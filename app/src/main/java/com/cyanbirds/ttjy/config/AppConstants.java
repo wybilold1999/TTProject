@@ -12,8 +12,8 @@ import com.xiaomi.account.openauth.XiaomiOAuthConstants;
  */
 public class AppConstants {
 	
-//	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-	public static final String BASE_URL = "http://192.168.1.101/TTLoveServer/";
+	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
+//	public static final String BASE_URL = "http://192.168.1.101/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙
