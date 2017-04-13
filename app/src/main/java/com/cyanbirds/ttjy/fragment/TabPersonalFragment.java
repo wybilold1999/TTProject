@@ -582,7 +582,6 @@ public class TabPersonalFragment extends Fragment implements AMapLocationListene
 	 * 销毁定位
 	 */
 	private void stopLocation() {
-		mMapCard.setVisibility(View.GONE);
 		if (aMapLocManager != null) {
 			aMapLocManager.removeUpdates(this);
 			aMapLocManager.destroy();
