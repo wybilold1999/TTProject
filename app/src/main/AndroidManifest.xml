@@ -426,6 +426,17 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.cyanbirds.ttjy.fileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+
         <!-- *****************************ECSDK核心服务类 （必须配置）Start******************************************** -->
         // SDK核心服务配置(必选配置)
         <service android:name="com.yuntongxun.ecsdk.ECClientService" android:enabled="true" android:process=":push" />

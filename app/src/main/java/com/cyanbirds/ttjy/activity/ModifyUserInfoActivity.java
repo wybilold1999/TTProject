@@ -1,13 +1,20 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.Toolbar;
@@ -169,6 +176,20 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 	 * 剪裁图片返回
 	 */
 	public final static int PHOTO_CUT_RESULT = 106;
+
+	/**
+	 * 读写文件夹
+	 */
+	private final int REQUEST_PERMISSION_WRITE = 1000;
+	/**
+	 * 跳转设置界面
+	 */
+	private final int REQUEST_PERMISSION_SETTING = 10001;
+
+	/**
+	 * 是否拥有读写权限
+	 */
+	private boolean isWritePersimmion = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -445,7 +466,12 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 					public void onClick(DialogInterface dialog, int which) {
 						switch (which) {
 							case 0:
-								openCamera();
+								if (AppManager.checkPermission(ModifyUserInfoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_WRITE)) {
+									isWritePersimmion = true;
+									if (AppManager.checkPermission(ModifyUserInfoActivity.this, Manifest.permission.CAMERA, CAMERA_RESULT)) {
+										openCamera();
+									}
+								}
 								break;
 							case 1:
 								openAlbums();
@@ -946,17 +972,14 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 					mPhotoOnSDCardUri);
 			sendBroadcast(intent);
 			if (mPhotoOnSDCardUri != null) {
-				File file = new File(mPhotoOnSDCardUri.getPath());
-				if (mPhotoOnSDCardUri != null && file.exists()) {
-					Uri uri = Uri.parse("file://" + file.getPath());
-					cutPhoto(Uri
-							.parse("file://" + FileUtils.getPath(this, uri)));
+				File file = new File(mPhotoPath);
+				if (file.exists()) {
+					cutPhoto(file);
 				}
 			}
 		} else if (resultCode == RESULT_OK && requestCode == ALBUMS_RESULT) {
 			Uri originalUri = data.getData();
-			cutPhoto(Uri
-					.parse("file://" + FileUtils.getPath(this, originalUri)));
+			cutPhoto(new File(FileUtils.getPath(this, originalUri)));
 		} else if (resultCode == RESULT_OK && requestCode == PHOTO_CUT_RESULT) {
 			mPortraitUri = data.getData();
 			if (mPortraitUri == null && mCutFile != null) {
@@ -1011,20 +1034,9 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 	/**
 	 * 剪切图片
 	 *
-	 * @param uri
+	 * @param file
 	 */
-	private void cutPhoto(Uri uri) {
-		Intent intent = new Intent("com.android.camera.action.CROP");
-		intent.setDataAndType(uri, "image/*");
-		intent.putExtra("crop", "true");
-		intent.putExtra("outputX", 500);
-		intent.putExtra("outputY", 500);
-		intent.putExtra("aspectX", 1);
-		intent.putExtra("aspectY", 1);
-		intent.putExtra("scale", true);
-		intent.putExtra("noFaceDetection", true);
-		intent.putExtra("outputFormat", CompressFormat.JPEG.toString());
-
+	private void cutPhoto(File file) {
 		mCutFile = new File(FileAccessorUtils.getImagePathName(),
 				"cutphoto.png");
 		if (!mCutFile.exists()) {
@@ -1034,9 +1046,20 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 				e.printStackTrace();
 			}
 		}
-		Uri ur = Uri.fromFile(mCutFile);
 
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, ur);
+		Uri imageUri= FileProvider.getUriForFile(this, "com.cyanbirds.ttjy.fileProvider", file);//通过FileProvider创建一个content类型的Uri
+		Intent intent = new Intent("com.android.camera.action.CROP");
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		intent.setDataAndType(imageUri, "image/*");
+		intent.putExtra("crop", "true");
+		intent.putExtra("outputX", 500);
+		intent.putExtra("outputY", 500);
+		intent.putExtra("aspectX", 1);
+		intent.putExtra("aspectY", 1);
+		intent.putExtra("scale", true);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mCutFile));
+		intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+		intent.putExtra("noFaceDetection", true); // no face detection
 		startActivityForResult(intent, PHOTO_CUT_RESULT);
 	}
 
@@ -1057,5 +1080,67 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 		super.onPause();
 		MobclickAgent.onPageEnd(this.getClass().getName());
 		MobclickAgent.onPause(this);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == CAMERA_RESULT) {
+			// 拒绝授权
+			if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+				// 勾选了不再提示
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+					showOpenCameraDialog();
+				} else {
+				}
+			} else if (isWritePersimmion) {
+				openCamera();
+			}
+		} else if (requestCode == REQUEST_PERMISSION_WRITE) {//读写文件夹权限
+			// 拒绝授权
+			if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+				// 勾选了不再提示
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+					showWriteDialog();
+				}
+			} else {
+				isWritePersimmion = true;
+				AppManager.checkPermission(this, Manifest.permission.CAMERA, CAMERA_RESULT);
+			}
+		}
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	}
+
+	private void showOpenCameraDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.open_camera_permission);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				Uri uri = Uri.fromParts("package", getPackageName(), null);
+				intent.setData(uri);
+				startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+
+			}
+		});
+		builder.show();
+	}
+
+	private void showWriteDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.open_write_external);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				Uri uri = Uri.fromParts("package", getPackageName(), null);
+				intent.setData(uri);
+				startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+
+			}
+		});
+		builder.show();
 	}
 }

@@ -1,7 +1,13 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -31,6 +37,9 @@ public class EntranceActivity extends BaseActivity {
     FancyButton mLogin;
     @BindView(R.id.register)
     FancyButton mRegister;
+
+    private final int REQUEST_LOCATION_PERMISSION = 1000;
+    private boolean isSecondAccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,5 +105,39 @@ public class EntranceActivity extends BaseActivity {
         super.onPause();
         MobclickAgent.onPageEnd(this.getClass().getName());
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        // 拒绝授权
+        if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            // 勾选了不再提示
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                    !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                if (!isSecondAccess) {
+                    showAccessLocationDialog();
+                }
+            }
+        } else {
+            PreferencesUtils.setAccessLocationStatus(this, true);
+        }
+    }
+
+    private void showAccessLocationDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.access_location);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isSecondAccess = true;
+                if (Build.VERSION.SDK_INT >= 23) {
+                    ActivityCompat.requestPermissions(EntranceActivity.this, new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION},
+                            REQUEST_LOCATION_PERMISSION);
+                }
+            }
+        });
+        builder.show();
     }
 }

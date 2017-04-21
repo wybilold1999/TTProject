@@ -231,6 +231,10 @@
     <string name="reward">抽奖活动</string>
     <string name="reward_count_over">您的抽奖次数已经用完，继续购买套餐又可获得3次抽奖机会</string>
     <string name="no_reward_count">您的抽奖次数为0，购买套餐可获得3次抽奖机会</string>
+    <string name="access_location">获取您的位置后才能更精确的查看附近用户，是否获取？</string>
+    <string name="open_location">获取您的位置后才能才能更精确的查看附近用户,请在权限选项中打开位置权限</string>
+    <string name="open_camera_permission">打开相机权限才能拍照,请在权限选项中打开相机权限</string>
+    <string name="open_write_external">获取存储权限后才能拍照,请在权限选项中打开存储权限</string>
 
     <string name="errcode_success">发送成功</string>
     <string name="errcode_cancel">发送取消</string>

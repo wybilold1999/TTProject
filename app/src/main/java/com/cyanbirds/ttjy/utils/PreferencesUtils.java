@@ -92,10 +92,8 @@ public class PreferencesUtils {
 	public static final String SETTINGS_JPUSH_SET_ALIAS = "com.cyanbirds.ttjy_jpush_set_alias";
 	/** 抽奖次数*/
 	public static final String SETTINGS_REWARD_COUNT = "com.cyanbirds.ttjy_reward_count";
-	/**经度**/
-	public static final String SETTINGS_LATITUDE = "com.cyanbirds.ttjy_latitude";
-	/**纬度**/
-	public static final String SETTINGS_LONGITUDE = "com.cyanbirds.ttjy_longitude";
+	/**获取位置权限**/
+	public static final String SETTINGS_ACCESS_LOCATION = "com.cyanbird.tanlove_access_location";
 
 	/**
 	 * 获取RL账号
@@ -1001,28 +999,16 @@ public class PreferencesUtils {
 	}
 
 
-	public static String getLatitude(final Context context) {
+	public static boolean getAccessLocationStatus(final Context context) {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		return sp.getString(SETTINGS_LATITUDE, "");
+		return sp.getBoolean(SETTINGS_ACCESS_LOCATION, false);
 	}
 
-	public static void setLatitude(final Context context, final String latitude) {
+	public static void setAccessLocationStatus(final Context context, final boolean isAccessed) {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		sp.edit().putString(SETTINGS_LATITUDE, latitude).commit();
-	}
-
-	public static String getLongitude(final Context context) {
-		SharedPreferences sp = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		return sp.getString(SETTINGS_LONGITUDE, "");
-	}
-
-	public static void setLongitude(final Context context, final String longitude) {
-		SharedPreferences sp = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		sp.edit().putString(SETTINGS_LONGITUDE, longitude).commit();
+		sp.edit().putBoolean(SETTINGS_ACCESS_LOCATION, isAccessed).commit();
 	}
 
 }

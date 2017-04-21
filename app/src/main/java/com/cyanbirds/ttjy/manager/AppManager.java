@@ -1,5 +1,7 @@
 package com.cyanbirds.ttjy.manager;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.KeyguardManager;
@@ -8,13 +10,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.alibaba.sdk.android.oss.OSS;
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.IMessage;
@@ -64,6 +69,7 @@ public class AppManager {
 	 * 进入聊天界面当前聊天联系人id
 	 */
 	public static String currentChatTalker = null;
+	private static final int REQUEST_LOCATION_PERMISSION = 1000;
 
 	private static UserService mUserService;
 	private static PictureService mPictureService;
@@ -450,6 +456,34 @@ public class AppManager {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static void requestLocationPermission(Activity activity) {
+		PackageManager pkgManager = CSApplication.getInstance().getPackageManager();
+		boolean ACCESS_COARSE_LOCATION =
+				pkgManager.checkPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+		boolean ACCESS_FINE_LOCATION =
+				pkgManager.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+		if (Build.VERSION.SDK_INT >= 23 && !ACCESS_COARSE_LOCATION || !ACCESS_FINE_LOCATION) {
+			//请求权限
+			ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+					REQUEST_LOCATION_PERMISSION);
+		}
+	}
+
+	public static boolean checkPermission(Activity activity, String permission, int flag) {
+		boolean isHasPermission = false;
+		if (Build.VERSION.SDK_INT >= 23) {
+			PackageManager pkgManager = CSApplication.getInstance().getPackageManager();
+			isHasPermission = pkgManager.checkPermission(permission, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+			if (!isHasPermission) {
+				//请求权限
+				ActivityCompat.requestPermissions(activity, new String[] {permission}, flag);
+			}
+		} else {
+			isHasPermission = true;
+		}
+		return isHasPermission;
 	}
 
 	/**

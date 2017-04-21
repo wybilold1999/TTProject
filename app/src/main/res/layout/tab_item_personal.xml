@@ -764,7 +764,7 @@
 						android:clickable="true"
 						android:descendantFocusability="blocksDescendants">
 
-						<com.facebook.drawee.view.SimpleDraweeView
+						<ImageView
 							android:id="@+id/plable_icon"
 							android:layout_width="22dp"
 							android:layout_height="22dp"
@@ -773,11 +773,8 @@
 							android:layout_centerVertical="true"
 							android:layout_marginLeft="20dp"
 							android:layout_marginStart="20dp"
-							app:actualImageScaleType="centerCrop"
-							app:failureImage="@mipmap/icon_plable"
-							app:placeholderImage="@mipmap/icon_plable"
-							app:placeholderImageScaleType="centerCrop"
-							app:roundAsCircle="true"/>
+							android:src="@mipmap/icon_plable"
+							android:scaleType="centerCrop"/>
 
 						<com.dl7.tag.TagLayout
 							android:id="@+id/plable_flowlayout"
@@ -808,7 +805,7 @@
 						android:clickable="true"
 						android:descendantFocusability="blocksDescendants">
 
-						<com.facebook.drawee.view.SimpleDraweeView
+						<ImageView
 							android:id="@+id/part_icon"
 							android:layout_width="22dp"
 							android:layout_height="22dp"
@@ -817,11 +814,8 @@
 							android:layout_centerVertical="true"
 							android:layout_marginLeft="20dp"
 							android:layout_marginStart="20dp"
-							app:actualImageScaleType="centerCrop"
-							app:failureImage="@mipmap/icon_part"
-							app:placeholderImage="@mipmap/icon_part"
-							app:placeholderImageScaleType="centerCrop"
-							app:roundAsCircle="true"/>
+							android:src="@mipmap/my_profile_mylove_icon"
+							android:scaleType="centerCrop"/>
 
 
 						<com.dl7.tag.TagLayout
@@ -853,7 +847,7 @@
 						android:clickable="true"
 						android:descendantFocusability="blocksDescendants">
 
-						<com.facebook.drawee.view.SimpleDraweeView
+						<ImageView
 							android:id="@+id/intrest_icon"
 							android:layout_width="22dp"
 							android:layout_height="22dp"
@@ -862,11 +856,8 @@
 							android:layout_centerVertical="true"
 							android:layout_marginLeft="20dp"
 							android:layout_marginStart="20dp"
-							app:actualImageScaleType="centerCrop"
-							app:failureImage="@mipmap/icon_intrest"
-							app:placeholderImage="@mipmap/icon_intrest"
-							app:placeholderImageScaleType="centerCrop"
-							app:roundAsCircle="true"/>
+							android:src="@mipmap/my_profile_interest_icon"
+							android:scaleType="centerCrop"/>
 
 						<com.dl7.tag.TagLayout
 							android:id="@+id/intrest_flowlayout"

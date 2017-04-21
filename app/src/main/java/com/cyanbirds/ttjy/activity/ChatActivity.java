@@ -1,7 +1,9 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -10,6 +12,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -21,7 +27,6 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.format.Formatter;
 import android.text.style.ImageSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -95,13 +100,10 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	private LinearLayout mEmoticonPageIndicator;
 	private RecyclerView mEmoticonRecyclerview;
 	private SwipeRefreshLayout mSwipeRefresh;
-	private Toolbar mToolbar;
 
 	private String mPhotoPath;
 	private File mPhotoFile;
 	private Uri mPhotoOnSDCardUri;
-	private Uri mPortraitUri;
-	private File mCutFile;
 
 	private String mConversationId;
 	private ClientUser mClientUser;
@@ -138,6 +140,19 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	 * 图片创建成功
 	 */
 	public static final int CREATE_IMAGE_SUCCESS_FLAG = 203;
+	/**
+	 * 跳转设置界面
+	 */
+	private final int REQUEST_PERMISSION_SETTING = 10001;
+	/**
+	 * 读写文件夹
+	 */
+	private final int REQUEST_PERMISSION_WRITE = 1000;
+
+	/**
+	 * 是否拥有读写权限
+	 */
+	private boolean isWritePersimmion = false;
 
 	public static Handler handler;
 
@@ -403,8 +418,11 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.openCamera:
-				openCamera();
-				setInputMode();
+				if (AppManager.checkPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_PERMISSION_WRITE) &&
+						AppManager.checkPermission(this, Manifest.permission.CAMERA, CAMERA_RESULT)) {
+					openCamera();
+					setInputMode();
+				}
 				break;
 			case R.id.openAlbums:
 				openAlbums();
@@ -531,9 +549,9 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	 * 打开相机
 	 */
 	private void openCamera() {
-		try {
-			hideSoftKeyboard();
-			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+		hideSoftKeyboard();
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (intent.resolveActivity(getPackageManager())!=null){
 			String mPhotoDirPath = Environment
 					.getExternalStoragePublicDirectory(
 							Environment.DIRECTORY_DCIM).getPath();
@@ -550,11 +568,16 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 					e.printStackTrace();
 				}
 			}
-			mPhotoOnSDCardUri = Uri.fromFile(mPhotoFile);
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoOnSDCardUri);
-			startActivityForResult(intent, CAMERA_RESULT);
-		} catch (Exception e) {
-			e.printStackTrace();
+			if (mPhotoFile != null) {
+				//FileProvider 是一个特殊的 ContentProvider 的子类，
+				//它使用 content:// Uri 代替了 file:/// Uri. ，更便利而且安全的为另一个app分享文件
+				mPhotoOnSDCardUri = FileProvider.getUriForFile(this,
+						"com.cyanbirds.tanlove.fileProvider",
+						mPhotoFile);
+				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoOnSDCardUri);
+				startActivityForResult(intent, CAMERA_RESULT);
+			}
 		}
 	}
 
@@ -586,11 +609,13 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 			Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
 					mPhotoOnSDCardUri);
 			sendBroadcast(intent);
-			if (mPhotoOnSDCardUri != null && new File(mPhotoOnSDCardUri.getPath()).exists()) {
-				int size = FileUtils.decodeFileLength(mPhotoOnSDCardUri.getPath());
-				String str = Formatter.formatFileSize(this, size);
+			if (mPhotoOnSDCardUri != null && new File(mPhotoPath).exists()) {
+//				int size = FileUtils.decodeFileLength(mPhotoPath);
+//				String str = Formatter.formatFileSize(this, size);
 				//压缩图片
-				String imgUrl = ImageUtil.compressImage(mPhotoOnSDCardUri.getPath(), FileAccessorUtils.IMESSAGE_IMAGE);
+				String imgUrl = ImageUtil.compressImage(mPhotoPath, FileAccessorUtils.IMESSAGE_IMAGE);
+//				int size2 = FileUtils.decodeFileLength(imgUrl);
+//				String str2 = Formatter.formatFileSize(this, size2);
 				Uri uri = Uri.parse("file://" + imgUrl);
 				toImagePreview(uri);
 			}
@@ -844,5 +869,68 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	@Override
 	public void onNotifyMessageStatusReport(IMessage msg) {
 		onMessageStatusReport(msg);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == CAMERA_RESULT) {
+			// 拒绝授权
+			if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+				// 勾选了不再提示
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+					showOpenCameraDialog();
+				} else {
+				}
+			} else if (isWritePersimmion) {
+				openCamera();
+				setInputMode();
+			}
+		} else if (requestCode == REQUEST_PERMISSION_WRITE) {//读写文件夹权限
+			// 拒绝授权
+			if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+				// 勾选了不再提示
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+					showWriteDialog();
+				}
+			} else {
+				isWritePersimmion = true;
+				AppManager.checkPermission(this, Manifest.permission.CAMERA, CAMERA_RESULT);
+			}
+		}
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+	}
+
+	private void showOpenCameraDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.open_camera_permission);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				Uri uri = Uri.fromParts("package", getPackageName(), null);
+				intent.setData(uri);
+				startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+
+			}
+		});
+		builder.show();
+	}
+
+	private void showWriteDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.open_write_external);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				Uri uri = Uri.fromParts("package", getPackageName(), null);
+				intent.setData(uri);
+				startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+
+			}
+		});
+		builder.show();
 	}
 }
