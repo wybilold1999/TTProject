@@ -961,7 +961,7 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginStart="20dp"
                         android:scaleType="fitCenter"
-                        android:src="@mipmap/icon_part" />
+                        android:src="@mipmap/my_profile_mylove_icon" />
 
                     <TextView
                         android:id="@+id/part_text"
@@ -1039,7 +1039,7 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginStart="20dp"
                         android:scaleType="fitCenter"
-                        android:src="@mipmap/icon_intrest" />
+                        android:src="@mipmap/my_profile_interest_icon" />
 
                     <TextView
                         android:id="@+id/intrest_text"
