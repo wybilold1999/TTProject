@@ -49,6 +49,7 @@ public class EntranceActivity extends BaseActivity {
         saveFirstLauncher();
         setupViews();
         setEvent();
+        AppManager.requestLocationPermission(this);
     }
 
     /**

@@ -870,7 +870,7 @@
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp">
 
-                    <com.facebook.drawee.view.SimpleDraweeView
+                    <ImageView
                         android:id="@+id/lable_icon"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
@@ -879,11 +879,8 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="20dp"
                         android:layout_marginStart="20dp"
-                        app:actualImageScaleType="centerCrop"
-                        app:failureImage="@mipmap/icon_plable"
-                        app:placeholderImage="@mipmap/icon_plable"
-                        app:placeholderImageScaleType="centerCrop"
-                        app:roundAsCircle="true"/>
+                        android:scaleType="centerCrop"
+                        android:src="@mipmap/icon_plable"/>
 
                     <TextView
                         android:id="@+id/lable_text"

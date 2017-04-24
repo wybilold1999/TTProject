@@ -413,6 +413,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 					}
 				}
 			} else {
+				initLocationClient();
 				PreferencesUtils.setAccessLocationStatus(this, true);
 			}
 		} else {
@@ -445,6 +446,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				isSecondAccess = true;
 				if (Build.VERSION.SDK_INT >= 23) {
 					ActivityCompat.requestPermissions(MainActivity.this, new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION},
 							REQUEST_LOCATION_PERMISSION);
