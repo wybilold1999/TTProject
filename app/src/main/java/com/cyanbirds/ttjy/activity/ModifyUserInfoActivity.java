@@ -917,8 +917,9 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 	 * 打开相机
 	 */
 	private void openCamera() {
-		try {
-			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+		hideSoftKeyboard();
+		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (intent.resolveActivity(getPackageManager())!=null){
 			String mPhotoDirPath = Environment
 					.getExternalStoragePublicDirectory(
 							Environment.DIRECTORY_DCIM).getPath();
@@ -935,11 +936,16 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 					e.printStackTrace();
 				}
 			}
-			mPhotoOnSDCardUri = Uri.fromFile(mPhotoFile);
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoOnSDCardUri);
-			startActivityForResult(intent, CAMERA_RESULT);
-		} catch (Exception e) {
-			e.printStackTrace();
+			if (mPhotoFile != null) {
+				//FileProvider 是一个特殊的 ContentProvider 的子类，
+				//它使用 content:// Uri 代替了 file:/// Uri. ，更便利而且安全的为另一个app分享文件
+				mPhotoOnSDCardUri = FileProvider.getUriForFile(this,
+						"com.cyanbirds.ttjy.fileProvider",
+						mPhotoFile);
+				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoOnSDCardUri);
+				startActivityForResult(intent, CAMERA_RESULT);
+			}
 		}
 	}
 

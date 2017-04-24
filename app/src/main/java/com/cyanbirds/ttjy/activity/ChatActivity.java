@@ -572,7 +572,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 				//FileProvider 是一个特殊的 ContentProvider 的子类，
 				//它使用 content:// Uri 代替了 file:/// Uri. ，更便利而且安全的为另一个app分享文件
 				mPhotoOnSDCardUri = FileProvider.getUriForFile(this,
-						"com.cyanbirds.tanlove.fileProvider",
+						"com.cyanbirds.ttjy.fileProvider",
 						mPhotoFile);
 				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoOnSDCardUri);

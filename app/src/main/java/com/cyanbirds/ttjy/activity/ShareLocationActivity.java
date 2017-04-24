@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -19,11 +18,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
-
 import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.location.LocationManagerProxy;
-import com.amap.api.location.LocationProviderProxy;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
@@ -63,14 +61,14 @@ import java.util.List;
  *
  */
 public class ShareLocationActivity extends BaseActivity implements
-		AMapLocationListener, Runnable, GeocodeSearch.OnGeocodeSearchListener,
+		AMapLocationListener, GeocodeSearch.OnGeocodeSearchListener,
 		AMap.OnMapTouchListener, OnClickListener, AMap.OnMapScreenShotListener {
 
 	private MapView mapView;
-	private AMap aMap;
 	private UiSettings mUiSettings;
-	private LocationManagerProxy aMapLocManager = null;
-	private AMapLocation aMapLocation;// 用于判断定位超时
+	private AMapLocationClientOption mLocationOption;
+	private AMapLocationClient mlocationClient;
+	private AMap aMap;
 	private GeocodeSearch geocoderSearch;
 	private CircularProgress mProgressBar;
 
@@ -141,21 +139,29 @@ public class ShareLocationActivity extends BaseActivity implements
 	 * 初始化AMap对象
 	 */
 	private void init() {
-		if (aMap == null) {
-			aMap = mapView.getMap();
-			mUiSettings = aMap.getUiSettings();
-			mUiSettings.setZoomControlsEnabled(false);// 不显示缩放按钮
-			aMap.moveCamera(CameraUpdateFactory.zoomTo(16));// 设置缩放比例
-		}
+		aMap = mapView.getMap();
+		mUiSettings = aMap.getUiSettings();//实例化UiSettings类对象
+		mUiSettings.setZoomControlsEnabled(false);
+		mUiSettings.setAllGesturesEnabled(false);
+		aMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+
+		mlocationClient = new AMapLocationClient(this);
+		//初始化定位参数
+		mLocationOption = new AMapLocationClientOption();
+		//设置定位监听
+		mlocationClient.setLocationListener(this);
+		//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+		mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+		//获取最近3s内精度最高的一次定位结果：
+		mLocationOption.setOnceLocationLatest(true);
+		//设置定位参数
+		mlocationClient.setLocationOption(mLocationOption);
+		//启动定位
+		mlocationClient.startLocation();
+
 		// 地理编码
 		geocoderSearch = new GeocodeSearch(this);
 		geocoderSearch.setOnGeocodeSearchListener(this);
-		// 定位
-		aMapLocManager = LocationManagerProxy.getInstance(this);
-		aMapLocManager.setGpsEnable(false);
-		aMapLocManager.requestLocationData(LocationProviderProxy.AMapNetwork,
-				-1, 10, this);
-		handler.postDelayed(this, 12000);// 设置超过12秒还没有定位到就停止定位
 	}
 
 	/**
@@ -176,7 +182,6 @@ public class ShareLocationActivity extends BaseActivity implements
 	protected void onPause() {
 		super.onPause();
 		mapView.onPause();
-		stopLocation();// 停止定位
 		MobclickAgent.onPageEnd(this.getClass().getName());
 		MobclickAgent.onPause(this);
 	}
@@ -190,16 +195,6 @@ public class ShareLocationActivity extends BaseActivity implements
 		mapView.onSaveInstanceState(outState);
 	}
 
-	/**
-	 * 销毁定位
-	 */
-	private void stopLocation() {
-		if (aMapLocManager != null) {
-			aMapLocManager.removeUpdates(this);
-			aMapLocManager.destroy();
-		}
-		aMapLocManager = null;
-	}
 
 	/**
 	 * 方法必须重写
@@ -211,28 +206,8 @@ public class ShareLocationActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onLocationChanged(Location location) {
-
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
 	public void onLocationChanged(AMapLocation location) {
 		if (location != null) {
-			this.aMapLocation = location;// 判断超时机制
 			LatLonPoint latLonPoint = new LatLonPoint(location.getLatitude(),
 					location.getLongitude());
 			mLatLonPoint = latLonPoint;
@@ -246,13 +221,6 @@ public class ShareLocationActivity extends BaseActivity implements
 		}
 	}
 
-	@Override
-	public void run() {
-		if (aMapLocation == null) {
-			ToastUtil.showMessage(R.string.location_timeout);
-			stopLocation();// 销毁掉定位
-		}
-	}
 
 	@Override
 	public void onGeocodeSearched(GeocodeResult result, int rCode) {
@@ -260,7 +228,7 @@ public class ShareLocationActivity extends BaseActivity implements
 
 	@Override
 	public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
-		if (rCode == 0) {
+		if (rCode == 1000) {
 			if (result != null && result.getRegeocodeAddress() != null
 					&& result.getRegeocodeAddress().getFormatAddress() != null) {
 				List<PoiItem> poiList = result.getRegeocodeAddress().getPois();

@@ -2,17 +2,20 @@ package com.cyanbirds.ttjy.activity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTabHost;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -144,17 +147,18 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				initJPush();
 
 				initMeizuPush();
+
+				loadData();
+
+				initLocationClient();
 			}
 		});
-
-		loadData();
 
 		if (!PreferencesUtils.getAccessLocationStatus(this)) {//还没获取到位置权限
 			AppManager.requestLocationPermission(this);
 		}
 		requestPermission();
 
-		initLocationClient();
 	}
 
 	/**
@@ -408,17 +412,60 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 		if (requestCode == REQUEST_PERMISSION) {
-			if ((grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
-				PushManager.getInstance().initialize(this.getApplicationContext(), MyPushService.class);
+
+		} else if (requestCode == REQUEST_LOCATION_PERMISSION) {
+			// 拒绝授权
+			if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+				// 勾选了不再提示
+				if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+						!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+					showOpenLocationDialog();
+				} else {
+					if (!isSecondAccess) {
+						showAccessLocationDialog();
+					}
+				}
 			} else {
-				Log.e("GetuiSdkDemo",
-						"we highly recommend that you need to grant the special permissions before initializing the SDK, otherwise some "
-								+ "functions will not work");
-				PushManager.getInstance().initialize(this.getApplicationContext(), MyPushService.class);
+				PreferencesUtils.setAccessLocationStatus(this, true);
 			}
 		} else {
 			super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
+	}
+
+	private void showOpenLocationDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.open_location);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+				Uri uri = Uri.fromParts("package", getPackageName(), null);
+				intent.setData(uri);
+				startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
+
+			}
+		});
+		builder.show();
+	}
+
+
+	private void showAccessLocationDialog(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(R.string.access_location);
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				if (Build.VERSION.SDK_INT >= 23) {
+					ActivityCompat.requestPermissions(MainActivity.this, new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION},
+							REQUEST_LOCATION_PERMISSION);
+				}
+
+			}
+		});
+		builder.show();
 	}
 
 	/**
@@ -474,6 +521,14 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_PERMISSION_SETTING) {
+			initLocationClient();
+		}
 	}
 
 }

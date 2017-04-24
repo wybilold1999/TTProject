@@ -2,7 +2,6 @@ package com.cyanbirds.ttjy.activity;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.Toolbar;
@@ -10,9 +9,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.location.LocationManagerProxy;
-import com.amap.api.location.LocationProviderProxy;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMap.InfoWindowAdapter;
 import com.amap.api.maps2d.AMap.OnInfoWindowClickListener;
@@ -28,7 +27,6 @@ import com.amap.api.maps2d.model.MyLocationStyle;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -38,14 +36,14 @@ import com.umeng.analytics.MobclickAgent;
  * @Date:2015年7月13日下午3:01:46
  */
 public class LocationDetailActivity extends BaseActivity implements
-		AMapLocationListener, Runnable, LocationSource,
+		AMapLocationListener, LocationSource,
 		OnInfoWindowClickListener, InfoWindowAdapter {
 
 	private MapView mMapView;
-	private LocationManagerProxy aMapLocManager = null;
-	private AMapLocation aMapLocation;// 用于判断定位超时
 	private AMap aMap;
 	private UiSettings mUiSettings;
+	private AMapLocationClientOption mLocationOption;
+	private AMapLocationClient mlocationClient;
 	private OnLocationChangedListener mListener;
 
 	private LatLng mMessageLatLng;
@@ -92,10 +90,19 @@ public class LocationDetailActivity extends BaseActivity implements
 			aMap.moveCamera(CameraUpdateFactory.zoomTo(16));// 设置缩放比例
 		}
 		// 定位
-		aMapLocManager = LocationManagerProxy.getInstance(this);
-		aMapLocManager.requestLocationData(LocationProviderProxy.AMapNetwork,
-				-1, 10, this);
-		handler.postDelayed(this, 12000);// 设置超过12秒还没有定位到就停止定位
+		mlocationClient = new AMapLocationClient(this);
+		//初始化定位参数
+		mLocationOption = new AMapLocationClientOption();
+		//设置定位监听
+		mlocationClient.setLocationListener(this);
+		//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+		mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+		//获取最近3s内精度最高的一次定位结果：
+		mLocationOption.setOnceLocationLatest(true);
+		//设置定位参数
+		mlocationClient.setLocationOption(mLocationOption);
+		//启动定位
+		mlocationClient.startLocation();
 
 		// 自定义系统定位小蓝点
 		MyLocationStyle myLocationStyle = new MyLocationStyle();
@@ -136,16 +143,6 @@ public class LocationDetailActivity extends BaseActivity implements
 		mMapView.onSaveInstanceState(outState);
 	}
 
-	/**
-	 * 销毁定位
-	 */
-	private void stopLocation() {
-		if (aMapLocManager != null) {
-			aMapLocManager.removeUpdates(this);
-			aMapLocManager.destroy();
-		}
-		aMapLocManager = null;
-	}
 
 	/**
 	 * 方法必须重写
@@ -157,42 +154,10 @@ public class LocationDetailActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onLocationChanged(Location location) {
-
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-
-	}
-
-	@Override
 	public void onLocationChanged(AMapLocation location) {
 		if (mListener != null && location != null) {
 			mListener.onLocationChanged(location);// 显示系统小蓝点
 			aMap.animateCamera(CameraUpdateFactory.changeLatLng(mMessageLatLng));
-		}
-		if (location != null) {
-			this.aMapLocation = location;// 判断超时机制
-		}
-
-	}
-
-	@Override
-	public void run() {
-		if (aMapLocation == null) {
-			ToastUtil.showMessage(R.string.location_timeout);
-			stopLocation();// 销毁掉定位
 		}
 	}
 
@@ -202,11 +167,8 @@ public class LocationDetailActivity extends BaseActivity implements
 	@Override
 	public void activate(OnLocationChangedListener listener) {
 		mListener = listener;
-		if (aMapLocManager == null) {
-			aMapLocManager = LocationManagerProxy.getInstance(this);
-			aMapLocManager.requestLocationData(
-					LocationProviderProxy.AMapNetwork, 60 * 1000, 10, this);
-		}
+		//启动定位
+		mlocationClient.startLocation();
 
 	}
 
@@ -216,11 +178,6 @@ public class LocationDetailActivity extends BaseActivity implements
 	@Override
 	public void deactivate() {
 		mListener = null;
-		if (aMapLocManager != null) {
-			aMapLocManager.removeUpdates(this);
-			aMapLocManager.destroy();
-		}
-		aMapLocManager = null;
 	}
 
 	@Override
