@@ -266,21 +266,8 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	 * 个推注册
 	 */
 	private void initGeTuiPush() {
-		PackageManager pkgManager = getPackageManager();
-		// 读写 sd card 权限非常重要, android6.0默认禁止的, 建议初始化之前就弹窗让用户赋予该权限
-		boolean sdCardWritePermission =
-				pkgManager.checkPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
-		// read phone state用于获取 imei 设备信息
-		boolean phoneSatePermission =
-				pkgManager.checkPermission(Manifest.permission.READ_PHONE_STATE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
-		if (Build.VERSION.SDK_INT >= 23 && !sdCardWritePermission || !phoneSatePermission) {
-			//请求权限
-			ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
-					REQUEST_PERMISSION);
-		} else {
-			// SDK初始化，第三方程序启动时，都要进行SDK初始化工作
-			PushManager.getInstance().initialize(this.getApplicationContext(), MyPushService.class);
-		}
+		// SDK初始化，第三方程序启动时，都要进行SDK初始化工作
+		PushManager.getInstance().initialize(this.getApplicationContext(), MyPushService.class);
 		PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), MyIntentService.class);
 	}
 
