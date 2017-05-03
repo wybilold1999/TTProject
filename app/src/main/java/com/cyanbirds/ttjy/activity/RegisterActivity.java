@@ -17,15 +17,12 @@ import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.WeinXinEvent;
-import com.cyanbirds.ttjy.eventtype.XMEvent;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.CheckIsRegisterByPhoneRequest;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
-import com.cyanbirds.ttjy.net.request.GetMiAccessTokenRequest;
 import com.cyanbirds.ttjy.net.request.QqLoginRequest;
 import com.cyanbirds.ttjy.net.request.WXLoginRequest;
-import com.cyanbirds.ttjy.net.request.XMLoginRequest;
 import com.cyanbirds.ttjy.utils.CheckUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.Md5Util;
@@ -40,9 +37,6 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.umeng.analytics.MobclickAgent;
-import com.xiaomi.account.openauth.XiaomiOAuthFuture;
-import com.xiaomi.account.openauth.XiaomiOAuthResults;
-import com.xiaomi.account.openauth.XiaomiOAuthorize;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -73,8 +67,6 @@ public class RegisterActivity extends BaseActivity {
     ImageView mSelectMan;
     @BindView(R.id.select_lady)
     ImageView mSelectLady;
-    @BindView(R.id.xm_login)
-    ImageView xmLogin;
 
     /**
      * 相册返回
@@ -109,7 +101,7 @@ public class RegisterActivity extends BaseActivity {
 
 
     @OnClick({R.id.next, R.id.qq_login,
-            R.id.select_man, R.id.select_lady, R.id.weixin_login, R.id.xm_login})
+            R.id.select_man, R.id.select_lady, R.id.weixin_login})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.next:
@@ -139,52 +131,9 @@ public class RegisterActivity extends BaseActivity {
                 req.state = "wechat_sdk_demo_test";
                 CSApplication.api.sendReq(req);
                 break;
-            case R.id.xm_login:
-                XiaomiOAuthFuture<XiaomiOAuthResults> future = new XiaomiOAuthorize()
-                        .setAppId(Long.parseLong(AppConstants.MI_PUSH_APP_ID))
-                        .setRedirectUrl(AppConstants.MI_ACCOUNT_REDIRECT_URI)
-                        .setScope(AppConstants.MI_SCOPE)
-                        .startGetAccessToken(this);
-                new GetMiAccessTokenRequest(this, future).execute();
-                break;
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void xmLogin(XMEvent event) {
-        ProgressDialogUtils.getInstance(RegisterActivity.this).show(R.string.dialog_request_login);
-        new XMLoginTask().request(event.xmOAuthResults, channelId);
-    }
-
-    public class XMLoginTask extends XMLoginRequest {
-        @Override
-        public void onPostExecute(ClientUser clientUser) {
-            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
-            MobclickAgent.onProfileSignIn(String.valueOf(AppManager
-                    .getClientUser().userId));
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
-                    && !TextUtils.isEmpty(clientUser.face_url)){
-                new DownloadPortraitTask().request(clientUser.face_url,
-                        FileAccessorUtils.FACE_IMAGE,
-                        Md5Util.md5(clientUser.face_url) + ".jpg");
-            }
-            AppManager.setClientUser(clientUser);
-            AppManager.saveUserInfo();
-            IMChattingHelper.getInstance().sendInitLoginMsg();
-            Intent intent = new Intent();
-            intent.setClass(RegisterActivity.this, MainActivity.class);
-            startActivity(intent);
-            finishAll();
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
-            ToastUtil.showMessage(error);
-        }
-    }
-    
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void weiXinLogin(WeinXinEvent event) {
         ProgressDialogUtils.getInstance(RegisterActivity.this).show(R.string.dialog_request_login);

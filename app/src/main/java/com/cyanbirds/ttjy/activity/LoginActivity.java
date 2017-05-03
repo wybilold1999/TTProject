@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,15 +16,12 @@ import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.WeinXinEvent;
-import com.cyanbirds.ttjy.eventtype.XMEvent;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
-import com.cyanbirds.ttjy.net.request.GetMiAccessTokenRequest;
 import com.cyanbirds.ttjy.net.request.QqLoginRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.net.request.WXLoginRequest;
-import com.cyanbirds.ttjy.net.request.XMLoginRequest;
 import com.cyanbirds.ttjy.utils.AESEncryptorUtil;
 import com.cyanbirds.ttjy.utils.CheckUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
@@ -41,9 +37,6 @@ import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
 import com.umeng.analytics.MobclickAgent;
-import com.xiaomi.account.openauth.XiaomiOAuthFuture;
-import com.xiaomi.account.openauth.XiaomiOAuthResults;
-import com.xiaomi.account.openauth.XiaomiOAuthorize;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -73,8 +66,6 @@ public class LoginActivity extends BaseActivity {
     ImageView weiXinLogin;
     @BindView(R.id.qq_login)
     ImageView qqLogin;
-    @BindView(R.id.xm_login)
-    ImageView xmLogin;
 
     public static Tencent mTencent;
     private UserInfo mInfo;
@@ -111,7 +102,7 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.btn_login, R.id.forget_pwd, R.id.qq_login, R.id.weixin_login, R.id.xm_login})
+    @OnClick({R.id.btn_login, R.id.forget_pwd, R.id.qq_login, R.id.weixin_login})
     public void onClick(View view) {
         Intent intent = new Intent();
         switch (view.getId()) {
@@ -142,49 +133,6 @@ public class LoginActivity extends BaseActivity {
                 req.state = "wechat_sdk_demo_test";
                 CSApplication.api.sendReq(req);
                 break;
-            case R.id.xm_login :
-                XiaomiOAuthFuture<XiaomiOAuthResults> future = new XiaomiOAuthorize()
-                        .setAppId(Long.parseLong(AppConstants.MI_PUSH_APP_ID))
-                        .setRedirectUrl(AppConstants.MI_ACCOUNT_REDIRECT_URI)
-                        .setScope(AppConstants.MI_SCOPE)
-                        .startGetAccessToken(this);
-                new GetMiAccessTokenRequest(this, future).execute();
-                break;
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void xmLogin(XMEvent event) {
-        ProgressDialogUtils.getInstance(LoginActivity.this).show(R.string.dialog_request_login);
-        new XMLoginTask().request(event.xmOAuthResults, channelId);
-    }
-
-    public class XMLoginTask extends XMLoginRequest {
-        @Override
-        public void onPostExecute(ClientUser clientUser) {
-            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
-            MobclickAgent.onProfileSignIn(String.valueOf(AppManager
-                    .getClientUser().userId));
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
-                    && !TextUtils.isEmpty(clientUser.face_url)){
-                new DownloadPortraitTask().request(clientUser.face_url,
-                        FileAccessorUtils.FACE_IMAGE,
-                        Md5Util.md5(clientUser.face_url) + ".jpg");
-            }
-            AppManager.setClientUser(clientUser);
-            AppManager.saveUserInfo();
-            IMChattingHelper.getInstance().sendInitLoginMsg();
-            Intent intent = new Intent();
-            intent.setClass(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finishAll();
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
-            ToastUtil.showMessage(error);
         }
     }
 
