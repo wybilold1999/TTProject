@@ -17,7 +17,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alipay.sdk.app.PayTask;
@@ -55,6 +57,8 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * @author: wangyb
@@ -78,10 +82,24 @@ public class DownloadPayFragment extends Fragment{
 	TextView mVipInfoSec;
 	@BindView(R.id.marqueeView)
 	MarqueeView mMarqueeView;
+	@BindView(R.id.btn_pay)
+	FancyButton mBtnPay;
+	@BindView(R.id.select_alipay)
+	CheckBox mSelectAlipay;
+	@BindView(R.id.alipay_lay)
+	RelativeLayout mAlipayLay;
+	@BindView(R.id.select_wechatpay)
+	CheckBox mSelectWechatpay;
+	@BindView(R.id.wechat_lay)
+	RelativeLayout mWechatLay;
+	@BindView(R.id.pay_lay)
+	LinearLayout mPayLay;
+
 	private View rootView;
 
 	private DownloadPayAdapter mAdapter;
 	private MemberBuy memberBuy;//当前选中的商品
+	private String mPayType;//支付方式
 
 	private static final int SDK_PAY_FLAG = 1;
 	private final int DOWNLOAD_VIP = 1;//服务器取下载赚钱的商品
@@ -174,6 +192,48 @@ public class DownloadPayFragment extends Fragment{
 		new GetMemberBuyListTask().request(DOWNLOAD_VIP);
 		//获取用户名称
 		new GetUserNameTask().request(1, 100);
+
+		/**
+		 * 默认支付宝支付
+		 */
+		mPayType = AppConstants.ALI_PAY_PLATFORM;
+		mSelectAlipay.setChecked(true);
+		mSelectWechatpay.setChecked(false);
+	}
+
+	@OnClick({R.id.btn_pay, R.id.select_alipay, R.id.alipay_lay, R.id.select_wechatpay, R.id.wechat_lay})
+	public void onClick(View view) {
+		switch (view.getId()) {
+			case R.id.select_alipay:
+				mPayType = AppConstants.ALI_PAY_PLATFORM;
+				mSelectAlipay.setChecked(true);
+				mSelectWechatpay.setChecked(false);
+				break;
+			case R.id.alipay_lay:
+				mPayType = AppConstants.ALI_PAY_PLATFORM;
+				mSelectAlipay.setChecked(true);
+				mSelectWechatpay.setChecked(false);
+				break;
+			case R.id.select_wechatpay:
+				mPayType = AppConstants.WX_PAY_PLATFORM;
+				mSelectAlipay.setChecked(false);
+				mSelectWechatpay.setChecked(true);
+				break;
+			case R.id.wechat_lay:
+				mPayType = AppConstants.WX_PAY_PLATFORM;
+				mSelectAlipay.setChecked(false);
+				mSelectWechatpay.setChecked(true);
+				break;
+			case R.id.btn_pay:
+				if (null != memberBuy) {
+					if (mPayType.equals(AppConstants.ALI_PAY_PLATFORM)) {
+						new GetAliPayOrderInfoTask().request(memberBuy.id, AppConstants.ALI_PAY_PLATFORM);
+					} else {
+						new CreateOrderTask().request(memberBuy.id, AppConstants.WX_PAY_PLATFORM);
+					}
+				}
+				break;
+		}
 	}
 
 
@@ -184,6 +244,8 @@ public class DownloadPayFragment extends Fragment{
 		@Override
 		public void onPostExecute(List<MemberBuy> memberBuys) {
 			if (memberBuys != null && !memberBuys.isEmpty()) {
+				memberBuys.get(0).isSelected = true;
+				memberBuy = memberBuys.get(0);
 				mAdapter = new DownloadPayAdapter(memberBuys, getActivity());
 				mAdapter.setOnItemClickListener(mOnItemClickListener);
 				mRecyclerView.setAdapter(mAdapter);

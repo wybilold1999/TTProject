@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
@@ -50,6 +51,7 @@ public class DownloadPayAdapter extends
         holder.mDataLimit.setText(memberBuy.months);
         holder.mPrice.setText(memberBuy.price + "元");
         holder.mInfo.setText(memberBuy.descreption);
+        holder.mSelect.setChecked(memberBuy.isSelected);
     }
 
     @Override
@@ -63,21 +65,27 @@ public class DownloadPayAdapter extends
         TextView mDataLimit;
         TextView mPrice;
         TextView mInfo;
-        Button mBuy;
+        CheckBox mSelect;
         public ViewHolder(View itemView) {
             super(itemView);
             mInfo = (TextView) itemView.findViewById(R.id.info);
             mPrice = (TextView) itemView.findViewById(R.id.price);
             mDataLimit = (TextView) itemView.findViewById(R.id.date_limit);
-            mBuy = (Button) itemView.findViewById(R.id.buy);
-            mBuy.setOnClickListener(this);
+            mSelect = (CheckBox) itemView.findViewById(R.id.select);
+            mSelect.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            int position = getAdapterPosition();
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(v, getAdapterPosition());
             }
+            for (MemberBuy memberBuy : mMemberBuys) {
+                memberBuy.isSelected = false;
+            }
+            mMemberBuys.get(position).isSelected = true;
+            notifyDataSetChanged();
         }
     }
 

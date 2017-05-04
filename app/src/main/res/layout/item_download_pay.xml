@@ -29,17 +29,15 @@
 
 	</LinearLayout>
 
-	<Button
-		android:id="@+id/buy"
-		android:layout_width="50dp"
-		android:layout_height="30dp"
+	<CheckBox
+		android:id="@+id/select"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
 		android:layout_centerVertical="true"
 		android:layout_marginRight="10dp"
-		android:background="@drawable/button_radius_background"
-		android:text="开通"
-		android:textColor="@android:color/white"
-		android:textSize="12sp"/>
+		android:button="@drawable/checkmark_selector"
+		android:padding="10dp" />
 
 	<TextView
 		android:id="@+id/price"
@@ -47,7 +45,7 @@
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
 		android:layout_marginRight="20dp"
-		android:layout_toLeftOf="@id/buy"
+		android:layout_toLeftOf="@id/select"
 		android:text="300"
 		android:textColor="@color/body_text_1"
 		android:textSize="14sp"/>
