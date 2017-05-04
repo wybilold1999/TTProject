@@ -610,12 +610,8 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 					mPhotoOnSDCardUri);
 			sendBroadcast(intent);
 			if (mPhotoOnSDCardUri != null && new File(mPhotoPath).exists()) {
-//				int size = FileUtils.decodeFileLength(mPhotoPath);
-//				String str = Formatter.formatFileSize(this, size);
 				//压缩图片
 				String imgUrl = ImageUtil.compressImage(mPhotoPath, FileAccessorUtils.IMESSAGE_IMAGE);
-//				int size2 = FileUtils.decodeFileLength(imgUrl);
-//				String str2 = Formatter.formatFileSize(this, size2);
 				Uri uri = Uri.parse("file://" + imgUrl);
 				toImagePreview(uri);
 			}

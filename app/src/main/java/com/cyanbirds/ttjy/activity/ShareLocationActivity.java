@@ -295,7 +295,7 @@ public class ShareLocationActivity extends BaseActivity implements
 		int id = item.getItemId();
 		if (id == R.id.send) {
 			if (!AppManager.getClientUser().isShowVip || AppManager.getClientUser().is_vip) {
-				if (AppManager.getClientUser().gold_num  < 101) {
+				if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num  < 101) {
 					showGoldDialog();
 				} else {
 					if (mSelLoactionLatLng == null || mSelLoactionLatLng.latitude == 0

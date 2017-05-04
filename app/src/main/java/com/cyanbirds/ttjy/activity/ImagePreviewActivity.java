@@ -66,7 +66,7 @@ public class ImagePreviewActivity extends BaseActivity {
 		int id = item.getItemId();
 		if (id == R.id.send) {
 			if(!AppManager.getClientUser().isShowVip || AppManager.getClientUser().is_vip){
-				if (AppManager.getClientUser().gold_num  < 101) {
+				if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num  < 101) {
 					showGoldDialog();
 				} else {
 					Intent intent = new Intent();
