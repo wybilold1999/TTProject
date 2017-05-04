@@ -99,6 +99,7 @@ public class UserLoginRequest extends ResultPostExecute<ClientUser> {
 			clientUser.isShowGold = jsonObject.get("isShowGold").getAsBoolean();
 			clientUser.isShowLovers = jsonObject.get("isShowLovers").getAsBoolean();
 			clientUser.isShowVideo = jsonObject.get("isShowVideo").getAsBoolean();
+			clientUser.isShowMap = jsonObject.get("isShowMap").getAsBoolean();
 			clientUser.gold_num = data.get("goldNum").getAsInt();
 			clientUser.state_marry = data.get("emotionStatus").getAsString();
 			clientUser.city = data.get("city").getAsString();

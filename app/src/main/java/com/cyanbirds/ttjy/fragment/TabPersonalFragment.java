@@ -583,7 +583,7 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 						.getRegeocodeAddress().getFormatAddress());
 				mAddress = poiItem.getSnippet();
 				mAdress.setText(mAddress);
-				if (AppManager.getClientUser().isShowVip &&
+				if (AppManager.getClientUser().isShowMap &&
 						!TextUtils.isEmpty(clientUser.distance) &&
 						!"0.0".equals(clientUser.distance) &&
 						!TextUtils.isEmpty(mAddress)) {

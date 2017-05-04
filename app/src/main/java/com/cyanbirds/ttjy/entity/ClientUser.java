@@ -108,6 +108,10 @@ public class ClientUser implements Serializable{
      * 0:不显示  1：显示
      */
     public Boolean isShowVideo; //视频
+    /**
+     * 0:不显示  1：显示
+     */
+    public Boolean isShowMap; //视频
 
     public String latitude = "";
     public String longitude = "";
