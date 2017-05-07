@@ -20,7 +20,7 @@
                 android:layout_marginTop="15dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="3dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <RelativeLayout
@@ -114,7 +114,7 @@
                 android:layout_marginTop="15dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="3dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -180,7 +180,7 @@
                 android:layout_marginTop="15dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="3dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -495,7 +495,7 @@
                 android:layout_marginTop="15dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="3dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -662,7 +662,7 @@
                 android:layout_marginTop="15dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="3dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -825,7 +825,7 @@
                 android:layout_marginTop="15dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="3dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
