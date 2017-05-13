@@ -126,9 +126,11 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
                 if (!TextUtils.isEmpty(AppManager.getClientUser().mobile)) {
                     intent.putExtra(ValueKey.PHONE_NUMBER, AppManager.getClientUser().mobile);
                 }
+                intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
                 break;
             case R.id.register:
                 intent.setClass(this, RegisterActivity.class);
+                intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
                 break;
         }
         startActivity(intent);
