@@ -1,6 +1,7 @@
 package com.cyanbirds.ttjy.net.request;
 
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
@@ -37,6 +38,11 @@ public class RegisterRequest extends ResultPostExecute<ClientUser> {
         params.put("reg_the_way", "0");
         params.put("regSystemVersion", AppManager.getDeviceSystemVersion());
         params.put("deviceId", AppManager.getDeviceId());
+        if (!TextUtils.isEmpty(clientUser.city)) {
+            params.put("currentCity", clientUser.city);
+        } else {
+            params.put("currentCity", "");
+        }
         Call<ResponseBody> call = AppManager.getUserService().userRegister(params);
         call.enqueue(new Callback<ResponseBody>() {
             @Override

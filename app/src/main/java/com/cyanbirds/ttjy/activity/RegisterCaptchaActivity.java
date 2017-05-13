@@ -142,6 +142,7 @@ public class RegisterCaptchaActivity extends BaseActivity implements
 				intent.setClass(RegisterCaptchaActivity.this, InputNewPwdActivity.class);
 				intent.putExtra(ValueKey.SMS_CODE, mSmsCode.getText().toString().trim());
 				intent.putExtra(ValueKey.PHONE_NUMBER, mPhone);
+				intent.putExtra(ValueKey.LOCATION, mClientUser.currentCity);
 				startActivity(intent);
 			} else {
 				AppManager.getClientUser().isCheckPhone = true;

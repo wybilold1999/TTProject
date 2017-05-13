@@ -39,6 +39,7 @@ public class InputNewPwdActivity extends BaseActivity implements
 
 	private String mPhone;
 	private String mSmsCode;
+	private String mCurrrentCity;//定位到的城市
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,7 @@ public class InputNewPwdActivity extends BaseActivity implements
 	private void setupData() {
 		mPhone = getIntent().getStringExtra(ValueKey.PHONE_NUMBER);
 		mSmsCode = getIntent().getStringExtra(ValueKey.SMS_CODE);
+		mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
 	}
 
 
@@ -98,7 +100,7 @@ public class InputNewPwdActivity extends BaseActivity implements
 		public void onPostExecute(String s) {
 			ProgressDialogUtils.getInstance(InputNewPwdActivity.this).dismiss();
 			ProgressDialogUtils.getInstance(InputNewPwdActivity.this).show(R.string.dialog_request_login);
-			new UserLoginTask().request(mPhone, AppManager.getClientUser().userPwd);
+			new UserLoginTask().request(mPhone, AppManager.getClientUser().userPwd, mCurrrentCity);
 		}
 
 		@Override

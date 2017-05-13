@@ -546,6 +546,7 @@ public class AppManager {
 			clientUser.isShowGold = clientUser.isShowVip;
 			clientUser.isShowLovers = clientUser.isShowVip;
 			clientUser.isShowVideo  = clientUser.isShowVip;
+			clientUser.currentCity = PreferencesUtils.getCurrentCity(mContext);
 			setClientUser(clientUser);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -586,6 +587,7 @@ public class AppManager {
 			PreferencesUtils.setSessionId(mContext, getClientUser().sessionId);
 			PreferencesUtils.setIsShow(mContext, getClientUser().isShowVip);
 			PreferencesUtils.setIsLogin(mContext, true);
+			PreferencesUtils.setCurrentCity(mContext, getClientUser().currentCity);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

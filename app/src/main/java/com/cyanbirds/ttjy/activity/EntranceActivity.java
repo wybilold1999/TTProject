@@ -11,12 +11,19 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +36,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * @Author:wangyb
  * @Date:2015年5月5日下午5:26:39
  */
-public class EntranceActivity extends BaseActivity {
+public class EntranceActivity extends BaseActivity implements AMapLocationListener {
 
     @BindView(R.id.login)
     FancyButton mLogin;
@@ -39,6 +46,10 @@ public class EntranceActivity extends BaseActivity {
     private final int REQUEST_LOCATION_PERMISSION = 1000;
     private boolean isSecondAccess = false;
 
+    private AMapLocationClientOption mLocationOption;
+    private AMapLocationClient mlocationClient;
+    private String mCurrrentCity;//定位到的城市
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +58,7 @@ public class EntranceActivity extends BaseActivity {
         saveFirstLauncher();
         setupViews();
         setEvent();
+        initLocationClient();
         AppManager.requestLocationPermission(this);
     }
 
@@ -72,6 +84,36 @@ public class EntranceActivity extends BaseActivity {
             PreferencesUtils.setIsFirstLauncher(this, false);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 初始化定位
+     */
+    private void initLocationClient() {
+        mlocationClient = new AMapLocationClient(this);
+        //初始化定位参数
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位监听
+        mlocationClient.setLocationListener(this);
+        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //获取最近3s内精度最高的一次定位结果：
+        mLocationOption.setOnceLocationLatest(true);
+        //设置定位参数
+        mlocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mlocationClient.startLocation();
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation != null) {
+            mCurrrentCity = aMapLocation.getCity();
+            AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
+            AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
+            PreferencesUtils.setCurrentCity(this, mCurrrentCity);
+            EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
         }
     }
 

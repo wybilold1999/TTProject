@@ -1,6 +1,7 @@
 package com.cyanbirds.ttjy.net.request;
 
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.cyanbirds.ttjy.CSApplication;
@@ -30,7 +31,7 @@ import retrofit2.Callback;
  */
 public class UserLoginRequest extends ResultPostExecute<ClientUser> {
 
-	public void request(final String account, final String pwd){
+	public void request(final String account, final String pwd, final String city){
 		ArrayMap<String, String> params = new ArrayMap<>();
 		params.put("account", account);
 		params.put("pwd", pwd);
@@ -39,6 +40,11 @@ public class UserLoginRequest extends ResultPostExecute<ClientUser> {
 		params.put("systemVersion", AppManager.getDeviceSystemVersion());
 		params.put("deviceId", AppManager.getDeviceId());
 		params.put("channel", CheckUtil.getAppMetaData(CSApplication.getInstance(), "UMENG_CHANNEL"));
+		if (!TextUtils.isEmpty(city)) {
+			params.put("currentCity", city);
+		} else {
+			params.put("currentCity", "");
+		}
 		Call<ResponseBody> call = AppManager.getUserService().userLogin(AppManager.getClientUser().sessionId, params);
 		call.enqueue(new Callback<ResponseBody>() {
 			@Override

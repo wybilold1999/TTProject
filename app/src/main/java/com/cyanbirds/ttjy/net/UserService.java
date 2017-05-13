@@ -212,4 +212,13 @@ public interface UserService {
     @POST("user/uploadToken")
     Call<ResponseBody> uploadToken( @Field("gtClientId") String gtClientId, @Header("token") String token);
 
+    /**
+     * 上传城市信息
+     * @param token
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("user/uploadCityInfo")
+    Call<ResponseBody> uploadCityInfo(@FieldMap ArrayMap<String, String> params, @Header("token") String token);
+
 }

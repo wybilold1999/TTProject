@@ -263,6 +263,7 @@
     <string name="dialog_modifying">正在修改，请稍后...</string>
     <string name="create_order_ing">正在生成订单，请稍后...</string>
     <string name="dialog_get_balance">正在提现，请稍后...</string>
+    <string name="wait">请稍后...</string>
 
     <!-- 高德地图分享位置 -->
     <string name="no_result">对不起，没有搜索到相关数据！</string>

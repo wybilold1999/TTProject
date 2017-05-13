@@ -95,4 +95,6 @@ public class ValueKey {
 	public static final String DATA = "data";
 	/** user_type  **/
 	public static final String USER_TYPE = "user_type";
+	/** LOCATION  **/
+	public static final String LOCATION = "location";
 }

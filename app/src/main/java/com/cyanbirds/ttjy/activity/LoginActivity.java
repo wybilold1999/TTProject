@@ -15,6 +15,7 @@ import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
+import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.eventtype.WeinXinEvent;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
@@ -75,6 +76,7 @@ public class LoginActivity extends BaseActivity {
     private String mPhoneNum;
     private String channelId;
     private boolean activityIsRunning;
+    private String mCurrrentCity;//定位到的城市
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +102,7 @@ public class LoginActivity extends BaseActivity {
             loginAccount.setText(mPhoneNum);
             loginAccount.setSelection(mPhoneNum.length());
         }
+        mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
     }
 
     @OnClick({R.id.btn_login, R.id.forget_pwd, R.id.qq_login, R.id.weixin_login})
@@ -112,7 +115,7 @@ public class LoginActivity extends BaseActivity {
                             AppConstants.SECURITY_KEY);
                     ProgressDialogUtils.getInstance(this).show(R.string.dialog_request_login);
                     new UserLoginTask().request(loginAccount.getText().toString().trim(),
-                            cryptLoginPwd);
+                            cryptLoginPwd, mCurrrentCity);
                 }
                 break;
             case R.id.forget_pwd:
@@ -122,12 +125,14 @@ public class LoginActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.qq_login:
+                ProgressDialogUtils.getInstance(this).show(R.string.wait);
                 if (!mTencent.isSessionValid() &&
                         mTencent.getQQToken().getOpenId() == null) {
                     mTencent.login(this, "all", loginListener);
                 }
                 break;
             case R.id.weixin_login:
+                ProgressDialogUtils.getInstance(this).show(R.string.wait);
                 SendAuth.Req req = new SendAuth.Req();
                 req.scope = "snsapi_userinfo";
                 req.state = "wechat_sdk_demo_test";
@@ -139,7 +144,12 @@ public class LoginActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void weiXinLogin(WeinXinEvent event) {
         ProgressDialogUtils.getInstance(LoginActivity.this).show(R.string.dialog_request_login);
-        new WXLoginTask().request(event.code, channelId);
+        new WXLoginTask().request(event.code, channelId, mCurrrentCity);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void getCity(LocationEvent event) {
+        mCurrrentCity = event.city;
     }
 
     class WXLoginTask extends WXLoginRequest {
@@ -155,6 +165,7 @@ public class LoginActivity extends BaseActivity {
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
             }
+            clientUser.currentCity = mCurrrentCity;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             IMChattingHelper.getInstance().sendInitLoginMsg();
@@ -185,6 +196,7 @@ public class LoginActivity extends BaseActivity {
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
             }
+            clientUser.currentCity = mCurrrentCity;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             IMChattingHelper.getInstance().sendInitLoginMsg();
@@ -266,7 +278,7 @@ public class LoginActivity extends BaseActivity {
                     if (activityIsRunning) {
                         ProgressDialogUtils.getInstance(LoginActivity.this).show(R.string.dialog_request_login);
                     }
-                    new QqLoginTask().request(token, openId, channelId);
+                    new QqLoginTask().request(token, openId, channelId, mCurrrentCity);
                 }
 
                 @Override
@@ -293,6 +305,7 @@ public class LoginActivity extends BaseActivity {
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
             }
+            clientUser.currentCity = mCurrrentCity;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             IMChattingHelper.getInstance().sendInitLoginMsg();
@@ -350,6 +363,7 @@ public class LoginActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         activityIsRunning = true;
+        ProgressDialogUtils.getInstance(this).dismiss();
         MobclickAgent.onPageStart(this.getClass().getName());
         MobclickAgent.onResume(this);
     }

@@ -92,6 +92,8 @@ public class PreferencesUtils {
 	public static final String SETTINGS_JPUSH_SET_ALIAS = "com.cyanbirds.ttjy_jpush_set_alias";
 	/** 抽奖次数*/
 	public static final String SETTINGS_REWARD_COUNT = "com.cyanbirds.ttjy_reward_count";
+	/** 定位到的城市*/
+	public static final String SETTINGS_CURRENT_CITY = "com.cyanbird.tanlove_current_city";
 
 	/**
 	 * 获取RL账号
@@ -994,6 +996,26 @@ public class PreferencesUtils {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		sp.edit().putInt(SETTINGS_REWARD_COUNT, count).commit();
+	}
+
+	/**
+	 *
+	 * @param context
+	 * @return
+	 */
+	public static String getCurrentCity(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getString(SETTINGS_CURRENT_CITY, "");
+	}
+
+	/**
+	 * @param context
+	 */
+	public static void setCurrentCity(final Context context, final String city) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putString(SETTINGS_CURRENT_CITY, city).commit();
 	}
 
 }

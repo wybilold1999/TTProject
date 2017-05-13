@@ -116,4 +116,6 @@ public class ClientUser implements Serializable{
     public String latitude = "";
     public String longitude = "";
 
+    public String currentCity;//定位的当前城市
+
 }

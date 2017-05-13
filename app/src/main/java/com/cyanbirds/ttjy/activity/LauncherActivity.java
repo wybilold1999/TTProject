@@ -136,7 +136,8 @@ public class LauncherActivity extends Activity {
             String userId = AppManager.getClientUser().userId;
             String userPwd = AppManager.getClientUser().userPwd;
             if(!TextUtils.isEmpty(userId) && !TextUtils.isEmpty(userPwd)){
-                new UserLoginTask().request(userId, userPwd);
+                new UserLoginTask().request(
+                        userId, userPwd, PreferencesUtils.getCurrentCity(this));
             }
         } catch (Exception e) {
             e.printStackTrace();
