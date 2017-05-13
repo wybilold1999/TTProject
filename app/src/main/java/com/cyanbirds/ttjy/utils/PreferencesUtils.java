@@ -93,7 +93,7 @@ public class PreferencesUtils {
 	/** 抽奖次数*/
 	public static final String SETTINGS_REWARD_COUNT = "com.cyanbirds.ttjy_reward_count";
 	/** 定位到的城市*/
-	public static final String SETTINGS_CURRENT_CITY = "com.cyanbird.tanlove_current_city";
+	public static final String SETTINGS_CURRENT_CITY = "com.cyanbird.ttjy_current_city";
 
 	/**
 	 * 获取RL账号
