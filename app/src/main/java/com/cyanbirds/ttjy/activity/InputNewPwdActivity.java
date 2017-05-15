@@ -114,6 +114,7 @@ public class InputNewPwdActivity extends BaseActivity implements
 		@Override
 		public void onPostExecute(ClientUser clientUser) {
 			ProgressDialogUtils.getInstance(InputNewPwdActivity.this).dismiss();
+			hideSoftKeyboard();
 			if(!TextUtils.isEmpty(AppManager.getClientUser().face_local)){
 				clientUser.face_local = AppManager.getClientUser().face_local;
 			}

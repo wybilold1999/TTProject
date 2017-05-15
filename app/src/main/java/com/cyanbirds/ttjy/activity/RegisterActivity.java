@@ -166,6 +166,7 @@ public class RegisterActivity extends BaseActivity {
             clientUser.currentCity = mCurrrentCity;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
+            IMChattingHelper.getInstance().sendInitLoginMsg();
             Intent intent = new Intent();
             intent.setClass(RegisterActivity.this, MainActivity.class);
             startActivity(intent);

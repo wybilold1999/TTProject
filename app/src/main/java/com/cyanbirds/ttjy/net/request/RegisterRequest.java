@@ -38,8 +38,8 @@ public class RegisterRequest extends ResultPostExecute<ClientUser> {
         params.put("reg_the_way", "0");
         params.put("regSystemVersion", AppManager.getDeviceSystemVersion());
         params.put("deviceId", AppManager.getDeviceId());
-        if (!TextUtils.isEmpty(clientUser.city)) {
-            params.put("currentCity", clientUser.city);
+        if (!TextUtils.isEmpty(clientUser.currentCity)) {
+            params.put("currentCity", clientUser.currentCity);
         } else {
             params.put("currentCity", "");
         }

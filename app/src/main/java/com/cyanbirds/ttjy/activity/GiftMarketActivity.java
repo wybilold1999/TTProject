@@ -141,21 +141,25 @@ public class GiftMarketActivity extends BaseActivity implements View.OnClickList
 	@Override
 	public void onClick(View v) {
 		mGiftDialog.dismiss();
-		if (AppManager.getClientUser().gold_num == 0) {
-			showBuyGoldDialog();
-		} else {
-			String gold = "";
-			if (AppManager.getClientUser().is_vip) {
-				gold = String.valueOf(gift.vip_amount);
-			} else {
-				gold = String.valueOf(gift.amount);
-			}
-			if (AppManager.getClientUser().gold_num < Integer.parseInt(gold)) {
+		if (AppManager.getClientUser().isShowVip) {
+			if (AppManager.getClientUser().gold_num == 0) {
 				showBuyGoldDialog();
 			} else {
-				AppManager.getClientUser().gold_num -= Integer.parseInt(gold);
-				new SendGiftTask().request(giftUser.userId, gift.dynamic_image_url, gold);
+				String gold = "";
+				if (AppManager.getClientUser().is_vip) {
+					gold = String.valueOf(gift.vip_amount);
+				} else {
+					gold = String.valueOf(gift.amount);
+				}
+				if (AppManager.getClientUser().gold_num < Integer.parseInt(gold)) {
+					showBuyGoldDialog();
+				} else {
+					AppManager.getClientUser().gold_num -= Integer.parseInt(gold);
+					new SendGiftTask().request(giftUser.userId, gift.dynamic_image_url, gold);
+				}
 			}
+		} else {
+			new SendGiftTask().request(giftUser.userId, gift.dynamic_image_url, "0");
 		}
 	}
 
