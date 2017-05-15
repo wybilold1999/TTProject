@@ -33,6 +33,7 @@ public class FindPwdActivity extends BaseActivity {
     FancyButton next;
 
     private int mInputPhoneType;
+    private String mCurrrentCity;//定位到的城市
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class FindPwdActivity extends BaseActivity {
             toolbar.setNavigationIcon(R.mipmap.ic_up);
         }
         mInputPhoneType = getIntent().getIntExtra(ValueKey.INPUT_PHONE_TYPE, -1);
+        mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
         setupView();
     }
 
@@ -61,6 +63,7 @@ public class FindPwdActivity extends BaseActivity {
             Intent intent = new Intent(this, RegisterCaptchaActivity.class);
             intent.putExtra(ValueKey.INPUT_PHONE_TYPE, mInputPhoneType);
             intent.putExtra(ValueKey.PHONE_NUMBER, phoneNum.getText().toString().trim());
+            intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
             startActivity(intent);
             finish();
         }

@@ -117,6 +117,7 @@ public class InputNewPwdActivity extends BaseActivity implements
 			if(!TextUtils.isEmpty(AppManager.getClientUser().face_local)){
 				clientUser.face_local = AppManager.getClientUser().face_local;
 			}
+			clientUser.currentCity = mCurrrentCity;
 			AppManager.setClientUser(clientUser);
 			AppManager.saveUserInfo();
 			Intent intent = new Intent();

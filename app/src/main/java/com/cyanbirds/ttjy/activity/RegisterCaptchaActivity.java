@@ -46,6 +46,7 @@ public class RegisterCaptchaActivity extends BaseActivity implements
 	private FancyButton mReGetCap;
 
 	private ClientUser mClientUser;
+	private String mCurrrentCity;//定位到的城市
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class RegisterCaptchaActivity extends BaseActivity implements
 		mPhoneType = getIntent().getIntExtra(ValueKey.INPUT_PHONE_TYPE, -1);
 		mPhone = getIntent().getStringExtra(ValueKey.PHONE_NUMBER);
 		mClientUser = (ClientUser) getIntent().getSerializableExtra(ValueKey.USER);
+		mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
 
 		mPhoneNumber.setText("+86" + " " + mPhone);
 		// 验证码有效日期
@@ -142,7 +144,7 @@ public class RegisterCaptchaActivity extends BaseActivity implements
 				intent.setClass(RegisterCaptchaActivity.this, InputNewPwdActivity.class);
 				intent.putExtra(ValueKey.SMS_CODE, mSmsCode.getText().toString().trim());
 				intent.putExtra(ValueKey.PHONE_NUMBER, mPhone);
-				intent.putExtra(ValueKey.LOCATION, mClientUser.currentCity);
+				intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
 				startActivity(intent);
 			} else {
 				AppManager.getClientUser().isCheckPhone = true;

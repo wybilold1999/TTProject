@@ -122,6 +122,7 @@ public class LoginActivity extends BaseActivity {
                 //0=注册1=找回密码2=验证绑定手机
                 intent.setClass(this, FindPwdActivity.class);
                 intent.putExtra(ValueKey.INPUT_PHONE_TYPE, 1);
+                intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
                 startActivity(intent);
                 break;
             case R.id.qq_login:
