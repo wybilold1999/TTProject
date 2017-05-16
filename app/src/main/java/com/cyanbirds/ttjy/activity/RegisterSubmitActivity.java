@@ -110,6 +110,7 @@ public class RegisterSubmitActivity extends BaseActivity implements
 			IMChattingHelper.getInstance().sendInitLoginMsg();
 			Intent intent = new Intent(RegisterSubmitActivity.this, MainActivity.class);
 			startActivity(intent);
+			finishAll();
 		}
 
 		@Override
