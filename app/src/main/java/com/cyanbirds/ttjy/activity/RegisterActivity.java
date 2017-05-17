@@ -153,7 +153,6 @@ public class RegisterActivity extends BaseActivity {
     class WXLoginTask extends WXLoginRequest {
         @Override
         public void onPostExecute(ClientUser clientUser) {
-            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
             MobclickAgent.onProfileSignIn(String.valueOf(AppManager
                     .getClientUser().userId));
             if(!new File(FileAccessorUtils.FACE_IMAGE,
@@ -295,7 +294,6 @@ public class RegisterActivity extends BaseActivity {
     class QqLoginTask extends QqLoginRequest {
         @Override
         public void onPostExecute(ClientUser clientUser) {
-            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
             if(!new File(FileAccessorUtils.FACE_IMAGE,
                     Md5Util.md5(clientUser.face_url) + ".jpg").exists()
                     && !TextUtils.isEmpty(clientUser.face_url)){
@@ -411,6 +409,12 @@ public class RegisterActivity extends BaseActivity {
         activityIsRunning = false;
         MobclickAgent.onPageEnd(this.getClass().getName());
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ProgressDialogUtils.getInstance(this).dismiss();
     }
 
     @Override
