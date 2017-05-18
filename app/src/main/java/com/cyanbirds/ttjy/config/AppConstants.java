@@ -21,7 +21,7 @@ public class AppConstants {
 	/**
 	 * 请求位置的高德web api的key
 	 */
-	public static final String WEB_KEY = "08601c8dc55fd647429a83eccc90f8be";
+	public static final String WEB_KEY = "d64c0240c9790d4c56498b152a4ca193";
 
 	/**
 	 *容联云IM
