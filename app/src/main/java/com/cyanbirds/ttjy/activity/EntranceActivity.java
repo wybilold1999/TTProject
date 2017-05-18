@@ -52,6 +52,8 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     private AMapLocationClient mlocationClient;
     private String mCurrrentCity;//定位到的城市
     private CityInfo mCityInfo;//web api返回的城市信息
+    private String curLat;
+    private String curLon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,10 +139,10 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
                     String[] rightTop = rectangle[1].split(",");
 
                     double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
-                    AppManager.getClientUser().latitude = String.valueOf(lat);
+                    curLat = String.valueOf(lat);
 
                     double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
-                    AppManager.getClientUser().longitude = String.valueOf(lon);
+                    curLon = String.valueOf(lon);
                 } catch (Exception e) {
 
                 }
@@ -158,10 +160,14 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
                     intent.putExtra(ValueKey.PHONE_NUMBER, AppManager.getClientUser().mobile);
                 }
                 intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
+                intent.putExtra(ValueKey.LATITUDE, curLat);
+                intent.putExtra(ValueKey.LONGITUDE, curLon);
                 break;
             case R.id.register:
                 intent.setClass(this, RegisterActivity.class);
                 intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
+                intent.putExtra(ValueKey.LATITUDE, curLat);
+                intent.putExtra(ValueKey.LONGITUDE, curLon);
                 break;
         }
         startActivity(intent);

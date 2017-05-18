@@ -83,6 +83,8 @@ public class RegisterActivity extends BaseActivity {
     private String channelId;
     private boolean activityIsRunning;
     private String mCurrrentCity;//定位到的城市
+    private String curLat;
+    private String curLon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +102,8 @@ public class RegisterActivity extends BaseActivity {
 
         channelId = CheckUtil.getAppMetaData(this, "UMENG_CHANNEL");
         mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
+        curLat = getIntent().getStringExtra(ValueKey.LATITUDE);
+        curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
     }
 
 
@@ -163,6 +167,8 @@ public class RegisterActivity extends BaseActivity {
                         Md5Util.md5(clientUser.face_url) + ".jpg");
             }
             clientUser.currentCity = mCurrrentCity;
+            clientUser.latitude = curLat;
+            clientUser.longitude = curLon;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             IMChattingHelper.getInstance().sendInitLoginMsg();
@@ -302,6 +308,8 @@ public class RegisterActivity extends BaseActivity {
                         Md5Util.md5(clientUser.face_url) + ".jpg");
             }
             clientUser.currentCity = mCurrrentCity;
+            clientUser.latitude = curLat;
+            clientUser.longitude = curLon;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             IMChattingHelper.getInstance().sendInitLoginMsg();
