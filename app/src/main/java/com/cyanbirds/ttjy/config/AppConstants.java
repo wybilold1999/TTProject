@@ -19,6 +19,11 @@ public class AppConstants {
 	public static final String SECURITY_KEY = "ABCD1234abcd5678";
 
 	/**
+	 * 请求位置的高德web api的key
+	 */
+	public static final String WEB_KEY = "d64c0240c9790d4c56498b152a4ca193";
+
+	/**
 	 *容联云IM
 	 */
 	public static final String YUNTONGXUN_ID = "8aaf07085a3c0ea1015a50eaef9408e5";

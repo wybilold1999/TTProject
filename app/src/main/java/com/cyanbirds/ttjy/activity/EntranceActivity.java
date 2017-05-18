@@ -18,8 +18,10 @@ import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
+import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.umeng.analytics.MobclickAgent;
 
@@ -49,6 +51,7 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     private AMapLocationClientOption mLocationOption;
     private AMapLocationClient mlocationClient;
     private String mCurrrentCity;//定位到的城市
+    private CityInfo mCityInfo;//web api返回的城市信息
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         ButterKnife.bind(this);
         saveFirstLauncher();
         setupViews();
-        setEvent();
+        new GetCityInfoTask().request();
         initLocationClient();
         AppManager.requestLocationPermission(this);
     }
@@ -71,12 +74,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     }
 
     /**
-     * 设置事件
-     */
-    private void setEvent() {
-    }
-
-    /**
      * 保存是否第一次启动
      */
     private void saveFirstLauncher() {
@@ -84,6 +81,24 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
             PreferencesUtils.setIsFirstLauncher(this, false);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取用户所在城市
+     */
+    class GetCityInfoTask extends GetCityInfoRequest {
+
+        @Override
+        public void onPostExecute(CityInfo cityInfo) {
+            mCityInfo = cityInfo;
+            mCurrrentCity = cityInfo.city;
+            PreferencesUtils.setCurrentCity(EntranceActivity.this, mCurrrentCity);
+            EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
         }
     }
 
@@ -108,12 +123,28 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        if (aMapLocation != null) {
-            mCurrrentCity = aMapLocation.getCity();
+        if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
             AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
             AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
+            mCurrrentCity = aMapLocation.getCity();
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+        } else {
+            if (mCityInfo != null) {
+                try {
+                    String[] rectangle = mCityInfo.rectangle.split(";");
+                    String[] leftBottom = rectangle[0].split(",");
+                    String[] rightTop = rectangle[1].split(",");
+
+                    double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
+                    AppManager.getClientUser().latitude = String.valueOf(lat);
+
+                    double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
+                    AppManager.getClientUser().longitude = String.valueOf(lon);
+                } catch (Exception e) {
+
+                }
+            }
         }
     }
 

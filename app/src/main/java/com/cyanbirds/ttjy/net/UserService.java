@@ -2,6 +2,8 @@ package com.cyanbirds.ttjy.net;
 
 import android.support.v4.util.ArrayMap;
 
+import com.cyanbirds.ttjy.config.AppConstants;
+
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -220,5 +222,12 @@ public interface UserService {
     @FormUrlEncoded
     @POST("user/uploadCityInfo")
     Call<ResponseBody> uploadCityInfo(@FieldMap ArrayMap<String, String> params, @Header("token") String token);
+
+    /**
+     * 获取用户所在城市
+     * @return
+     */
+    @GET("http://restapi.amap.com/v3/ip?key=" + AppConstants.WEB_KEY)
+    Call<ResponseBody> getCityInfo();
 
 }

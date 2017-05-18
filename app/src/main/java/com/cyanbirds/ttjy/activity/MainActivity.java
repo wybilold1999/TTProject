@@ -304,7 +304,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 	@Override
 	public void onLocationChanged(AMapLocation aMapLocation) {
-		if (aMapLocation != null) {
+		if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
 			AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
 			AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
 			new UploadCityInfoTask().request(aMapLocation.getCity());
