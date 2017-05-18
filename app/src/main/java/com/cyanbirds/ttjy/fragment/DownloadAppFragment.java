@@ -17,6 +17,7 @@ import com.cyanbirds.ttjy.adapter.DownloadAppAdapter;
 import com.cyanbirds.ttjy.entity.ApkInfo;
 import com.cyanbirds.ttjy.net.request.GetDownloadAppListRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class DownloadAppFragment extends Fragment implements OnRefreshListener {
 	}
 
 	private void setupViews() {
-		LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+		LinearLayoutManager manager = new WrapperLinearLayoutManager(getActivity());
 		manager.setOrientation(LinearLayout.VERTICAL);
 		mRecyclerView.setLayoutManager(manager);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());

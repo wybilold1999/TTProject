@@ -34,6 +34,7 @@ import com.cyanbirds.ttjy.net.request.GetFindLoveRequest;
 import com.cyanbirds.ttjy.net.request.GetRealUserRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
@@ -120,7 +121,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        layoutManager = new LinearLayoutManager(
+        layoutManager = new WrapperLinearLayoutManager(
                 getActivity(), LinearLayoutManager.VERTICAL, false);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);

@@ -18,6 +18,7 @@ import com.cyanbirds.ttjy.entity.DynamicContent;
 import com.cyanbirds.ttjy.eventtype.PubDycEvent;
 import com.cyanbirds.ttjy.listener.NestedScrollViewListener;
 import com.cyanbirds.ttjy.net.request.GetDynamicListRequest;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.ProgressDialogUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.google.gson.Gson;
@@ -82,7 +83,7 @@ public class TabDynamicFragment extends Fragment {
 	}
 
 	private void setupViews() {
-		layoutManager = new LinearLayoutManager(
+		layoutManager = new WrapperLinearLayoutManager(
 				getActivity(), LinearLayoutManager.VERTICAL, false);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 		mRecyclerview.setLayoutManager(layoutManager);

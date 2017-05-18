@@ -40,6 +40,7 @@ import com.cyanbirds.ttjy.net.request.GetAliPayOrderInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetMemberBuyListRequest;
 import com.cyanbirds.ttjy.net.request.GetPayResultRequest;
 import com.cyanbirds.ttjy.net.request.GetUserNameRequest;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.sunfusheng.marqueeview.MarqueeView;
@@ -163,7 +164,7 @@ public class DownloadPayFragment extends Fragment{
 	}
 
 	private void setupViews() {
-		LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+		LinearLayoutManager manager = new WrapperLinearLayoutManager(getActivity());
 		manager.setOrientation(LinearLayout.VERTICAL);
 		mRecyclerView.setLayoutManager(manager);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());

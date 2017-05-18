@@ -38,6 +38,7 @@ import com.cyanbirds.ttjy.net.request.GetBetweenLoversInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetMemberBuyListRequest;
 import com.cyanbirds.ttjy.net.request.GetPayResultRequest;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -124,7 +125,7 @@ public class BetweenLoversActivity extends BaseActivity {
 	}
 
 	private void setupView() {
-		layoutManager = new LinearLayoutManager(
+		layoutManager = new WrapperLinearLayoutManager(
 				this, LinearLayoutManager.VERTICAL, false);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 		mVipRecyclerview.setLayoutManager(layoutManager);

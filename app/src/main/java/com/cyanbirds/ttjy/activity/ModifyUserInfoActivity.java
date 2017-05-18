@@ -1053,7 +1053,8 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 			}
 		}
 
-		Uri imageUri= FileProvider.getUriForFile(this, "com.cyanbirds.ttjy.fileProvider", file);//通过FileProvider创建一个content类型的Uri
+//		Uri imageUri= FileProvider.getUriForFile(this, "com.cyanbirds.ttjy.fileProvider", file);//通过FileProvider创建一个content类型的Uri
+		Uri imageUri = Uri.fromFile(file);
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		intent.setDataAndType(imageUri, "image/*");

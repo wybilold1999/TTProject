@@ -42,6 +42,7 @@ import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.UserEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.UpdateGoldRequest;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.StringUtil;
 import com.dl7.tag.TagLayout;
 import com.umeng.analytics.MobclickAgent;
@@ -230,13 +231,13 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	}
 
 	private void setupViews() {
-		layoutManager = new LinearLayoutManager(
+		layoutManager = new WrapperLinearLayoutManager(
 				getActivity(), LinearLayoutManager.HORIZONTAL, false);
 		layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 		mRecyclerview.setLayoutManager(layoutManager);
 		mRecyclerview.setItemAnimator(new DefaultItemAnimator());
 
-		mGiftLayoutManager = new LinearLayoutManager(
+		mGiftLayoutManager = new WrapperLinearLayoutManager(
 				getActivity(), LinearLayoutManager.HORIZONTAL, false);
 		mGiftLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 		mGiftRecyclerview.setLayoutManager(mGiftLayoutManager);

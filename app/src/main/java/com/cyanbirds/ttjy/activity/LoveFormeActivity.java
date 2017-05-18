@@ -18,6 +18,7 @@ import com.cyanbirds.ttjy.entity.LoveModel;
 import com.cyanbirds.ttjy.net.request.GetLoveFormeListRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
@@ -62,7 +63,7 @@ public class LoveFormeActivity extends BaseActivity {
         mCircularProgress = (CircularProgress) findViewById(R.id.progress_bar);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mNoUserinfo = (TextView) findViewById(R.id.info);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
+        LinearLayoutManager manager = new WrapperLinearLayoutManager(this);
         manager.setOrientation(LinearLayout.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());

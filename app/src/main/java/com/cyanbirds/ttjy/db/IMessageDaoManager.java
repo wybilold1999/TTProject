@@ -1,6 +1,8 @@
 package com.cyanbirds.ttjy.db;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.cyanbirds.ttjy.db.base.DBManager;
 import com.cyanbirds.ttjy.entity.IMessage;
@@ -21,6 +23,7 @@ public class IMessageDaoManager extends DBManager {
 
 	private static IMessageDaoManager mInstance;
 	private IMessageDao mIMessageDao;
+	private Handler mHandler = new Handler(Looper.getMainLooper());
 
 	private IMessageDaoManager(Context context) {
 		super(context);
@@ -50,7 +53,12 @@ public class IMessageDaoManager extends DBManager {
 	 */
 	public long insertIMessage(IMessage message) {
 		long id = mIMessageDao.insertOrReplace(message);
-		MessageUnReadListener.getInstance().notifyDataSetChanged(0);
+		mHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				MessageUnReadListener.getInstance().notifyDataSetChanged(0);
+			}
+		});
 		return id;
 	}
 	
@@ -62,16 +70,15 @@ public class IMessageDaoManager extends DBManager {
 		if (messages == null || messages.isEmpty()) {
 			return;
 		}
-		MessageUnReadListener.getInstance().notifyDataSetChanged(0);
+		mHandler.post(new Runnable() {
+			@Override
+			public void run() {
+				MessageUnReadListener.getInstance().notifyDataSetChanged(0);
+			}
+		});
 		mIMessageDao.insertInTx(messages);
 	}
 	
-	/**
-	 * @param message
-	 */
-	public void deleteIMessage(IMessage message) {
-	}
-
 	/**
 	 * 根据会话id删除消息
 	 * @param conversationId

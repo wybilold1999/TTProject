@@ -16,6 +16,7 @@ import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.listener.MessageChangedListener;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
+import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -55,7 +56,7 @@ public class MessageFragment extends Fragment implements MessageChangedListener.
 
     private void setupViews(){
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.message_recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(
+        LinearLayoutManager layoutManager = new WrapperLinearLayoutManager(
                 getActivity(), LinearLayoutManager.VERTICAL, false);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mMessageRecyclerView.setLayoutManager(layoutManager);
