@@ -74,7 +74,11 @@ public class AttentionMeActivity extends BaseActivity {
     }
 
     private void setupData(){
-        if (AppManager.getClientUser().is_vip) {
+        if (AppManager.getClientUser().isShowVip) {
+            if (AppManager.getClientUser().is_vip) {
+                pageSize = 200;
+            }
+        } else {
             pageSize = 200;
         }
         mFollowModels = new ArrayList<>();
@@ -100,7 +104,9 @@ public class AttentionMeActivity extends BaseActivity {
         public void onPostExecute(List<FollowModel> followModels) {
             mCircularProgress.setVisibility(View.GONE);
             if(followModels != null && followModels.size() > 0){
-                if (!AppManager.getClientUser().is_vip && followModels.size() > 10) {//如果不是vip，移除前面3个
+                if (AppManager.getClientUser().isShowVip &&
+                        !AppManager.getClientUser().is_vip &&
+                        followModels.size() > 10) {//如果不是vip，移除前面3个
                     mAdapter.setIsShowFooter(true);
                     List<String> urls = new ArrayList<>(3);
                     urls.add(followModels.get(0).faceUrl);
