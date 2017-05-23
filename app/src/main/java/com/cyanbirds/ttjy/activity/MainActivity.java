@@ -37,6 +37,7 @@ import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
+import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FoundFragment;
@@ -47,6 +48,7 @@ import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
+import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetOSSTokenRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.service.MyIntentService;
@@ -84,6 +86,9 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	private AMapLocationClientOption mLocationOption;
 	private AMapLocationClient mlocationClient;
 	private boolean isSecondAccess = false;
+
+	private String curLat;
+	private String curLon;
 
 	private final Handler mHandler = new Handler() {
 		@Override
@@ -125,6 +130,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+		new GetCityInfoTask().request();
 		setupViews();
 		setupEvent();
 		initOSS();
@@ -309,7 +315,36 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			new UploadCityInfoTask().request(aMapLocation.getCity(),
 					AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
 		} else {
-			new UploadCityInfoTask().request(AppManager.getClientUser().currentCity, null, null);
+			new UploadCityInfoTask().request(AppManager.getClientUser().currentCity, curLat, curLon);
+		}
+	}
+
+	/**
+	 * 获取用户所在城市
+	 */
+	class GetCityInfoTask extends GetCityInfoRequest {
+
+		@Override
+		public void onPostExecute(CityInfo cityInfo) {
+			if (cityInfo != null) {
+				try {
+					String[] rectangle = cityInfo.rectangle.split(";");
+					String[] leftBottom = rectangle[0].split(",");
+					String[] rightTop = rectangle[1].split(",");
+
+					double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
+					curLat = String.valueOf(lat);
+
+					double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
+					curLon = String.valueOf(lon);
+				} catch (Exception e) {
+
+				}
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
 		}
 	}
 
