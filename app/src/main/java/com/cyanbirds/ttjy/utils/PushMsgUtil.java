@@ -1,9 +1,12 @@
 package com.cyanbirds.ttjy.utils;
 
+import android.content.Intent;
 import android.text.TextUtils;
 
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.activity.VoipCallActivity;
+import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
 import com.cyanbirds.ttjy.entity.Conversation;
@@ -51,6 +54,15 @@ public class PushMsgUtil {
 		isPassThrough = isPassThroughMsg;
 		PushMsgModel pushMsgModel = gson.fromJson(pushMsgJson, PushMsgModel.class);
 		if (pushMsgModel != null && !TextUtils.isEmpty(pushMsgModel.sender)) {
+			if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
+				if (!AppManager.getTopActivity(CSApplication.getInstance()).equals("com.cyanbirds.ttjy.activity.VoipCallActivity")) {
+					Intent intent = new Intent(CSApplication.getInstance(), VoipCallActivity.class);
+					intent.putExtra(ValueKey.IMAGE_URL, pushMsgModel.faceUrl);
+					intent.putExtra(ValueKey.USER_NAME, pushMsgModel.senderName);
+					CSApplication.getInstance().startActivity(intent);
+				}
+			}
+
 			Conversation conversation = ConversationSqlManager.getInstance(CSApplication.getInstance())
 					.queryConversationForByTalkerId(pushMsgModel.sender);
 			if (conversation == null) {
@@ -66,6 +78,10 @@ public class PushMsgUtil {
 					conversation.type = ECMessage.Type.IMAGE.ordinal();
 					conversation.content = CSApplication.getInstance().getResources()
 							.getString(R.string.image_symbol);
+				} else if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
+					conversation.type = ECMessage.Type.CALL.ordinal();
+					conversation.content = CSApplication.getInstance().getResources()
+							.getString(R.string.voip_symbol);
 				}
 				conversation.talker = pushMsgModel.sender;
 				conversation.talkerName = pushMsgModel.senderName;

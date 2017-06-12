@@ -1,13 +1,16 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
+import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.cyanbirds.ttjy.utils.VibratorUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -43,6 +46,15 @@ public class VoipCallActivity extends BaseActivity {
     }
 
     private void setupData() {
+        String faceUrl = getIntent().getStringExtra(ValueKey.IMAGE_URL);
+        String nickName = getIntent().getStringExtra(ValueKey.USER_NAME);
+        if (!TextUtils.isEmpty(faceUrl)) {
+            mPortrait.setImageURI(Uri.parse(faceUrl));
+        }
+        if (!TextUtils.isEmpty(nickName)) {
+            mNickName.setVisibility(View.VISIBLE);
+            mNickName.setText(String.format(this.getResources().getString(R.string.calling), nickName));
+        }
         timer = new CountDownTimer(50000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {

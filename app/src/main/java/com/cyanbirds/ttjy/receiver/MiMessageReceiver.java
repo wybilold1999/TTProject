@@ -9,6 +9,7 @@ import android.util.Log;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.LauncherActivity;
 import com.cyanbirds.ttjy.activity.MainActivity;
+import com.cyanbirds.ttjy.activity.VoipCallActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
@@ -57,7 +58,7 @@ public class MiMessageReceiver extends PushMessageReceiver {
     private Handler mHandler = new Handler(getMainLooper());
 
     @Override
-    public void onReceivePassThroughMessage(Context context, final MiPushMessage message) {
+    public void onReceivePassThroughMessage(final Context context, final MiPushMessage message) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
