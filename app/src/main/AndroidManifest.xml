@@ -426,6 +426,12 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".activity.VoipCallActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:screenOrientation="portrait">
+        </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"
