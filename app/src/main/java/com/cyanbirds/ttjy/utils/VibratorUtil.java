@@ -30,7 +30,7 @@ public class VibratorUtil {
 
     public static void start() {
         vibrator = (Vibrator) CSApplication.getInstance().getSystemService(Service.VIBRATOR_SERVICE);
-        long [] pattern = {300, 1500, 300, 1500};   // 停止 开启 停止 开启
+        long [] pattern = {600, 1500, 600, 1500};   // 停止 开启 停止 开启
         vibrator.vibrate(pattern, 2);           //重复两次上面的pattern 如果只想震动一次，index设为-1
     }
 
