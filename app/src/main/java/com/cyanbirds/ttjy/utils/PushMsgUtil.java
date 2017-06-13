@@ -78,10 +78,6 @@ public class PushMsgUtil {
 					conversation.type = ECMessage.Type.IMAGE.ordinal();
 					conversation.content = CSApplication.getInstance().getResources()
 							.getString(R.string.image_symbol);
-				} else if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
-					conversation.type = ECMessage.Type.CALL.ordinal();
-					conversation.content = CSApplication.getInstance().getResources()
-							.getString(R.string.voip_symbol);
 				}
 				conversation.talker = pushMsgModel.sender;
 				conversation.talkerName = pushMsgModel.senderName;
