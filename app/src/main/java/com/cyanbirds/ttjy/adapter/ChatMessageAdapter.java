@@ -448,6 +448,10 @@ public class ChatMessageAdapter extends
                 return new LocationViewHolder(LayoutInflater.from(
                         parent.getContext()).inflate(
                     R.layout.item_chat_message_location, parent, false));
+            case IMessage.MessageType.VOIP:
+                return new VoipViewHolder(LayoutInflater.from(
+                        parent.getContext()).inflate(
+                        R.layout.item_chat_message_voip, parent, false));
             default:
                 return null;
         }
@@ -648,6 +652,50 @@ public class ChatMessageAdapter extends
             }
         }
 
+    }
+
+    public class VoipViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+
+        RelativeLayout message_lay;
+        SimpleDraweeView portrait;
+        TextView message_text;
+        TextView chat_time;
+        LinearLayout message_content;
+        TextView nickname;
+        ImageView message_send_fail;
+        CircularProgress progress_bar;
+
+        public VoipViewHolder(View itemView) {
+            super(itemView);
+            message_lay = (RelativeLayout) itemView
+                    .findViewById(R.id.message_lay);
+            portrait = (SimpleDraweeView) itemView.findViewById(R.id.portrait);
+            message_text = (TextView) itemView.findViewById(R.id.message_text);
+            chat_time = (TextView) itemView.findViewById(R.id.chat_time);
+            message_content = (LinearLayout) itemView
+                    .findViewById(R.id.message_content);
+            nickname = (TextView) itemView.findViewById(R.id.nickname);
+            message_send_fail = (ImageView) itemView
+                    .findViewById(R.id.message_send_fail);
+            progress_bar = (CircularProgress) itemView
+                    .findViewById(R.id.progress_bar);
+            portrait.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.message_send_fail:
+                    break;
+                case R.id.portrait:
+                    if(!"-1".equals(mConversation.talker)){
+                        Intent intent = new Intent(mContext, PersonalInfoActivity.class);
+                        intent.putExtra(ValueKey.USER_ID, mConversation.talker);
+                        mContext.startActivity(intent);
+                    }
+                    break;
+            }
+        }
     }
 
     public void onDestroy() {
