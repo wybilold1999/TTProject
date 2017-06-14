@@ -139,7 +139,9 @@ public class MessageAdapter extends
                     .setItems(
                             new String[] {
                                     mContext.getResources().getString(
-                                            R.string.delete_conversation) },
+                                            R.string.delete_conversation),
+                                    mContext.getResources().getString(
+                                            R.string.delete_all_conversation) },
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -148,6 +150,13 @@ public class MessageAdapter extends
                                             ConversationSqlManager.getInstance(mContext).deleteConversationById(mConversations.get(position));
                                             IMessageDaoManager.getInstance(mContext).deleteIMessageByConversationId(mConversations.get(position).id);
                                             mConversations.remove(position);
+                                            notifyDataSetChanged();
+                                            MessageUnReadListener.getInstance().notifyDataSetChanged(0);
+                                            break;
+                                        case 1:
+                                            ConversationSqlManager.getInstance(mContext).deleteAllConversation();
+                                            IMessageDaoManager.getInstance(mContext).deleteAllIMessage();
+                                            mConversations.clear();
                                             notifyDataSetChanged();
                                             MessageUnReadListener.getInstance().notifyDataSetChanged(0);
                                             break;

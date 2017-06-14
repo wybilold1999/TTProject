@@ -56,11 +56,13 @@ public class PushMsgUtil {
 		if (pushMsgModel != null && !TextUtils.isEmpty(pushMsgModel.sender)) {
 			if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
 				if (!AppManager.getTopActivity(CSApplication.getInstance()).equals("com.cyanbirds.ttjy.activity.VoipCallActivity")) {
-					Intent intent = new Intent(CSApplication.getInstance(), VoipCallActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					intent.putExtra(ValueKey.IMAGE_URL, pushMsgModel.faceUrl);
-					intent.putExtra(ValueKey.USER_NAME, pushMsgModel.senderName);
-					CSApplication.getInstance().startActivity(intent);
+					if (!AppManager.getClientUser().is_vip || AppManager.getClientUser().gold_num < 100) {
+						Intent intent = new Intent(CSApplication.getInstance(), VoipCallActivity.class);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						intent.putExtra(ValueKey.IMAGE_URL, pushMsgModel.faceUrl);
+						intent.putExtra(ValueKey.USER_NAME, pushMsgModel.senderName);
+						CSApplication.getInstance().startActivity(intent);
+					}
 				}
 			}
 			Conversation conversation = ConversationSqlManager.getInstance(CSApplication.getInstance())

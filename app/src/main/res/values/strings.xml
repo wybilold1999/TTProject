@@ -239,12 +239,16 @@
     <string name="calling">%1$s正在来电中...</string>
     <string name="decline_call">已拒绝来电</string>
     <string name="no_vip_receive_calling">您还不是会员,暂时无法接听,立即开通会员接听来电?</string>
+    <string name="no_vip_calling">您还不是会员,暂时不能拨打电话,立即开通会员来拨打电话?</string>
+    <string name="no_gold_num_receive_calling">您的金币数量不足,暂时无法接听,立即购买接听来电?</string>
+    <string name="no_gold_num_calling">您的金币数量不足,暂时无法拨打电话,立即购买来拨打电话?</string>
 
     <string name="errcode_success">发送成功</string>
     <string name="errcode_cancel">发送取消</string>
     <string name="errcode_deny">发送被拒绝</string>
     <string name="errcode_unknown">发送返回</string>
     <string name="delete_conversation">删除该聊天</string>
+    <string name="delete_all_conversation">删除全部聊天</string>
 
     <string name="network_requests_error">网络异常,请检查网络设置</string>
     <string name="data_load_error">数据加载失败</string>

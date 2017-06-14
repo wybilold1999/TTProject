@@ -340,6 +340,77 @@ public class ChatMessageAdapter extends
                 locationHolder.location_info.setText(message.content);
                 setChatTime(locationHolder.chat_time, message.send_time,
                         showTimer);
+            } else if (message.msgType == IMessage.MessageType.VOIP) {
+                // 普通消息
+                VoipViewHolder voipViewHolder = (VoipViewHolder) holder;
+                if (!TextUtils.isEmpty(message.content)) {
+                    voipViewHolder.message_text.setText(message.content);
+                }
+
+                voipViewHolder.nickname.setVisibility(View.GONE);
+                voipViewHolder.message_send_fail.setVisibility(View.GONE);
+                voipViewHolder.progress_bar.setVisibility(View.GONE);
+                if (message.isSend == IMessage.MessageIsSend.RECEIVING) {
+                    voipViewHolder.message_text
+                            .setBackgroundResource(R.drawable.left_bubble_selector);
+                    voipViewHolder.message_text.setTextColor(Color.BLACK);
+
+                    if(!TextUtils.isEmpty(mConversation.localPortrait)){
+                        if (mConversation.localPortrait.startsWith("res")) {
+                            voipViewHolder.portrait.setImageURI(Uri.parse(mConversation.localPortrait));
+                        } else {
+                            voipViewHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
+                        }
+                    }
+
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) voipViewHolder.portrait
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT,
+                            RelativeLayout.TRUE);
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+                    voipViewHolder.portrait.setLayoutParams(lp);
+
+                    lp = (RelativeLayout.LayoutParams) voipViewHolder.message_content
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.RIGHT_OF, R.id.portrait);
+                    lp.addRule(RelativeLayout.LEFT_OF, 0);
+                    voipViewHolder.message_content.setLayoutParams(lp);
+                } else if (message.isSend == IMessage.MessageIsSend.SEND) {
+                    if (message.status == IMessage.MessageStatus.FAILED) {
+                        voipViewHolder.message_send_fail
+                                .setVisibility(View.VISIBLE);
+                    } else if (message.status == IMessage.MessageStatus.SENDING) {
+                        voipViewHolder.progress_bar.setVisibility(View.VISIBLE);
+                    } else if(message.status == IMessage.MessageStatus.SENT){
+                        voipViewHolder.progress_bar.setVisibility(View.GONE);
+                    }
+                    voipViewHolder.message_text
+                            .setBackgroundResource(R.drawable.right_bubble_selector);
+                    voipViewHolder.message_text.setTextColor(Color.WHITE);
+
+                    if(!TextUtils.isEmpty(AppManager.getClientUser().face_local)){
+                        voipViewHolder.portrait.setImageURI(Uri.parse("file://"
+                                + AppManager.getClientUser().face_local));
+                    } else {
+                        voipViewHolder.portrait.setImageURI(Uri.parse(
+                                AppManager.getClientUser().face_url));
+                    }
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) voipViewHolder.portrait
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,
+                            RelativeLayout.TRUE);
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                    voipViewHolder.portrait.setLayoutParams(lp);
+
+                    lp = (RelativeLayout.LayoutParams) voipViewHolder.message_content
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.LEFT_OF, R.id.portrait);
+                    lp.addRule(RelativeLayout.RIGHT_OF, 0);
+                    voipViewHolder.message_content.setLayoutParams(lp);
+                }
+                // 设置显示消息时间
+                setChatTime(voipViewHolder.chat_time, message.send_time,
+                        showTimer);
             }
         } catch (Exception e) {
             e.printStackTrace();
