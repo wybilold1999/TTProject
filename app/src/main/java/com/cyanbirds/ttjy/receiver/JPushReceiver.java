@@ -43,32 +43,35 @@ public class JPushReceiver extends BroadcastReceiver {
             //send the Registration Id to your server...
 			Log.d("test", intent.getStringExtra(JPushInterface.EXTRA_REGISTRATION_ID));
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
-			final String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
-			if (!TextUtils.isEmpty(message)) {
-				mHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						PushMsgUtil.getInstance().handlePushMsg(true, message);
-					}
-				});
+			if (AppManager.getClientUser().isShowVip) {
+				final String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
+				if (!TextUtils.isEmpty(message)) {
+					mHandler.post(new Runnable() {
+						@Override
+						public void run() {
+							PushMsgUtil.getInstance().handlePushMsg(true, message);
+						}
+					});
+				}
 			}
-        
         } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
             String msgObject = bundle.getString(JPushInterface.EXTRA_EXTRA);
 			if (AppManager.isMsgClick) {
 				NotificationManager.getInstance().cancelNotification();
 			}
 			try {
-				if (!TextUtils.isEmpty(msgObject)) {
-					JSONObject json = new JSONObject(msgObject);
-					final String message = json.getString("message");
-					if (!TextUtils.isEmpty(message)) {
-						mHandler.post(new Runnable() {
-							@Override
-							public void run() {
-								PushMsgUtil.getInstance().handlePushMsg(false, message);
-							}
-						});
+				if (AppManager.getClientUser().isShowVip) {
+					if (!TextUtils.isEmpty(msgObject)) {
+						JSONObject json = new JSONObject(msgObject);
+						final String message = json.getString("message");
+						if (!TextUtils.isEmpty(message)) {
+							mHandler.post(new Runnable() {
+								@Override
+								public void run() {
+									PushMsgUtil.getInstance().handlePushMsg(false, message);
+								}
+							});
+						}
 					}
 				}
 			} catch (JSONException e) {

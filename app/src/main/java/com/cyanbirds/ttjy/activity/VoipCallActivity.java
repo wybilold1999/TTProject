@@ -1,8 +1,11 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.cyanbirds.ttjy.utils.VibratorUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -75,6 +79,9 @@ public class VoipCallActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.answer:
+                if (!AppManager.getClientUser().is_vip) {
+                    showTurnOnVipDialog();
+                }
                 break;
             case R.id.decline:
                 ToastUtil.showMessage(R.string.decline_call);
@@ -82,6 +89,28 @@ public class VoipCallActivity extends BaseActivity {
                 finish();
                 break;
         }
+    }
+
+    private void showTurnOnVipDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_vip_receive_calling);
+        builder.setPositiveButton(getResources().getString(R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(VoipCallActivity.this, VipCenterActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        builder.setNegativeButton(getResources().getString(R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.show();
     }
 
     @Override

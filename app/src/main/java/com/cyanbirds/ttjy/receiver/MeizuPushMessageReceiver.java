@@ -91,13 +91,15 @@ public class MeizuPushMessageReceiver extends MzPushMessageReceiver {
 	@Override
 	public void onNotificationArrived(Context context, String title, final String content,
 									  final String selfDefineContentString) {
-		//通知栏消息到达回调
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				PushMsgUtil.getInstance().handlePushMsg(true, selfDefineContentString);
-			}
-		});
+		if (AppManager.getClientUser().isShowVip) {
+			//通知栏消息到达回调
+			mHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					PushMsgUtil.getInstance().handlePushMsg(true, selfDefineContentString);
+				}
+			});
+		}
 	}
 	@Override
 	public void onNotificationClicked(Context context, String title, String content,
