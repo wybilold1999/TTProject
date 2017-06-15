@@ -63,7 +63,7 @@ public class VoipCallActivity extends BaseActivity {
             mNickName.setText(nickName);
         }
         if (!TextUtils.isEmpty(from)) {
-            time = 2000;
+            time = 1000;
         } else {
             time = 50000;
         }
