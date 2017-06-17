@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
@@ -38,6 +39,10 @@ public class VoipCallActivity extends BaseActivity {
     ImageView mAnswer;
     @BindView(R.id.decline)
     ImageView mDecline;
+    @BindView(R.id.receive_call_lay)
+    RelativeLayout mCallLay;
+    @BindView(R.id.decline_call)
+    ImageView mDeclineCall;
 
     private CountDownTimer timer;
     private String from;
@@ -62,9 +67,13 @@ public class VoipCallActivity extends BaseActivity {
             mNickName.setVisibility(View.VISIBLE);
             mNickName.setText(nickName);
         }
-        if (!TextUtils.isEmpty(from)) {
-            time = 1000;
+        if (!TextUtils.isEmpty(from)) {//主动拨打电话
+            mCallLay.setVisibility(View.GONE);
+            mDeclineCall.setVisibility(View.VISIBLE);
+            time = 2000;
         } else {
+            mCallLay.setVisibility(View.VISIBLE);
+            mDeclineCall.setVisibility(View.GONE);
             time = 50000;
         }
         timer = new CountDownTimer(time, 1000) {
@@ -92,7 +101,7 @@ public class VoipCallActivity extends BaseActivity {
         VibratorUtil.start();
     }
 
-    @OnClick({R.id.answer, R.id.decline})
+    @OnClick({R.id.answer, R.id.decline, R.id.decline_call})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.answer:
@@ -104,6 +113,11 @@ public class VoipCallActivity extends BaseActivity {
                 break;
             case R.id.decline:
                 ToastUtil.showMessage(R.string.decline_call);
+                timer.cancel();
+                VibratorUtil.cancel();
+                finish();
+                break;
+            case R.id.decline_call:
                 timer.cancel();
                 VibratorUtil.cancel();
                 finish();
@@ -133,6 +147,9 @@ public class VoipCallActivity extends BaseActivity {
                         }
                     }
                 });
+        if (!TextUtils.isEmpty(from)) {
+            builder.setCancelable(false);
+        }
         builder.show();
     }
 
@@ -158,6 +175,9 @@ public class VoipCallActivity extends BaseActivity {
                         }
                     }
                 });
+        if (!TextUtils.isEmpty(from)) {
+            builder.setCancelable(false);
+        }
         builder.show();
     }
 

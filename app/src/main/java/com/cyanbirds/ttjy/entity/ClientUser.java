@@ -112,6 +112,10 @@ public class ClientUser implements Serializable{
      * 0:不显示  1：显示
      */
     public Boolean isShowMap; //地图
+    /**
+     * 0:不显示  1：显示
+     */
+    public Boolean isShowRpt; //红包
 
     public String latitude = "";
     public String longitude = "";

@@ -155,9 +155,7 @@ public class PersonalInfoActivity extends BaseActivity {
 			getMenuInflater().inflate(R.menu.personal_menu, menu);
 		} else {
 			if (AppManager.getClientUser().isShowVip) {
-				if (!AppManager.getClientUser().is_vip) {
-					getMenuInflater().inflate(R.menu.call_menu, menu);
-				} else if (AppManager.getClientUser().gold_num < 100) {
+				if (!AppManager.getClientUser().is_vip || AppManager.getClientUser().gold_num < 100) {
 					getMenuInflater().inflate(R.menu.call_menu, menu);
 				}
 			}

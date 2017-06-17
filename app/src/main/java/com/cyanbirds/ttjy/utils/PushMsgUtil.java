@@ -119,6 +119,10 @@ public class PushMsgUtil {
 				conversation.type = ECMessage.Type.CALL.ordinal();
 				conversation.content = CSApplication.getInstance().getResources()
 						.getString(R.string.voip_symbol);
+			} else if (pushMsgModel.msgType == PushMsgModel.MessageType.RPT) {
+				conversation.type = ECMessage.Type.RICH_TEXT.ordinal();
+				conversation.content = CSApplication.getInstance().getResources()
+						.getString(R.string.rpt_symbol);
 			}
 			conversation.talker = pushMsgModel.sender;
 			conversation.talkerName = pushMsgModel.senderName;
@@ -154,10 +158,14 @@ public class PushMsgUtil {
 						conversation.type = ECMessage.Type.IMAGE.ordinal();
 						conversation.content = CSApplication.getInstance().getResources()
 								.getString(R.string.image_symbol);
-					} else {
+					} else if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
 						conversation.type = ECMessage.Type.IMAGE.ordinal();
 						conversation.content = CSApplication.getInstance().getResources()
 								.getString(R.string.voip_symbol);
+					} else if (pushMsgModel.msgType == PushMsgModel.MessageType.RPT) {
+						conversation.type = ECMessage.Type.RICH_TEXT.ordinal();
+						conversation.content = CSApplication.getInstance().getResources()
+								.getString(R.string.rpt_symbol);
 					}
 					conversation.talker = pushMsgModel.sender;
 					conversation.talkerName = pushMsgModel.senderName;
@@ -208,6 +216,9 @@ public class PushMsgUtil {
 		} else if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
 			message.msgType = IMessage.MessageType.VOIP;
 			message.content = "未接听";
+		}  else if (pushMsgModel.msgType == PushMsgModel.MessageType.RPT) {
+			message.msgType = IMessage.MessageType.RED_PKT;
+			message.content = pushMsgModel.content;
 		}
 
 		IMessageDaoManager.getInstance(CSApplication.getInstance()).insertIMessage(message);

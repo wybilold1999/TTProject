@@ -1,19 +1,17 @@
 package com.cyanbirds.ttjy.activity;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,29 +20,22 @@ import com.alipay.sdk.app.PayTask;
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
-import com.cyanbirds.ttjy.adapter.MyGoldAdapter;
 import com.cyanbirds.ttjy.config.AppConstants;
+import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.MemberBuy;
 import com.cyanbirds.ttjy.entity.PayResult;
-import com.cyanbirds.ttjy.entity.UserVipModel;
 import com.cyanbirds.ttjy.entity.WeChatPay;
 import com.cyanbirds.ttjy.eventtype.PayEvent;
-import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.CreateOrderRequest;
-import com.cyanbirds.ttjy.net.request.GetAliPayOrderInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetMemberBuyListRequest;
-import com.cyanbirds.ttjy.net.request.GetPayResultRequest;
-import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
-import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
-import com.cyanbirds.ttjy.utils.DensityUtil;
+import com.cyanbirds.ttjy.net.request.RPAliPayOrderInfoRequest;
+import com.cyanbirds.ttjy.net.request.RPCreateOrderRequest;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.tencent.mm.sdk.modelpay.PayReq;
-import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -54,18 +45,22 @@ import butterknife.OnClick;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
- * @author Cloudsoar(wangyb)
- * @datetime 2016-06-22 14:44 GMT+8
- * @description
+ * 作者：wangyb
+ * 时间：2017/6/17 11:17
+ * 描述：红包
  */
-public class MyGoldActivity extends BaseActivity {
+public class RedPacketActivity extends BaseActivity {
 
-	@BindView(R.id.recyclerview)
-	RecyclerView mRecyclerView;
-	@BindView(R.id.my_gold_num)
-	TextView mMyGoldNum;
-	@BindView(R.id.btn_pay)
-	FancyButton mBtnPay;
+	@BindView(R.id.read_packet_amount)
+	EditText mReadPacketAmount;
+	@BindView(R.id.blessings)
+	EditText mBlessings;
+	@BindView(R.id.money)
+	TextView mMoney;
+	@BindView(R.id.single_more)
+	TextView mSingleMore;
+	@BindView(R.id.limit)
+	TextView mMoneyLimit;
 	@BindView(R.id.select_alipay)
 	CheckBox mSelectAlipay;
 	@BindView(R.id.alipay_lay)
@@ -76,15 +71,13 @@ public class MyGoldActivity extends BaseActivity {
 	RelativeLayout mWechatLay;
 	@BindView(R.id.pay_lay)
 	LinearLayout mPayLay;
-	@BindView(R.id.call_info)
-	TextView mCallInfo;
+	private FancyButton mBtnSendMoney;
 
 	private static final int SDK_PAY_FLAG = 1;
-
-	private int BUY_GOLD = 2;
-	private MyGoldAdapter mAdapter;
-	private MemberBuy mMemberBuy;//选中的商品
+	private int MEMBER_BUY_TYPE_RED_PACKET = 5;//红包
 	private String mPayType;//支付方式
+	private MemberBuy mMemberBuy;//选中的商品
+	private DecimalFormat mFormat;
 
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
@@ -102,8 +95,7 @@ public class MyGoldActivity extends BaseActivity {
 					// 判断resultStatus 为9000则代表支付成功
 					if (TextUtils.equals(resultStatus, "9000")) {
 						// 该笔订单是否真实支付成功，需要依赖服务端的异步通知。
-						ToastUtil.showMessage("支付成功");
-						new GetPayResultTask().request();
+						finishActivity();
 					} else {
 						// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
 						ToastUtil.showMessage("支付失败");
@@ -119,13 +111,11 @@ public class MyGoldActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_my_gold);
+		setContentView(R.layout.activity_red_packet);
 		ButterKnife.bind(this);
-		Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		if (mToolbar != null) {
-			setSupportActionBar(mToolbar);
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-			getSupportActionBar().setTitle(R.string.my_gold);
+		Toolbar toolbar = getActionBarToolbar();
+		if (toolbar != null) {
+			toolbar.setNavigationIcon(R.mipmap.ic_up);
 		}
 		setupView();
 		setupEvent();
@@ -133,38 +123,109 @@ public class MyGoldActivity extends BaseActivity {
 	}
 
 	private void setupView() {
-		LinearLayoutManager manager = new WrapperLinearLayoutManager(this);
-		manager.setOrientation(LinearLayout.VERTICAL);
-		mRecyclerView.setLayoutManager(manager);
-		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-		mRecyclerView.addItemDecoration(new DividerItemDecoration(
-				this, LinearLayoutManager.VERTICAL, DensityUtil
-				.dip2px(this, 12), DensityUtil.dip2px(this, 12)));
-		mRecyclerView.setNestedScrollingEnabled(false);
+		mBtnSendMoney = (FancyButton) findViewById(R.id.btn_send_money);
 	}
 
 	private void setupEvent() {
-		EventBus.getDefault().register(this);
+		mReadPacketAmount.setFocusable(true);
+		mReadPacketAmount.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (!TextUtils.isEmpty(s.toString())) {
+					int index = s.toString().indexOf(".");
+					if (index != -1) {
+						if (s.toString().length() - index > 3) {
+							String money = s.toString().substring(0, index + 3);
+							mReadPacketAmount.setText(money);
+							mReadPacketAmount.setSelection(money.length());
+							s = mReadPacketAmount.getText();
+						}
+					}
+					if (Double.parseDouble(s.toString()) > Double.parseDouble(mMemberBuy.months)) {
+						mMoneyLimit.setVisibility(View.VISIBLE);
+						mBtnSendMoney.setClickable(false);
+						mBtnSendMoney.setEnabled(false);
+						mBtnSendMoney.setTextColor(getResources().getColor(R.color.btn_send_money_text));
+						mBtnSendMoney.setBackgroundColor(getResources().getColor(R.color.btn_send_money_unenable));
+						mBtnSendMoney.setOnClickListener(null);
+					} else if (Double.parseDouble(s.toString()) > mMemberBuy.price) {
+						mMoneyLimit.setVisibility(View.INVISIBLE);
+						mBtnSendMoney.setEnabled(true);
+						mBtnSendMoney.setClickable(true);
+						mBtnSendMoney.setTextColor(getResources().getColor(R.color.item_find_love_bg));
+						mBtnSendMoney.setBackgroundColor(getResources().getColor(R.color.btn_send_money_normal));
+						mBtnSendMoney.setFocusBackgroundColor(getResources().getColor(R.color.btn_send_money_press));
+						mBtnSendMoney.setOnClickListener(new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								if (mMemberBuy != null) {
+									if (mPayType.equals(AppConstants.ALI_PAY_PLATFORM)) {
+										new GetAliPayOrderInfoTask().request(mMemberBuy.id, AppConstants.ALI_PAY_PLATFORM, mReadPacketAmount.getText().toString());
+									} else {
+										new CreateOrderTask().request(mMemberBuy.id, AppConstants.WX_PAY_PLATFORM, mReadPacketAmount.getText().toString());
+									}
+								}
+							}
+						});
+					} else {
+						mMoneyLimit.setVisibility(View.INVISIBLE);
+						mBtnSendMoney.setClickable(false);
+						mBtnSendMoney.setEnabled(false);
+						mBtnSendMoney.setTextColor(getResources().getColor(R.color.btn_send_money_text));
+						mBtnSendMoney.setBackgroundColor(getResources().getColor(R.color.btn_send_money_unenable));
+						mBtnSendMoney.setOnClickListener(null);
+					}
+					String finalMoney = mFormat.format(Double.parseDouble(s.toString()));
+					mMoney.setText(String.format(getResources().getString(R.string.money), finalMoney));
+				} else {
+					mMoney.setText("￥0.00");
+				}
+			}
+		});
 	}
 
 	private void setupData() {
-		if (AppManager.getClientUser().is_vip && AppManager.getClientUser().gold_num > 100) {
-			mCallInfo.setVisibility(View.GONE);
-		} else {
-			mCallInfo.setVisibility(View.VISIBLE);
-		}
-		mMyGoldNum.setText(String.format(getResources().getString(R.string.my_gold_num), AppManager.getClientUser().gold_num));
-		new GetGoldListTask().request(BUY_GOLD);
-
+		mFormat = new DecimalFormat("#.00");
 		/**
 		 * 默认支付宝支付
 		 */
 		mPayType = AppConstants.ALI_PAY_PLATFORM;
 		mSelectAlipay.setChecked(true);
 		mSelectWechatpay.setChecked(false);
+		new GetGoldListTask().request(MEMBER_BUY_TYPE_RED_PACKET);
 	}
 
-	@OnClick({R.id.btn_pay, R.id.select_alipay, R.id.alipay_lay, R.id.select_wechatpay, R.id.wechat_lay})
+	/**
+	 * 请求金币商品列表
+	 */
+	class GetGoldListTask extends GetMemberBuyListRequest {
+		@Override
+		public void onPostExecute(List<MemberBuy> memberBuys) {
+			mMemberBuy = memberBuys.get(0);
+			mMoneyLimit.setText(String.format(getResources().getString(
+					R.string.single_red_packet_limit), mMemberBuy.months));
+			mSingleMore.setText(String.format(getResources().getString(
+					R.string.single_red_packet_more), String.valueOf(mMemberBuy.price)));
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
+			ToastUtil.showMessage(error);
+		}
+	}
+
+
+	@OnClick({R.id.select_alipay, R.id.alipay_lay, R.id.select_wechatpay, R.id.wechat_lay})
 	public void onViewClicked(View view) {
 		switch (view.getId()) {
 			case R.id.select_alipay:
@@ -187,73 +248,10 @@ public class MyGoldActivity extends BaseActivity {
 				mSelectAlipay.setChecked(false);
 				mSelectWechatpay.setChecked(true);
 				break;
-			case R.id.btn_pay:
-				if (null != mMemberBuy) {
-					if (mPayType.equals(AppConstants.ALI_PAY_PLATFORM)) {
-						new GetAliPayOrderInfoTask().request(mMemberBuy.id, AppConstants.ALI_PAY_PLATFORM);
-					} else {
-						new CreateOrderTask().request(mMemberBuy.id, AppConstants.WX_PAY_PLATFORM);
-					}
-				}
-				break;
 		}
 	}
 
-	/**
-	 * 请求金币商品列表
-	 */
-	class GetGoldListTask extends GetMemberBuyListRequest {
-		@Override
-		public void onPostExecute(List<MemberBuy> memberBuys) {
-			mMemberBuy = memberBuys.get(0);
-			memberBuys.get(0).isSelected = true;
-			mAdapter = new MyGoldAdapter(memberBuys, MyGoldActivity.this);
-			mAdapter.setOnItemClickListener(mOnItemClickListener);
-			mRecyclerView.setAdapter(mAdapter);
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-			ToastUtil.showMessage(error);
-		}
-	}
-
-
-	private MyGoldAdapter.OnItemClickListener mOnItemClickListener = new MyGoldAdapter.OnItemClickListener() {
-		@Override
-		public void onItemClick(View view, int position) {
-			mMemberBuy = mAdapter.getItem(position);
-//			showPayDialog(memberBuy);
-		}
-	};
-
-	private void showPayDialog(final MemberBuy memberBuy) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getResources().getString(R.string.pay_type));
-		builder.setNegativeButton(getResources().getString(R.string.cancel),
-				null);
-		builder.setItems(
-				new String[]{getResources().getString(R.string.ali_pay),
-						getResources().getString(R.string.weixin_pay)},
-				new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						switch (which) {
-							case 0:
-								new GetAliPayOrderInfoTask().request(memberBuy.id, AppConstants.ALI_PAY_PLATFORM);
-								break;
-							case 1:
-								new CreateOrderTask().request(memberBuy.id, AppConstants.WX_PAY_PLATFORM);
-								break;
-						}
-						dialog.dismiss();
-					}
-				});
-		builder.show();
-	}
-
-	class CreateOrderTask extends CreateOrderRequest {
+	class CreateOrderTask extends RPCreateOrderRequest {
 		@Override
 		public void onPostExecute(WeChatPay weChatPay) {
 			PayReq payReq = new PayReq();
@@ -276,7 +274,7 @@ public class MyGoldActivity extends BaseActivity {
 	/**
 	 * 调用支付宝支付
 	 */
-	class GetAliPayOrderInfoTask extends GetAliPayOrderInfoRequest {
+	class GetAliPayOrderInfoTask extends RPAliPayOrderInfoRequest {
 		@Override
 		public void onPostExecute(String s) {
 			payV2(s);
@@ -304,7 +302,7 @@ public class MyGoldActivity extends BaseActivity {
 
 			@Override
 			public void run() {
-				PayTask alipay = new PayTask(MyGoldActivity.this);
+				PayTask alipay = new PayTask(RedPacketActivity.this);
 				Map<String, String> result = alipay.payV2(orderInfo, true);
 
 				Message msg = new Message();
@@ -320,47 +318,25 @@ public class MyGoldActivity extends BaseActivity {
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void paySuccess(PayEvent event) {
-		new GetPayResultTask().request();
+		finishActivity();
 	}
 
-	class GetPayResultTask extends GetPayResultRequest {
-		@Override
-		public void onPostExecute(UserVipModel userVipModel) {
-			AppManager.getClientUser().is_vip = userVipModel.isVip;
-			AppManager.getClientUser().is_download_vip = userVipModel.isDownloadVip;
-			AppManager.getClientUser().gold_num = userVipModel.goldNum;
+	private void finishActivity() {
+		Intent intent = new Intent();
+		if (!TextUtils.isEmpty(mBlessings.getText().toString())) {
+			intent.putExtra(ValueKey.DATA, mBlessings.getText().toString());
+		} else {
+			intent.putExtra(ValueKey.DATA, getResources().getString(R.string.feedback_info));
 		}
-
-		@Override
-		public void onErrorExecute(String error) {
-			ToastUtil.showMessage(error);
-		}
+		setResult(RESULT_OK, intent);
+		finish();
 	}
+
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == 0 && requestCode == SDK_PAY_FLAG) {
 		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		EventBus.getDefault().unregister(this);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		MobclickAgent.onPageStart(this.getClass().getName());
-		MobclickAgent.onResume(this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		MobclickAgent.onPageEnd(this.getClass().getName());
-		MobclickAgent.onPause(this);
 	}
 }

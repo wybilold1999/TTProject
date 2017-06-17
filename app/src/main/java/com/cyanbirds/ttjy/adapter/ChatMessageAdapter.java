@@ -3,10 +3,12 @@ package com.cyanbirds.ttjy.adapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.Html;
@@ -24,8 +26,10 @@ import android.widget.TextView;
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.LocationDetailActivity;
+import com.cyanbirds.ttjy.activity.MyGoldActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.activity.PhotoViewActivity;
+import com.cyanbirds.ttjy.activity.VipCenterActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
 import com.cyanbirds.ttjy.entity.Conversation;
@@ -411,6 +415,95 @@ public class ChatMessageAdapter extends
                 // 设置显示消息时间
                 setChatTime(voipViewHolder.chat_time, message.send_time,
                         showTimer);
+            } else if (message.msgType == IMessage.MessageType.RED_PKT) {
+                // 红包消息
+                RedViewHolder redViewHolder = (RedViewHolder) holder;
+                if (!TextUtils.isEmpty(message.content)) {
+                    redViewHolder.message_text.setText(message.content);
+                }
+                redViewHolder.nickname.setVisibility(View.GONE);
+                redViewHolder.message_send_fail.setVisibility(View.GONE);
+                redViewHolder.progress_bar.setVisibility(View.GONE);
+                if (message.isSend == IMessage.MessageIsSend.RECEIVING) {
+                    if(!TextUtils.isEmpty(mConversation.localPortrait)){
+                        if (mConversation.localPortrait.startsWith("res")) {
+                            redViewHolder.portrait.setImageURI(Uri.parse(mConversation.localPortrait));
+                        } else {
+                            redViewHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
+                        }
+                    }
+
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) redViewHolder.portrait
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT,
+                            RelativeLayout.TRUE);
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
+                    redViewHolder.portrait.setLayoutParams(lp);
+
+                    lp = (RelativeLayout.LayoutParams) redViewHolder.message_content
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.RIGHT_OF, R.id.portrait);
+                    lp.addRule(RelativeLayout.LEFT_OF, 0);
+                    redViewHolder.message_content.setLayoutParams(lp);
+                    redViewHolder.redPktLay.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!AppManager.getClientUser().is_vip) {
+                                showVipDialog(mContext.getResources().getString(R.string.un_receive_rpt));
+                            } else if (AppManager.getClientUser().gold_num < 100) {
+                                showGoldDialog(mContext.getResources().getString(R.string.no_gold_un_receive_rpt));
+                            } else {
+                                ToastUtil.showMessage(R.string.cancel_red_packet);
+                            }
+                        }
+                    });
+                } else if (message.isSend == IMessage.MessageIsSend.SEND) {
+                    if (message.status == IMessage.MessageStatus.FAILED) {
+                        redViewHolder.message_send_fail
+                                .setVisibility(View.VISIBLE);
+                    } else if (message.status == IMessage.MessageStatus.SENDING) {
+                        redViewHolder.progress_bar.setVisibility(View.VISIBLE);
+                    } else if(message.status == IMessage.MessageStatus.SENT){
+                        redViewHolder.progress_bar.setVisibility(View.GONE);
+                    }
+
+                    if(!TextUtils.isEmpty(AppManager.getClientUser().face_local)){
+                        redViewHolder.portrait.setImageURI(Uri.parse("file://"
+                                + AppManager.getClientUser().face_local));
+                    } else {
+                        redViewHolder.portrait.setImageURI(Uri.parse(
+                                AppManager.getClientUser().face_url));
+                    }
+
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) redViewHolder.portrait
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,
+                            RelativeLayout.TRUE);
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+                    redViewHolder.portrait.setLayoutParams(lp);
+
+                    lp = (RelativeLayout.LayoutParams) redViewHolder.message_content
+                            .getLayoutParams();
+                    lp.addRule(RelativeLayout.LEFT_OF, R.id.portrait);
+                    lp.addRule(RelativeLayout.RIGHT_OF, 0);
+                    redViewHolder.message_content.setLayoutParams(lp);
+
+                    redViewHolder.redPktLay.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (!AppManager.getClientUser().is_vip) {
+                                showVipDialog(mContext.getResources().getString(R.string.un_cancel_red_packet));
+                            } else if (AppManager.getClientUser().gold_num < 100) {
+                                showGoldDialog(mContext.getResources().getString(R.string.no_gold_un_cancel_red_packet));
+                            } else {
+                                ToastUtil.showMessage(R.string.cancel_red_packet_tips);
+                            }
+                        }
+                    });
+                }
+                // 设置显示消息时间
+                setChatTime(redViewHolder.chat_time, message.send_time,
+                        showTimer);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -523,6 +616,10 @@ public class ChatMessageAdapter extends
                 return new VoipViewHolder(LayoutInflater.from(
                         parent.getContext()).inflate(
                         R.layout.item_chat_message_voip, parent, false));
+            case IMessage.MessageType.RED_PKT:
+                return new RedViewHolder(LayoutInflater.from(
+                        parent.getContext()).inflate(
+                        R.layout.item_chat_red_packet, parent, false));
             default:
                 return null;
         }
@@ -767,6 +864,93 @@ public class ChatMessageAdapter extends
                     break;
             }
         }
+    }
+
+    public class RedViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+
+        RelativeLayout message_lay;
+        LinearLayout redPktLay;
+        SimpleDraweeView portrait;
+        TextView message_text;
+        TextView chat_time;
+        LinearLayout message_content;
+        TextView nickname;
+        ImageView message_send_fail;
+        CircularProgress progress_bar;
+
+        public RedViewHolder(View itemView) {
+            super(itemView);
+            message_lay = (RelativeLayout) itemView
+                    .findViewById(R.id.message_lay);
+            redPktLay = (LinearLayout) itemView.findViewById(R.id.red_pkt_lay);
+            portrait = (SimpleDraweeView) itemView.findViewById(R.id.portrait);
+            message_text = (TextView) itemView.findViewById(R.id.blessings);
+            chat_time = (TextView) itemView.findViewById(R.id.chat_time);
+            message_content = (LinearLayout) itemView
+                    .findViewById(R.id.message_content);
+            nickname = (TextView) itemView.findViewById(R.id.nickname);
+            message_send_fail = (ImageView) itemView
+                    .findViewById(R.id.message_send_fail);
+            progress_bar = (CircularProgress) itemView
+                    .findViewById(R.id.progress_bar);
+            portrait.setOnClickListener(this);
+            redPktLay.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.message_send_fail:
+                    break;
+                case R.id.portrait:
+                    if(!"-1".equals(mConversation.talker)){
+                        Intent intent = new Intent(mContext, PersonalInfoActivity.class);
+                        intent.putExtra(ValueKey.USER_ID, mConversation.talker);
+                        mContext.startActivity(intent);
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void showVipDialog(String tips) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(tips);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent intent = new Intent(mContext, VipCenterActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private void showGoldDialog(String tips) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(tips);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent intent = new Intent(mContext, MyGoldActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     public void onDestroy() {
