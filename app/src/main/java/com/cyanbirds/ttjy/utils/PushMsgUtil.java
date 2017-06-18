@@ -103,7 +103,6 @@ public class PushMsgUtil {
 			} else {
 				handleConversation(pushMsgModel);
 			}
-
 		}
 	}
 

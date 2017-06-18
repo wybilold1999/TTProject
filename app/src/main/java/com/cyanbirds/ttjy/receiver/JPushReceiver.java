@@ -12,11 +12,9 @@ import android.util.Log;
 import com.cyanbirds.ttjy.activity.LauncherActivity;
 import com.cyanbirds.ttjy.activity.MainActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.helper.AppActivityLifecycleCallbacks;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
-import com.cyanbirds.ttjy.utils.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
