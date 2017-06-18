@@ -142,6 +142,7 @@ public class RedPacketActivity extends BaseActivity {
 			@Override
 			public void afterTextChanged(Editable s) {
 				if (!TextUtils.isEmpty(s.toString())) {
+					mReadPacketAmount.setSelection(s.toString().length());
 					int index = s.toString().indexOf(".");
 					if (index != -1) {
 						if (s.toString().length() - index > 3) {
@@ -168,13 +169,14 @@ public class RedPacketActivity extends BaseActivity {
 						mBtnSendMoney.setOnClickListener(new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								if (mMemberBuy != null) {
+								/*if (mMemberBuy != null) {
 									if (mPayType.equals(AppConstants.ALI_PAY_PLATFORM)) {
 										new GetAliPayOrderInfoTask().request(mMemberBuy.id, AppConstants.ALI_PAY_PLATFORM, mReadPacketAmount.getText().toString());
 									} else {
 										new CreateOrderTask().request(mMemberBuy.id, AppConstants.WX_PAY_PLATFORM, mReadPacketAmount.getText().toString());
 									}
-								}
+								}*/
+								finishActivity();
 							}
 						});
 					} else {

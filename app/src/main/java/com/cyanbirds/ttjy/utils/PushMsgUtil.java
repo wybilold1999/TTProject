@@ -84,14 +84,22 @@ public class PushMsgUtil {
 					}
 				}
 			}
+			if (pushMsgModel.msgType == PushMsgModel.MessageType.RPT) {//红包
+				//如果是vip并且金币数量大于100，就忽略红包消息
+				if (AppManager.getClientUser().is_vip && AppManager.getClientUser().gold_num > 100) {
+					return;
+				}
+			}
 			if (System.currentTimeMillis() - AppManager.getClientUser().loginTime < 60000 &&
 					pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
-				mHandler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						handleConversation(pushMsgModel);
-					}
-				}, 60000);
+				if (!AppManager.getClientUser().is_vip || AppManager.getClientUser().gold_num < 100) {
+					mHandler.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							handleConversation(pushMsgModel);
+						}
+					}, 60000);
+				}
 			} else {
 				handleConversation(pushMsgModel);
 			}
@@ -235,7 +243,7 @@ public class PushMsgUtil {
 		/**
 		 * 只要是透传消息，就创建通知栏
 		 */
-		if (isPassThrough) {
+		if (isPassThrough && pushMsgModel.msgType != PushMsgModel.MessageType.VOIP) {
 			AppManager.showNotification(message);
 		}
 	}

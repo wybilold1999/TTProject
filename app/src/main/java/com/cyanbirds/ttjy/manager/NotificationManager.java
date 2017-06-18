@@ -137,6 +137,8 @@ public class NotificationManager {
             return mContext.getResources().getString(R.string.image_symbol);
         } else if (message.msgType == IMessage.MessageType.LOCATION) {
             return mContext.getResources().getString(R.string.location_symbol);
+        } else if (message.msgType == IMessage.MessageType.RED_PKT) {
+            mContext.getResources().getString(R.string.rpt_symbol);
         }
         return "";
     }

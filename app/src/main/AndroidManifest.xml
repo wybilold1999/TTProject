@@ -213,6 +213,7 @@
         <activity
             android:name=".activity.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="portrait"/>
 
         <activity

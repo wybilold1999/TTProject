@@ -148,10 +148,10 @@ public class MyGoldActivity extends BaseActivity {
 	}
 
 	private void setupData() {
-		if (AppManager.getClientUser().is_vip && AppManager.getClientUser().gold_num > 100) {
-			mCallInfo.setVisibility(View.GONE);
-		} else {
+		if (AppManager.getClientUser().gold_num < 100) {
 			mCallInfo.setVisibility(View.VISIBLE);
+		} else {
+			mCallInfo.setVisibility(View.GONE);
 		}
 		mMyGoldNum.setText(String.format(getResources().getString(R.string.my_gold_num), AppManager.getClientUser().gold_num));
 		new GetGoldListTask().request(BUY_GOLD);
