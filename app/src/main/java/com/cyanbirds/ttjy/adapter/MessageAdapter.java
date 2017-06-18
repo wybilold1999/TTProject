@@ -24,6 +24,7 @@ import com.cyanbirds.ttjy.db.IMessageDaoManager;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
+import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.utils.DateUtil;
 import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -159,6 +160,7 @@ public class MessageAdapter extends
                                             mConversations.clear();
                                             notifyDataSetChanged();
                                             MessageUnReadListener.getInstance().notifyDataSetChanged(0);
+                                            NotificationManager.getInstance().cancelNotification();
                                             break;
                                     }
                                     dialog.dismiss();

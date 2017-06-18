@@ -55,8 +55,6 @@ public class MyIntentService extends GTIntentService {
 				});
 			}
 		}
-
-		Log.d(TAG, "----------------------------------------------------------------------------------------------");
 	}
 
 	@Override
@@ -130,8 +128,6 @@ public class MyIntentService extends GTIntentService {
 			default:
 				break;
 		}
-
-		Log.d(TAG, "settag result sn = " + sn + ", code = " + code + ", text = " + text);
 	}
 
 }
