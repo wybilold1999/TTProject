@@ -61,7 +61,7 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return vh;
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(
-                    R.layout.footer_gift_more, null);
+                    R.layout.footer_view_more, null);
             view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             return new FooterViewHolder(view);
@@ -74,7 +74,7 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(receiveGiftModel == null){
             return;
         }
-        if(holder instanceof AttentionMeAdapter.ItemViewHolder){
+        if(holder instanceof ItemViewHolder){
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.portrait.setImageURI(Uri.parse(receiveGiftModel.faceUrl));
             itemViewHolder.giftUrl.setImageURI(Uri.parse(receiveGiftModel.giftUrl));
@@ -170,7 +170,7 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void showVipDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setMessage(R.string.see_more_data);
+        builder.setMessage(R.string.see_more_send_gift_data);
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
