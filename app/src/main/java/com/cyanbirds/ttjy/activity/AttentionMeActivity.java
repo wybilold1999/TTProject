@@ -130,12 +130,12 @@ public class AttentionMeActivity extends BaseActivity {
                 }
                 mAdapter.setIsShowFooter(false);
                 mAdapter.setFollowModels(mFollowModels);
-            }
+            }*/
             if (mFollowModels != null && mFollowModels.size() > 0) {
                 mNoUserinfo.setVisibility(View.GONE);
             } else {
                 mNoUserinfo.setVisibility(View.VISIBLE);
-            }*/
+            }
         }
 
         @Override
