@@ -104,6 +104,11 @@ public class AttentionMeActivity extends BaseActivity {
         public void onPostExecute(List<FollowModel> followModels) {
             mCircularProgress.setVisibility(View.GONE);
             if(followModels != null && followModels.size() > 0){
+                mFollowModels.addAll(followModels);
+                mAdapter.setIsShowFooter(false);
+                mAdapter.setFollowModels(mFollowModels);
+            }
+            /*if(followModels != null && followModels.size() > 0){
                 if (AppManager.getClientUser().isShowVip &&
                         !AppManager.getClientUser().is_vip &&
                         followModels.size() > 10) {//如果不是vip，移除前面3个
@@ -130,7 +135,7 @@ public class AttentionMeActivity extends BaseActivity {
                 mNoUserinfo.setVisibility(View.GONE);
             } else {
                 mNoUserinfo.setVisibility(View.VISIBLE);
-            }
+            }*/
         }
 
         @Override
