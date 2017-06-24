@@ -30,7 +30,6 @@ import com.cyanbirds.ttjy.net.request.GetMemberBuyListRequest;
 import com.cyanbirds.ttjy.net.request.RPAliPayOrderInfoRequest;
 import com.cyanbirds.ttjy.net.request.RPCreateOrderRequest;
 import com.cyanbirds.ttjy.utils.ToastUtil;
-import com.jaeger.library.StatusBarUtil;
 import com.tencent.mm.sdk.modelpay.PayReq;
 
 import org.greenrobot.eventbus.Subscribe;
