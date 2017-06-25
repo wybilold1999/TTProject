@@ -434,7 +434,7 @@
         <activity
             android:name=".activity.RedPacketActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:label="@string/send_red_packet"
             android:screenOrientation="portrait">
         </activity>
