@@ -43,7 +43,6 @@ import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FoundFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
 import com.cyanbirds.ttjy.fragment.PersonalFragment;
-import com.cyanbirds.ttjy.fragment.VideoShowFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
@@ -55,9 +54,7 @@ import com.cyanbirds.ttjy.service.MyIntentService;
 import com.cyanbirds.ttjy.service.MyPushService;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
-import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.igexin.sdk.PushManager;
-import com.tencent.android.tpush.XGPushManager;
 import com.umeng.analytics.MobclickAgent;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.yuntongxun.ecsdk.ECInitParams;
@@ -143,16 +140,11 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				 * 注册小米推送
 				 */
 				MiPushClient.registerPush(MainActivity.this, AppConstants.MI_PUSH_APP_ID, AppConstants.MI_PUSH_APP_KEY);
-				/**
-				 * 注册信鸽推送
-				 */
-				XGPushManager.registerPush(getApplicationContext(), "userId=" + AppManager.getClientUser().userId);
 				//个推
 				initGeTuiPush();
 
 				initJPush();
 
-				initMeizuPush();
 
 				loadData();
 
@@ -291,11 +283,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			}
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_TAGS, tag));
 		}
-	}
-
-	private void initMeizuPush() {
-		com.meizu.cloud.pushsdk.PushManager.register(this,
-				AppConstants.MZ_APP_ID, AppConstants.MZ_APP_KEY);
 	}
 
 	@Override
