@@ -203,7 +203,6 @@ public class ConversationSqlManager extends DBManager {
 			conversation.content = CSApplication.getInstance().getResources().getString(R.string.location_symbol);
 			conversation.type = ECMessage.Type.LOCATION.ordinal();
 		} else if (ecMessage.getType() == ECMessage.Type.FILE) {
-
 		} else if (ecMessage.getType() == ECMessage.Type.RICH_TEXT) {
 			conversation.content = CSApplication.getInstance().getResources().getString(R.string.rpt_symbol);
 			conversation.type = ECMessage.Type.RICH_TEXT.ordinal();
