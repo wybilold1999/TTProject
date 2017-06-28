@@ -166,7 +166,7 @@ public class MessageAdapter extends
                                     dialog.dismiss();
 
                                 }
-                            }).show();
+                            }).setTitle("操作").show();
             return true;
         }
     }
