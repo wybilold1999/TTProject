@@ -325,4 +325,8 @@
     <string name="input_bank">输入收款人开户行</string>
     <string name="input_bank_no">输入开户行银行账号</string>
 
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="author">吴小龙同學</string>
+
 </resources>

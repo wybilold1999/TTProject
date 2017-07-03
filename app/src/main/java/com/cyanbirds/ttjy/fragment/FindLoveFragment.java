@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +26,7 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.activity.RadarActivity;
 import com.cyanbirds.ttjy.adapter.FindLoveAdapter;
@@ -49,6 +52,7 @@ import java.util.List;
  * @description:
  */
 public class FindLoveFragment extends Fragment implements OnRefreshListener, View.OnClickListener{
+    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefresh;
     private FloatingActionButton mFab;
@@ -111,7 +115,14 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ((MainNewActivity) getActivity()).initDrawer(mToolbar);
+    }
+
     private void setupViews() {
+        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         mProgress = (CircularProgress) rootView.findViewById(R.id.progress_bar);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
@@ -140,7 +151,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     }
 
     private void setupData() {
-        //获得索引值
+        /*//获得索引值
         Bundle bundle = getArguments();
         if (bundle != null) {
             mCurIndex = bundle.getInt(FRAGMENT_INDEX);
@@ -155,8 +166,9 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
             case 2 :
                 mUserScopeType = ALL_COUNTRY;
                 break;
-        }
+        }*/
 
+        mUserScopeType = SAME_CITY;
         mClientUsers = new ArrayList<>();
         mAdapter = new FindLoveAdapter(mClientUsers, getActivity());
         mAdapter.setOnItemClickListener(mOnItemClickListener);

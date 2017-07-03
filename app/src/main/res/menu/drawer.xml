@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <!--group 可设置单选效果-->
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/navigation_item_1"
+            android:checked="true"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="缘分" />
+
+        <item
+            android:id="@+id/navigation_item_2"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="颜值" />
+        <item
+            android:id="@+id/navigation_item_3"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="邂逅" />
+        <item
+            android:id="@+id/navigation_item_4"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="同城" />
+
+    </group>
+
+    <item android:title="其他">
+        <menu>
+            <item
+                android:id="@+id/navigation_item_set"
+                android:icon="@drawable/abc_btn_radio_material"
+                android:title="设置" />
+            <item
+                android:id="@+id/navigation_item_about"
+                android:icon="@drawable/abc_btn_radio_material"
+                android:title="关于" />
+        </menu>
+    </item>
+
+</menu>
