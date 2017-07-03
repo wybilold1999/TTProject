@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
     <!--group 可设置单选效果-->
     <group android:checkableBehavior="single">
 
@@ -9,20 +10,36 @@
             android:id="@+id/navigation_item_1"
             android:checked="true"
             android:icon="@drawable/abc_btn_radio_material"
-            android:title="缘分" />
-
+            android:title="缘分"/>
         <item
             android:id="@+id/navigation_item_2"
             android:icon="@drawable/abc_btn_radio_material"
-            android:title="颜值" />
+            android:title="颜值"/>
         <item
             android:id="@+id/navigation_item_3"
             android:icon="@drawable/abc_btn_radio_material"
-            android:title="邂逅" />
+            android:title="邂逅"/>
         <item
             android:id="@+id/navigation_item_4"
             android:icon="@drawable/abc_btn_radio_material"
-            android:title="同城" />
+            android:title="同城"/>
+        <item
+            android:id="@+id/navigation_item_5"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="消息"
+            app:actionLayout="@layout/red_badge"/>
+        <item
+            android:id="@+id/navigation_item_6"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="礼物"/>
+        <item
+            android:id="@+id/navigation_item_7"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="关注"/>
+        <item
+            android:id="@+id/navigation_item_8"
+            android:icon="@drawable/abc_btn_radio_material"
+            android:title="喜欢"/>
 
     </group>
 
@@ -31,11 +48,11 @@
             <item
                 android:id="@+id/navigation_item_set"
                 android:icon="@drawable/abc_btn_radio_material"
-                android:title="设置" />
+                android:title="设置"/>
             <item
                 android:id="@+id/navigation_item_about"
                 android:icon="@drawable/abc_btn_radio_material"
-                android:title="关于" />
+                android:title="关于"/>
         </menu>
     </item>
 
