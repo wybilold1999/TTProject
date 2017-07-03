@@ -12,12 +12,12 @@
         android:background="?attr/colorPrimary"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <!--<LinearLayout
+    <LinearLayout
         android:id="@+id/data_lay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="visible">-->
+        android:visibility="gone">
 
         <com.stone.card.CardSlidePanel
             android:id="@+id/image_slide_panel"
@@ -74,15 +74,14 @@
 
         </com.stone.card.CardSlidePanel>
 
-    <!--</LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/loading_lay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@mipmap/bg_match_people"
-        android:layout_centerInParent="true"
-        android:visibility="gone">
+        android:layout_centerInParent="true">
 
         <ImageView
             android:id="@+id/radar_img"
@@ -136,6 +135,6 @@
             android:text="正为你推荐有缘的人..."
             android:textSize="18sp"/>
 
-    </RelativeLayout>-->
+    </RelativeLayout>
 
 </LinearLayout>

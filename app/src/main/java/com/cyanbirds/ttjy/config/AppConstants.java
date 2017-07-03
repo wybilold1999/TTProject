@@ -11,7 +11,7 @@ package com.cyanbirds.ttjy.config;
 public class AppConstants {
 	
 //	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-	public static final String BASE_URL = "http://localhost/TTLoveServer/";
+	public static final String BASE_URL = "http://192.168.1.100/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙

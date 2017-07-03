@@ -55,7 +55,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefresh;
-    private FloatingActionButton mFab;
+//    private FloatingActionButton mFab;
     private CircularProgress mProgress;
     private View rootView;
     private View searchView;
@@ -109,9 +109,6 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         if (parent != null) {
             parent.removeView(rootView);
         }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                R.string.tab_find_love);
         return rootView;
     }
 
@@ -123,7 +120,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
 
     private void setupViews() {
         mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+//        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         mProgress = (CircularProgress) rootView.findViewById(R.id.progress_bar);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         mSwipeRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh);
@@ -147,7 +144,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     private void setupEvent() {
         mSwipeRefresh.setOnRefreshListener(this);
         mRecyclerView.addOnScrollListener(mOnScrollListener);
-        mFab.setOnClickListener(this);
+//        mFab.setOnClickListener(this);
     }
 
     private void setupData() {

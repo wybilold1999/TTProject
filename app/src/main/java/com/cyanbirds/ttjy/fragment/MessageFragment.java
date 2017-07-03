@@ -52,9 +52,6 @@ public class MessageFragment extends Fragment implements MessageChangedListener.
         if (parent != null) {
             parent.removeView(rootView);
         }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                R.string.tab_message);
         return rootView;
     }
 

@@ -1,27 +1,37 @@
 package com.cyanbirds.ttjy.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.YuanFenModel;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.AddLoveRequest;
 import com.cyanbirds.ttjy.net.request.GetYuanFenUserRequest;
 import com.cyanbirds.ttjy.net.request.SendGreetRequest;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.stone.card.CardDataItem;
 import com.stone.card.CardSlidePanel;
 import com.umeng.analytics.MobclickAgent;
@@ -53,7 +63,7 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
     LinearLayout mCardBottomLayout;
     @BindView(R.id.image_slide_panel)
     CardSlidePanel mImageSlidePanel;
-    /*@BindView(R.id.data_lay)
+    @BindView(R.id.data_lay)
     LinearLayout mDataLay;
     @BindView(R.id.radar_img)
     ImageView mRadarImg;
@@ -64,7 +74,7 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
     @BindView(R.id.portrait)
     SimpleDraweeView mPortrait;
     @BindView(R.id.loading_lay)
-    RelativeLayout mLoadingLay;*/
+    RelativeLayout mLoadingLay;
 
     private View rootView;
     private Unbinder unbinder;
@@ -106,14 +116,12 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
     }
 
     private void setupData() {
-//        mLoadingLay.setVisibility(View.GONE);
-//        mDataLay.setVisibility(View.VISIBLE);
-        /*if (!TextUtils.isEmpty(AppManager.getClientUser().face_local)) {
+        if (!TextUtils.isEmpty(AppManager.getClientUser().face_local)) {
             mPortrait.setImageURI(Uri.parse("file://" + AppManager.getClientUser().face_local));
         }
-        startcircularAnima();*/
+        startcircularAnima();
 
-        CardDataItem dataItem = null;
+        /*CardDataItem dataItem = null;
         models = (List<YuanFenModel>) getArguments().getSerializable(ValueKey.USER);
         for (YuanFenModel model : models) {
             dataItem = new CardDataItem();
@@ -129,14 +137,14 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
             dataList.add(dataItem);
         }
         mImageSlidePanel.fillData(dataList);
-        mImageSlidePanel.invalidate();
+        mImageSlidePanel.invalidate();*/
 
-       /* mHandler.postDelayed(new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 new GetYuanFenUserTask().request(pageNo, pageSize);
             }
-        }, 3000);*/
+        }, 3000);
     }
 
 
@@ -189,6 +197,8 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
     class GetYuanFenUserTask extends GetYuanFenUserRequest {
         @Override
         public void onPostExecute(List<YuanFenModel> yuanFenModels) {
+            mDataLay.setVisibility(View.VISIBLE);
+            mLoadingLay.setVisibility(View.GONE);
             if (yuanFenModels != null && yuanFenModels.size() > 0) {
                 for (YuanFenModel model : yuanFenModels) {
                     CardDataItem dataItem = new CardDataItem();
@@ -213,7 +223,7 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
         }
     }
 
-    /*private void startcircularAnima() {
+    private void startcircularAnima() {
         grayAnimal = playHeartbeatAnimation();
         mRadarBttomImg.startAnimation(grayAnimal);
         new Handler().postDelayed(new Runnable() {
@@ -305,7 +315,7 @@ public class CardFragment extends Fragment implements CardSlidePanel.CardSwitchL
         sa.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(sa);
         return animationSet;
-    }*/
+    }
 
     @Override
     public void onResume() {

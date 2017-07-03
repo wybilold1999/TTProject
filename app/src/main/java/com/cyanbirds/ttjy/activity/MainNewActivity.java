@@ -166,6 +166,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initNavigationViewHeader() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation);
         //设置头像，布局app:headerLayout="@layout/drawer_header"所指定的头布局
         View view = navigationView.inflateHeaderView(R.layout.drawer_header);

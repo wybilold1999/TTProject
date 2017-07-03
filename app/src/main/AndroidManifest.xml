@@ -439,6 +439,13 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".activity.MainNewActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:screenOrientation="portrait">
+        </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"
