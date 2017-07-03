@@ -10,8 +10,8 @@ package com.cyanbirds.ttjy.config;
  */
 public class AppConstants {
 	
-	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-//	public static final String BASE_URL = "http://192.168.1.100/TTLoveServer/";
+//	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
+	public static final String BASE_URL = "http://localhost/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙
@@ -66,9 +66,6 @@ public class AppConstants {
 	public static final String MZ_APP_ID = "110467";
 	public static final String MZ_APP_KEY = "74e7258593474bb0a04a91239243105b";
 
-	public static final String ISNIGHT = "isNight";
 	public static final String CURRENT_INDEX = "currentIndex";
-	public static final String TRANSITION_PIC = "transitionPic";
-	public static final String TRANSITION_SEARCHVIEW = "transitionSearchView";
 
 }
