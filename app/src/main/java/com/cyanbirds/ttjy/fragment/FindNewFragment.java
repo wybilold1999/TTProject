@@ -86,6 +86,7 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mToolbar.setTitle("颜值");
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 

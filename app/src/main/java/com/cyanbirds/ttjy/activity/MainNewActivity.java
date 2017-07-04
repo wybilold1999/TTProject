@@ -19,7 +19,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -46,13 +45,12 @@ import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
-import com.cyanbirds.ttjy.fragment.AttentionMeFragment;
+import com.cyanbirds.ttjy.fragment.AttentionFragment;
 import com.cyanbirds.ttjy.fragment.CardFragment;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FindNewFragment;
 import com.cyanbirds.ttjy.fragment.FoundNewFragment;
-import com.cyanbirds.ttjy.fragment.GiftsFragment;
-import com.cyanbirds.ttjy.fragment.LoveMeFragment;
+import com.cyanbirds.ttjy.fragment.GiftLoveFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
 import com.cyanbirds.ttjy.fragment.SettingFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
@@ -231,42 +229,34 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
             currentIndex = savedInstanceState.getInt(AppConstants.CURRENT_INDEX);
             switch (this.currentIndex) {
                 case 0:
-                    currentFragment = new CardFragment();
-                    switchContent(currentFragment);
-                    break;
-                case 1:
                     currentFragment = new FindNewFragment();
                     switchContent(currentFragment);
                     break;
-                case 2:
+                case 1:
                     currentFragment = new FoundNewFragment();
                     switchContent(currentFragment);
                     break;
-                case 3:
+                case 2:
                     currentFragment = new FindLoveFragment();
                     switchContent(currentFragment);
                     break;
-                case 4:
+                case 3:
                     currentFragment = new MessageFragment();
                     switchContent(currentFragment);
                     break;
+                case 4:
+                    currentFragment = new GiftLoveFragment();
+                    switchContent(currentFragment);
+                    break;
                 case 5:
-                    currentFragment = new GiftsFragment();
+                    currentFragment = new AttentionFragment();
                     switchContent(currentFragment);
                     break;
                 case 6:
-                    currentFragment = new AttentionMeFragment();
-                    switchContent(currentFragment);
-                    break;
-                case 7:
-                    currentFragment = new LoveMeFragment();
-                    switchContent(currentFragment);
-                    break;
-                case 8:
                     currentFragment = new SettingFragment();
                     switchContent(currentFragment);
                     break;
-                case 9:
+                case 7:
                     currentFragment = new AboutFragment();
                     switchContent(currentFragment);
                     break;
@@ -306,29 +296,23 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 case R.id.navigation_item_5:
                     currentIndex = 4;
                     menuItem.setChecked(true);
-                    currentFragment = new GiftsFragment();
+                    currentFragment = new GiftLoveFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_6:
                     currentIndex = 5;
                     menuItem.setChecked(true);
-                    currentFragment = new AttentionMeFragment();
-                    switchContent(currentFragment);
-                    return true;
-                case R.id.navigation_item_7:
-                    currentIndex = 6;
-                    menuItem.setChecked(true);
-                    currentFragment = new LoveMeFragment();
+                    currentFragment = new AttentionFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_set:
-                    currentIndex = 7;
+                    currentIndex = 6;
                     menuItem.setChecked(true);
                     currentFragment = new SettingFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_about:
-                    currentIndex = 8;
+                    currentIndex = 7;
                     menuItem.setChecked(true);
                     currentFragment = new AboutFragment();
                     switchContent(currentFragment);

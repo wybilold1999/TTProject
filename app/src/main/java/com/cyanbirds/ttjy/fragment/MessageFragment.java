@@ -58,6 +58,7 @@ public class MessageFragment extends Fragment implements MessageChangedListener.
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mToolbar.setTitle("消息");
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 

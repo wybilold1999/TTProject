@@ -115,6 +115,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mToolbar.setTitle("同城");
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 

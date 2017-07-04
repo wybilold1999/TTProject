@@ -1,16 +1,19 @@
-package com.cyanbirds.ttjy.activity;
+package com.cyanbirds.ttjy.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.base.BaseActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.adapter.MyAttentionAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.FollowModel;
@@ -25,50 +28,55 @@ import com.umeng.analytics.MobclickAgent;
 import java.util.List;
 
 /**
- * @author Cloudsoar(wangyb)
- * @datetime 2016-01-13 22:17 GMT+8
- * @email 395044952@qq.com
+ * Created by wangyb on 2017/6/29.
+ * 描述：
  */
-public class MyAttentionActivity extends BaseActivity {
+
+public class MyAttentionFragment extends Fragment {
+
     private RecyclerView mRecyclerView;
     private CircularProgress mCircularProgress;
     private TextView mNoUserInfo;
     private MyAttentionAdapter mAdapter;
+    private View rootView;
 
     private int pageNo = 1;
     private int pageSize = 200;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_attention);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.my_attention);
-        setupView();
-        setupEvent();
-        setupData();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.activity_my_attention, null);
+            setupView();
+            setupData();
+            setHasOptionsMenu(true);
+
+        }
+        ViewGroup parent = (ViewGroup) rootView.getParent();
+        if (parent != null) {
+            parent.removeView(rootView);
+        }
+        return rootView;
     }
 
     private void setupView(){
-        mCircularProgress = (CircularProgress) findViewById(R.id.progress_bar);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        mNoUserInfo = (TextView) findViewById(R.id.info);
-        LinearLayoutManager manager = new WrapperLinearLayoutManager(this);
+        mCircularProgress = (CircularProgress) rootView.findViewById(R.id.progress_bar);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        mNoUserInfo = (TextView) rootView.findViewById(R.id.info);
+        LinearLayoutManager manager = new WrapperLinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayout.VERTICAL);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.addItemDecoration(new DividerItemDecoration(
-                this, LinearLayoutManager.VERTICAL, DensityUtil
-                .dip2px(this, 12), DensityUtil.dip2px(
-                this, 12)));
+                getActivity(), LinearLayoutManager.VERTICAL, DensityUtil
+                .dip2px(getActivity(), 12), DensityUtil.dip2px(
+                getActivity(), 12)));
     }
 
-    private void setupEvent(){
-
-    }
 
     private void setupData(){
-        mAdapter = new MyAttentionAdapter(MyAttentionActivity.this);
+        mAdapter = new MyAttentionAdapter(getActivity());
         mAdapter.setOnItemClickListener(mOnItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
         mCircularProgress.setVisibility(View.VISIBLE);
@@ -79,7 +87,7 @@ public class MyAttentionActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             FollowModel followModel = mAdapter.getItem(position);
-            Intent intent = new Intent(MyAttentionActivity.this, PersonalInfoActivity.class);
+            Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(followModel.userId));
             startActivity(intent);
         }
@@ -105,16 +113,14 @@ public class MyAttentionActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart(this.getClass().getName());
-        MobclickAgent.onResume(this);
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(this.getClass().getName());
-        MobclickAgent.onPause(this);
     }
 }

@@ -87,6 +87,7 @@ public class SettingFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mToolbar.setTitle("设置");
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 

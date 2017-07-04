@@ -52,6 +52,7 @@ public class AboutFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mToolbar.setTitle("关于");
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 
