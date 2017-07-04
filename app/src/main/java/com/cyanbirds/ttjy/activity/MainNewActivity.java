@@ -282,59 +282,53 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 case R.id.navigation_item_1:
                     currentIndex = 0;
                     menuItem.setChecked(true);
-                    currentFragment = new CardFragment();
+                    currentFragment = new FindNewFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_2:
                     currentIndex = 1;
                     menuItem.setChecked(true);
-                    currentFragment = new FindNewFragment();
+                    currentFragment = new FoundNewFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_3:
                     currentIndex = 2;
                     menuItem.setChecked(true);
-                    currentFragment = new FoundNewFragment();
+                    currentFragment = new FindLoveFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_4:
                     currentIndex = 3;
                     menuItem.setChecked(true);
-                    currentFragment = new FindLoveFragment();
+                    currentFragment = new MessageFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_5:
                     currentIndex = 4;
                     menuItem.setChecked(true);
-                    currentFragment = new MessageFragment();
+                    currentFragment = new GiftsFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_6:
                     currentIndex = 5;
                     menuItem.setChecked(true);
-                    currentFragment = new GiftsFragment();
+                    currentFragment = new AttentionMeFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_7:
                     currentIndex = 6;
                     menuItem.setChecked(true);
-                    currentFragment = new AttentionMeFragment();
-                    switchContent(currentFragment);
-                    return true;
-                case R.id.navigation_item_8:
-                    currentIndex = 7;
-                    menuItem.setChecked(true);
                     currentFragment = new LoveMeFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_set:
-                    currentIndex = 8;
+                    currentIndex = 7;
                     menuItem.setChecked(true);
                     currentFragment = new SettingFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_about:
-                    currentIndex = 9;
+                    currentIndex = 8;
                     menuItem.setChecked(true);
                     currentFragment = new AboutFragment();
                     switchContent(currentFragment);
