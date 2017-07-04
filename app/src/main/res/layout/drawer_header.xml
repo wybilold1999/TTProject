@@ -21,6 +21,8 @@
             android:layout_height="80dp"
             android:layout_centerInParent="true"
             android:contentDescription="@null"
+            app:roundingBorderWidth="2dp"
+            app:roundingBorderColor="@android:color/white"
             app:actualImageScaleType="fitCenter"
             app:failureImage="@mipmap/default_head"
             app:placeholderImage="@mipmap/default_head"
