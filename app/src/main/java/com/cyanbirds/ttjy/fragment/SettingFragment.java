@@ -28,7 +28,6 @@ import com.cyanbirds.ttjy.net.request.LogoutRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.ProgressDialogUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
-import com.stone.card.CardSlidePanel;
 import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;

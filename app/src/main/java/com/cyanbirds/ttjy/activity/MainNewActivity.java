@@ -46,7 +46,6 @@ import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
 import com.cyanbirds.ttjy.fragment.AttentionFragment;
-import com.cyanbirds.ttjy.fragment.CardFragment;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FindNewFragment;
 import com.cyanbirds.ttjy.fragment.FoundNewFragment;
@@ -222,7 +221,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
 
     private void initFragment(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            currentFragment = new CardFragment();
+            currentFragment = new FindNewFragment();
             switchContent(currentFragment);
         } else {
             //activity销毁后记住销毁前所在页面，用于夜间模式切换

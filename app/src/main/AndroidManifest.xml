@@ -343,11 +343,6 @@
             android:label="@string/find_yuan_fen"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".activity.CardActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
-            android:label="@string/yuan_fen"
-            android:screenOrientation="portrait"/>
-        <activity
             android:name=".activity.SingleVideoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:label="@string/video_show"

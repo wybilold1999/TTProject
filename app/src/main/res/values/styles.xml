@@ -101,4 +101,10 @@
         <item name="tag_view_text_size">10</item>
     </style>
 
+    <style name="SwipeFling">
+        <item name="rotation_degrees">15</item>
+        <item name="min_adapter_stack">6</item>
+        <item name="max_visible">4</item>
+    </style>
+
 </resources>
