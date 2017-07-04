@@ -15,6 +15,7 @@ import com.cyanbirds.ttjy.adapter.CardAdapter;
 import com.cyanbirds.ttjy.entity.CardModel;
 import com.cyanbirds.ttjy.entity.YuanFenModel;
 import com.cyanbirds.ttjy.net.request.GetYuanFenUserRequest;
+import com.cyanbirds.ttjy.net.request.SendGreetRequest;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.umeng.analytics.MobclickAgent;
@@ -166,6 +167,17 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
         @Override
         public void onErrorExecute(String error) {
             ToastUtil.showMessage(error);
+        }
+    }
+
+    class SenderGreetTask extends SendGreetRequest {
+        @Override
+        public void onPostExecute(String s) {
+            ToastUtil.showMessage(s);
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
         }
     }
 
