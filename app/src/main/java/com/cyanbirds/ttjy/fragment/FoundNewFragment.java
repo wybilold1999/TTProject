@@ -71,7 +71,7 @@ public class FoundNewFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mToolbar.setTitle("邂逅");
+        mToolbar.setTitle("发现");
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 

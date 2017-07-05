@@ -63,7 +63,7 @@ public class MessageFragment extends Fragment implements MessageChangedListener.
     }
 
     private void setupViews(){
-        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar_actionbar);
+        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.message_recycler_view);
         LinearLayoutManager layoutManager = new WrapperLinearLayoutManager(
                 getActivity(), LinearLayoutManager.VERTICAL, false);

@@ -169,10 +169,10 @@ public class RadarActivity extends BaseActivity {
 	class GetYuanFenUserTask extends GetYuanFenUserRequest {
 		@Override
 		public void onPostExecute(List<YuanFenModel> yuanFenModels) {
-			Intent intent = new Intent(RadarActivity.this, CardActivity.class);
+			/*Intent intent = new Intent(RadarActivity.this, CardActivity.class);
 			intent.putExtra(ValueKey.USER, (Serializable) yuanFenModels);
 			startActivity(intent);
-			finish();
+			finish();*/
 		}
 
 		@Override
