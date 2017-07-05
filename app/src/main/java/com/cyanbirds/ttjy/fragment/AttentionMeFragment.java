@@ -2,12 +2,10 @@ package com.cyanbirds.ttjy.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.adapter.AttentionMeAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
@@ -37,7 +34,6 @@ import java.util.List;
 
 public class AttentionMeFragment extends Fragment {
 
-    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private CircularProgress mCircularProgress;
     private TextView mNoUserinfo;
@@ -65,14 +61,7 @@ public class AttentionMeFragment extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ((MainNewActivity) getActivity()).initDrawer(mToolbar);
-    }
-
     private void setupView(){
-        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mCircularProgress = (CircularProgress) rootView.findViewById(R.id.progress_bar);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         mNoUserinfo = (TextView) rootView.findViewById(R.id.info);

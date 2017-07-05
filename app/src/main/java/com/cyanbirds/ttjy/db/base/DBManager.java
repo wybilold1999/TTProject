@@ -15,7 +15,7 @@ import com.cyanbirds.ttjy.manager.AppManager;
  */
 public class DBManager {
 	private final static String dbName = "tt_db";
-	private static DaoMaster.DevOpenHelper openHelper;
+	private static DaoMaster.OpenHelper openHelper;
 	private Context context;
 	private static SQLiteDatabase sqliteDB;
 	private DaoMaster daoMaster;
@@ -23,7 +23,7 @@ public class DBManager {
 
 	public DBManager(Context context) {
 		this.context = context;
-		openHelper = new DaoMaster.DevOpenHelper(context, AppManager.getClientUser().userId + "_" + dbName, null);
+		openHelper = new MySQLiteOpenHelper(context, AppManager.getClientUser().userId + "_" + dbName, null);
 		if (daoMaster == null) {
 			daoMaster = new DaoMaster(getWritableDatabase());
 			daoSession = daoMaster.newSession();

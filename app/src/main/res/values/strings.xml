@@ -327,6 +327,8 @@
 
     <string name="open">open</string>
     <string name="close">close</string>
-    <string name="author">吴小龙同學</string>
+    <string name="love_name"><Data><![CDATA[<b>%1$s</b> 刚喜欢了您哦！]]></Data></string>
+    <string name="send_msg">发送消息</string>
+    <string name="going_find">继续寻觅</string>
 
 </resources>

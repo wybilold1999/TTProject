@@ -22,21 +22,24 @@
         <item
             android:id="@+id/navigation_item_4"
             android:icon="@mipmap/ic_message"
-            android:title="消息"/>
+            android:title="消息"
+            app:actionLayout="@layout/msg_red_badge"/>
         <item
             android:id="@+id/navigation_item_5"
             android:icon="@mipmap/ic_gift"
             android:title="礼物"
-            app:actionLayout="@layout/red_badge"/>
+            app:actionLayout="@layout/gift_red_badge"/>
         <item
             android:id="@+id/navigation_item_6"
             android:icon="@mipmap/ic_attention"
-            android:title="关注"/>
+            android:title="关注"
+            app:actionLayout="@layout/attenion_red_badge"/>
 
     </group>
 
     <item android:title="其他">
         <menu>
+            <group android:checkableBehavior="single">
             <item
                 android:id="@+id/navigation_item_set"
                 android:icon="@mipmap/ic_setting"
@@ -45,6 +48,7 @@
                 android:id="@+id/navigation_item_about"
                 android:icon="@mipmap/ic_about"
                 android:title="关于"/>
+            </group>
         </menu>
     </item>
 

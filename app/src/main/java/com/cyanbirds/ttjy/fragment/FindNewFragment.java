@@ -159,7 +159,11 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
                         "-2".equals(AppManager.getClientUser().userId) ||
                         "-3".equals(AppManager.getClientUser().userId)){ //客服登陆，获取真实用户
                 } else {
-                    mUserScopeType = "1";
+                    if ("-1".equals(mUserScopeType)) {
+                        mUserScopeType = "1";
+                    } else {
+                        mUserScopeType = "-1";
+                    }
                     new GetFindLoveTask().request(pageIndex, pageSize, GENDER, mUserScopeType);
                     pageIndex++;
                 }
@@ -216,6 +220,11 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 "-2".equals(AppManager.getClientUser().userId) ||
                 "-3".equals(AppManager.getClientUser().userId)){ //客服登陆，获取真实用户
         } else {
+            if ("-1".equals(mUserScopeType)) {
+                mUserScopeType = "1";
+            } else {
+                mUserScopeType = "-1";
+            }
             new GetFreshFindLoveTask().request(++pageIndex, pageSize, GENDER, mUserScopeType);
         }
     }
@@ -262,6 +271,8 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
         if (null != mSwipeRefresh) {
             mSwipeRefresh.setOnRefreshListener(null);
         }
-        unbinder.unbind();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
     }
 }

@@ -57,4 +57,6 @@
     <color name="red_packet_bg">#fb9d3a</color>
     <color name="red_packet_toolbar">#e95f38</color>
 
+    <color name="half_transparent">#e0fffbf0</color>
+
 </resources>

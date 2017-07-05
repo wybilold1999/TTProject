@@ -73,7 +73,7 @@ public class NotificationManager {
         String content;
         int unReadNum = ConversationSqlManager.getInstance(mContext).getAnalyticsUnReadConversation();
         // 显示消息详情
-        if (PreferencesUtils.getShowMessageInfo(mContext)) {
+        /*if (PreferencesUtils.getShowMessageInfo(mContext)) {
             if (TextUtils.isEmpty(message.sender_name)) {
                 title = mContext.getResources().getString(R.string.app_name);
             } else {
@@ -86,7 +86,13 @@ public class NotificationManager {
             title = mContext.getResources().getString(R.string.app_name);
             content = String.format(
                     mContext.getResources().getString(R.string.notification_tips), unContactNum, unReadNum);
+        }*/
+        if (!TextUtils.isEmpty(message.face_url)) {
+            title = mContext.getResources().getString(R.string.app_name);
+        } else {
+            title = message.sender_name;
         }
+        content = getTickerText(message);
         builder.setTicker(title + "\n" + message.content);
         // 设置通知内容的标题
         builder.setContentTitle(title);
@@ -110,6 +116,10 @@ public class NotificationManager {
         ClientUser clientUser = new ClientUser();
         clientUser.user_name = title;
         clientUser.userId = message.sender;
+        if (!TextUtils.isEmpty(message.face_url)) {
+            clientUser.face_url = message.face_url;
+            clientUser.isLocalMsg = true;
+        }
 
         Intent intent = new Intent(mContext, NotificationReceiver.class);
         intent.putExtra(ValueKey.USER, clientUser);
