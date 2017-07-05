@@ -80,7 +80,7 @@ public class GiftLoveFragment extends Fragment {
         fragmentList.add(loveFrag);
 
         TabFragmentAdapter fragmentAdapter = new TabFragmentAdapter(
-                getFragmentManager(), fragmentList, tabList);
+                getChildFragmentManager(), fragmentList, tabList);
         mViewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
         mTabLayout.setupWithViewPager(mViewpager);//将TabLayout和ViewPager关联起来。
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

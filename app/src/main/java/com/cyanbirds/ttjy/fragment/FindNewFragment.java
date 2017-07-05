@@ -62,7 +62,7 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
     /**
      * 0:同城 1：缘分 2：颜值  -1:就是全国
      */
-    private String mUserScopeType = "2";
+    private String mUserScopeType = "-1";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

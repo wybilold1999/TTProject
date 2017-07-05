@@ -12,14 +12,20 @@
         android:background="?attr/colorPrimary"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="vertical" />
+        android:fastScrollAlwaysVisible="true"
+        android:fastScrollEnabled="true"
+        android:scrollbarStyle="insideOverlay"
+        android:scrollbars="none"/>
 
     <com.cyanbirds.ttjy.ui.widget.CircularProgress
         android:id="@+id/progress_bar"
@@ -28,5 +34,7 @@
         android:layout_gravity="center"
         android:indeterminate="true"
         android:visibility="gone" />
+
+    </FrameLayout>
 
 </LinearLayout>
