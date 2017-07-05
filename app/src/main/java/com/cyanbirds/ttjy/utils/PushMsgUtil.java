@@ -15,6 +15,7 @@ import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.entity.IMessage;
 import com.cyanbirds.ttjy.entity.PushMsgModel;
 import com.cyanbirds.ttjy.listener.MessageChangedListener;
+import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
 import com.google.gson.Gson;
@@ -233,12 +234,8 @@ public class PushMsgUtil {
 		 * 通知会话界面的改变
 		 */
 		MessageChangedListener.getInstance().notifyMessageChanged(String.valueOf(conversationId));
-		/*if (isPassThrough && !AppActivityLifecycleCallbacks.getInstance().getIsForeground()) {
-			AppManager.showNotification(message);
-		}*/
-		/*if (isPassThrough && AppManager.isAppIsInBackground(CSApplication.getInstance())) {
-			AppManager.showNotification(message);
-		}*/
+
+		MessageUnReadListener.getInstance().notifyDataSetChanged(0);
 		/**
 		 * 只要是透传消息，就创建通知栏
 		 */

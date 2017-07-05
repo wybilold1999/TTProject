@@ -149,6 +149,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         new GetCityInfoTask().request();
         initNavigationViewHeader();
         initFragment(savedInstanceState);
+        setupEvent();
         initOSS();
         SDKCoreHelper.init(this, ECInitParams.LoginMode.FORCE_LOGIN);
         updateConversationUnRead();
@@ -234,6 +235,10 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         LinearLayout attentionredPoint = (LinearLayout) navigationView.getMenu().findItem(R.id.navigation_item_6).getActionView();
         mAttentionUnread = (ImageView) attentionredPoint.findViewById(R.id.attention_unread);
 
+    }
+
+    private void setupEvent() {
+        MessageUnReadListener.getInstance().setMessageUnReadListener(this);
     }
 
     @Override

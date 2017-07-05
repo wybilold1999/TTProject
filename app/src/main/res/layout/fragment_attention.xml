@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         app:tabIndicatorColor="@color/color_theme"
         app:tabSelectedTextColor="@color/color_theme"
-        app:tabTextColor="@android:color/black"/>
+        app:tabTextColor="@color/gray_text"/>
 
     <View
         android:layout_width="match_parent"
