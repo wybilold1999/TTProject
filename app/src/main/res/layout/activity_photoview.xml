@@ -88,8 +88,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@mipmap/meassage_icon" />
+                android:layout_gravity="center_vertical"/>
 
             <TextView
                 android:layout_width="wrap_content"

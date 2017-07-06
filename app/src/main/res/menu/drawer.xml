@@ -10,7 +10,7 @@
             android:id="@+id/navigation_item_1"
             android:checked="true"
             android:icon="@mipmap/ic_yanzhi"
-            android:title="颜值"/>
+            android:title="缘分"/>
         <item
             android:id="@+id/navigation_item_2"
             android:icon="@mipmap/ic_found"

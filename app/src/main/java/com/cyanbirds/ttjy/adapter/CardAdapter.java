@@ -92,7 +92,7 @@ public class CardAdapter extends BaseAdapter {
                 .setProgressiveRenderingEnabled(true)
                 .build();
         PipelineDraweeController controllerTwo = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
-                .setOldController(holder.mImgOne.getController())
+                .setOldController(holder.mImgTwo.getController())
                 .setImageRequest(requestTwo)
                 .build();
         holder.mImgTwo.setController(controllerTwo);
@@ -102,7 +102,7 @@ public class CardAdapter extends BaseAdapter {
                 .setProgressiveRenderingEnabled(true)
                 .build();
         PipelineDraweeController controllerThree = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
-                .setOldController(holder.mImgOne.getController())
+                .setOldController(holder.mImgThree.getController())
                 .setImageRequest(requestThree)
                 .build();
         holder.mImgThree.setController(controllerThree);
@@ -112,7 +112,7 @@ public class CardAdapter extends BaseAdapter {
                 .setProgressiveRenderingEnabled(true)
                 .build();
         PipelineDraweeController controllerFour = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
-                .setOldController(holder.mImgOne.getController())
+                .setOldController(holder.mImgFour.getController())
                 .setImageRequest(requestFour)
                 .build();
         holder.mImgFour.setController(controllerFour);

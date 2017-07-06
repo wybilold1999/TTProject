@@ -67,7 +67,7 @@ public class RadarActivity extends BaseActivity {
 		mHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				new GetYuanFenUserTask().request(pageNo, pageSize);
+				new GetYuanFenUserTask().request(pageNo, pageSize, 1);
 			}
 		}, 3000);
 	}

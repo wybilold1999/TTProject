@@ -28,8 +28,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center|center_horizontal"
-			android:gravity="center"
-			android:src="@mipmap/feed_more_video_icon"/>
+			android:gravity="center"/>
 
 		<RelativeLayout
 			android:layout_width="match_parent"

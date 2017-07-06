@@ -1,5 +1,6 @@
 package com.cyanbirds.ttjy.fragment;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +23,13 @@ import android.widget.RelativeLayout;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.adapter.CardAdapter;
+import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.CardModel;
 import com.cyanbirds.ttjy.entity.YuanFenModel;
 import com.cyanbirds.ttjy.manager.AppManager;
+import com.cyanbirds.ttjy.net.request.AddLoveRequest;
 import com.cyanbirds.ttjy.net.request.GetYuanFenUserRequest;
 import com.cyanbirds.ttjy.net.request.SendGreetRequest;
 import com.cyanbirds.ttjy.utils.ToastUtil;
@@ -78,6 +83,8 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     private CardAdapter mAdapter;
     private int pageNo = 1;
     private int pageSize = 200;
+    private int scope = 1;
+    private CardModel curModel;
     private Handler mHandler = new Handler();
     private AnimationSet grayAnimal;
 
@@ -129,9 +136,9 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                new GetYuanFenUserTask().request(pageNo, pageSize);
+                new GetYuanFenUserTask().request(pageNo, pageSize, scope);
             }
-        }, 3000);
+        }, 6000);
     }
 
     @OnClick({R.id.left, R.id.info, R.id.right})
@@ -141,6 +148,11 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
                 mFrame.getTopCardListener().selectLeft();
                 break;
             case R.id.info:
+                if (curModel != null) {
+                    Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+                    intent.putExtra(ValueKey.USER_ID, String.valueOf(curModel.userId));
+                    startActivity(intent);
+                }
                 break;
             case R.id.right:
                 mFrame.getTopCardListener().selectRight();
@@ -150,8 +162,13 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
 
     @Override
     public void removeFirstObjectInAdapter() {
-        dataList.remove(0);
-        mAdapter.notifyDataSetChanged();
+        if (dataList != null && dataList.size() > 0) {
+            dataList.remove(0);
+            mAdapter.notifyDataSetChanged();
+            if (dataList.size() > 0) {
+                curModel = dataList.get(0);
+            }
+        }
     }
 
     @Override
@@ -161,28 +178,40 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
 
     @Override
     public void onRightCardExit(Object dataObject) {
-
+        CardModel cardModel = (CardModel) dataObject;
+        new SenderGreetTask().request(String.valueOf(cardModel.userId));
+        new AddLoveRequest().request(String.valueOf(cardModel.userId));
     }
 
     @Override
     public void onAdapterAboutToEmpty(int itemsInAdapter) {
-
-    }
-
-    @Override
-    public void onScroll(float scrollProgressPercent) {
-        try {
-            View view = mFrame.getSelectedView();
-            view.findViewById(R.id.item_swipe_right_indicator).setAlpha(scrollProgressPercent < 0 ? -scrollProgressPercent : 0);
-            view.findViewById(R.id.item_swipe_left_indicator).setAlpha(scrollProgressPercent > 0 ? scrollProgressPercent : 0);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (itemsInAdapter == 0) {
+            mLoadingLay.setVisibility(View.VISIBLE);
+            mDataLay.setVisibility(View.GONE);
+            if (scope == 1) {
+                scope = -1;
+            } else {
+                scope = 1;
+            }
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new GetYuanFenUserTask().request(pageNo, pageSize, scope);
+                }
+            }, 6000);
         }
     }
 
     @Override
-    public void onItemClicked(int itemPosition, Object dataObject) {
+    public void onScroll(float scrollProgressPercent) {
+    }
 
+    @Override
+    public void onItemClicked(int itemPosition, Object dataObject) {
+        CardModel model = (CardModel) dataObject;
+        Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+        intent.putExtra(ValueKey.USER_ID, String.valueOf(model.userId));
+        startActivity(intent);
     }
 
     class GetYuanFenUserTask extends GetYuanFenUserRequest {
@@ -191,6 +220,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
             mLoadingLay.setVisibility(View.GONE);
             mDataLay.setVisibility(View.VISIBLE);
             if (yuanFenModels != null && yuanFenModels.size() > 0) {
+                dataList.clear();
                 for (YuanFenModel model : yuanFenModels) {
                     CardModel dataItem = new CardModel();
                     dataItem.userId = model.uid;
@@ -204,6 +234,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
                     dataItem.pictures = model.pictures;
                     dataList.add(dataItem);
                 }
+                curModel = dataList.get(0);
                 mAdapter.notifyDataSetChanged();
             }
         }
@@ -253,13 +284,13 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
             public void run() {
                 startwhiteAnimal();
             }
-        }, 400);
+        }, 500);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 startannularAnimat();
             }
-        }, 600);
+        }, 700);
     }
 
     private AnimationSet playHeartbeatAnimation() {
@@ -267,7 +298,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
         ScaleAnimation sa = new ScaleAnimation(0.3f, 1.0f, 0.3f, 1.0f,
                 ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
                 ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        sa.setDuration(900);
+        sa.setDuration(800);
         sa.setFillAfter(true);
         sa.setRepeatCount(0);
         sa.setInterpolator(new LinearInterpolator());
@@ -302,7 +333,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     private void startwhiteAnimal() {
         AnimationSet whiteAnimal = playHeartbeatAnimation();
         whiteAnimal.setRepeatCount(0);
-        whiteAnimal.setDuration(700);
+        whiteAnimal.setDuration(600);
         mRadarTopImg.setVisibility(View.VISIBLE);
         mRadarTopImg.startAnimation(whiteAnimal);
         whiteAnimal.setAnimationListener(new Animation.AnimationListener() {

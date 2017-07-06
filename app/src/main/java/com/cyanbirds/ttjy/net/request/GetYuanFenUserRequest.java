@@ -29,10 +29,11 @@ import retrofit2.Response;
  * @email 395044952@qq.com
  */
 public class GetYuanFenUserRequest extends ResultPostExecute<List<YuanFenModel>> {
-    public void request(int pageNo, int pageSize) {
+    public void request(int pageNo, int pageSize, int scope) {
         ArrayMap<String, Integer> map = new ArrayMap<>(2);
         map.put("pageNo", pageNo);
         map.put("pageSize", pageSize);
+        map.put("scope", scope);
         Call<ResponseBody> call = AppManager.getUserService().getYuanFenUser(AppManager.getClientUser().sessionId, map);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
