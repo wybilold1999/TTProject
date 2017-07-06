@@ -30,7 +30,7 @@ public class SwipeFlingAdapterView extends BaseFlingAdapterView {
     private int MIN_ADAPTER_STACK = 6;
     private float ROTATION_DEGREES = 15.f;
     private float ITEM_SMALL_WIDTH = 20;
-    private float ITEM_SMALL_HIGH = 32;
+    private float ITEM_SMALL_HIGH = 26;
 
     private Adapter mAdapter;
     private int LAST_OBJECT_IN_STACK = 0;

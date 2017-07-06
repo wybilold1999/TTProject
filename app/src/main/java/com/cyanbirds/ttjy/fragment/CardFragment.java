@@ -1,22 +1,34 @@
 package com.cyanbirds.ttjy.fragment;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.adapter.CardAdapter;
 import com.cyanbirds.ttjy.entity.CardModel;
 import com.cyanbirds.ttjy.entity.YuanFenModel;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetYuanFenUserRequest;
 import com.cyanbirds.ttjy.net.request.SendGreetRequest;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.umeng.analytics.MobclickAgent;
 
@@ -47,6 +59,18 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     ImageView mRight;
     @BindView(R.id.frame)
     SwipeFlingAdapterView mFrame;
+    @BindView(R.id.loading_lay)
+    RelativeLayout mLoadingLay;
+    @BindView(R.id.data_lay)
+    FrameLayout mDataLay;
+    @BindView(R.id.radar_img)
+    ImageView mRadarImg;
+    @BindView(R.id.radar_bttom_img)
+    ImageView mRadarBttomImg;
+    @BindView(R.id.radar_top_img)
+    ImageView mRadarTopImg;
+    @BindView(R.id.portrait)
+    SimpleDraweeView mPortrait;
     private View rootView;
     private Unbinder unbinder;
 
@@ -54,6 +78,8 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     private CardAdapter mAdapter;
     private int pageNo = 1;
     private int pageSize = 200;
+    private Handler mHandler = new Handler();
+    private AnimationSet grayAnimal;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +87,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_card, null);
             unbinder = ButterKnife.bind(this, rootView);
+            setupView();
             setupEvent();
             setupData();
             setHasOptionsMenu(true);
@@ -79,6 +106,11 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
         ((MainNewActivity) getActivity()).initDrawer(mToolbar);
     }
 
+    private void setupView() {
+        mLoadingLay.setVisibility(View.VISIBLE);
+        mDataLay.setVisibility(View.GONE);
+    }
+
     private void setupEvent() {
         mFrame.setOnItemClickListener(this);
         mFrame.setFlingListener(this);
@@ -89,7 +121,17 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
         mAdapter = new CardAdapter(getActivity(), dataList);
         mFrame.setAdapter(mAdapter);
 
-        new GetYuanFenUserTask().request(pageNo, pageSize);
+        if (!TextUtils.isEmpty(AppManager.getClientUser().face_local)) {
+            mPortrait.setImageURI(Uri.parse("file://" + AppManager.getClientUser().face_local));
+        }
+
+        startcircularAnima();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new GetYuanFenUserTask().request(pageNo, pageSize);
+            }
+        }, 3000);
     }
 
     @OnClick({R.id.left, R.id.info, R.id.right})
@@ -146,6 +188,8 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     class GetYuanFenUserTask extends GetYuanFenUserRequest {
         @Override
         public void onPostExecute(List<YuanFenModel> yuanFenModels) {
+            mLoadingLay.setVisibility(View.GONE);
+            mDataLay.setVisibility(View.VISIBLE);
             if (yuanFenModels != null && yuanFenModels.size() > 0) {
                 for (YuanFenModel model : yuanFenModels) {
                     CardModel dataItem = new CardModel();
@@ -196,7 +240,103 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
+        if (unbinder != null) {
+            unbinder.unbind();
+        }
+    }
+
+    private void startcircularAnima() {
+        grayAnimal = playHeartbeatAnimation();
+        mRadarBttomImg.startAnimation(grayAnimal);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startwhiteAnimal();
+            }
+        }, 400);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startannularAnimat();
+            }
+        }, 600);
+    }
+
+    private AnimationSet playHeartbeatAnimation() {
+        AnimationSet animationSet = new AnimationSet(true);
+        ScaleAnimation sa = new ScaleAnimation(0.3f, 1.0f, 0.3f, 1.0f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        sa.setDuration(900);
+        sa.setFillAfter(true);
+        sa.setRepeatCount(0);
+        sa.setInterpolator(new LinearInterpolator());
+        animationSet.addAnimation(sa);
+        return animationSet;
+    }
+
+    private void startannularAnimat() {
+        mRadarImg.setVisibility(View.VISIBLE);
+        AnimationSet annularAnimat = getAnimAnnular();
+        annularAnimat.setAnimationListener(new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mRadarImg.setVisibility(View.GONE);
+            }
+        });
+        mRadarImg.startAnimation(annularAnimat);
+    }
+
+    private void startwhiteAnimal() {
+        AnimationSet whiteAnimal = playHeartbeatAnimation();
+        whiteAnimal.setRepeatCount(0);
+        whiteAnimal.setDuration(700);
+        mRadarTopImg.setVisibility(View.VISIBLE);
+        mRadarTopImg.startAnimation(whiteAnimal);
+        whiteAnimal.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mRadarImg.setVisibility(View.GONE);
+                mRadarTopImg.setVisibility(View.GONE);
+                startcircularAnima();
+            }
+        });
+
+    }
+
+    private AnimationSet getAnimAnnular() {
+        AnimationSet animationSet = new AnimationSet(true);
+        ScaleAnimation sa = new ScaleAnimation(1.0f, 1.5f, 1.0f, 1.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f,
+                ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+        animationSet.addAnimation(new AlphaAnimation(1.0f, 0.1f));
+        animationSet.setDuration(400);
+        sa.setDuration(500);
+        sa.setFillAfter(true);
+        sa.setRepeatCount(0);
+        sa.setInterpolator(new LinearInterpolator());
+        animationSet.addAnimation(sa);
+        return animationSet;
     }
 
 }
