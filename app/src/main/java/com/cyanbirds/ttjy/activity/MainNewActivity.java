@@ -50,6 +50,7 @@ import com.cyanbirds.ttjy.entity.LoveModel;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
 import com.cyanbirds.ttjy.fragment.AttentionFragment;
+import com.cyanbirds.ttjy.fragment.CardFragment;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FindNewFragment;
 import com.cyanbirds.ttjy.fragment.FoundNewFragment;
@@ -176,26 +177,28 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         AppManager.requestLocationPermission(this);
         requestPermission();
 
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                new GetLoveFormeListTask().request(1, 1);
-            }
-        }, 4500 * 10);
+        if (!AppManager.getClientUser().isShowVip) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new GetLoveFormeListTask().request(1, 1);
+                }
+            }, 4500 * 10);
 
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                new MyGiftListTask().request(1, 1);
-            }
-        }, 500 * 10);
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new MyGiftListTask().request(1, 1);
+                }
+            }, 500 * 10);
 
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                new FollowListTask().request("followFormeList", 1, 1);
-            }
-        }, 2500 * 10);
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    new FollowListTask().request("followFormeList", 1, 1);
+                }
+            }, 2500 * 10);
+        }
     }
 
     private void initNavigationViewHeader() {
@@ -268,14 +271,14 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
 
     private void initFragment(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            currentFragment = new FindNewFragment();
+            currentFragment = new CardFragment();
             switchContent(currentFragment);
         } else {
             //activity销毁后记住销毁前所在页面，用于夜间模式切换
             currentIndex = savedInstanceState.getInt(AppConstants.CURRENT_INDEX);
             switch (this.currentIndex) {
                 case 0:
-                    currentFragment = new FindNewFragment();
+                    currentFragment = new CardFragment();
                     switchContent(currentFragment);
                     break;
                 case 1:
@@ -318,7 +321,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 case R.id.navigation_item_1:
                     currentIndex = 0;
                     menuItem.setChecked(true);
-                    currentFragment = new FindNewFragment();
+                    currentFragment = new CardFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_2:
