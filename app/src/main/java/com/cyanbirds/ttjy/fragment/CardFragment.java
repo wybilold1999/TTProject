@@ -138,7 +138,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
             public void run() {
                 new GetYuanFenUserTask().request(pageNo, pageSize, scope);
             }
-        }, 6000);
+        }, 3500);
     }
 
     @OnClick({R.id.left, R.id.info, R.id.right})
@@ -198,7 +198,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
                 public void run() {
                     new GetYuanFenUserTask().request(pageNo, pageSize, scope);
                 }
-            }, 6000);
+            }, 3500);
         }
     }
 

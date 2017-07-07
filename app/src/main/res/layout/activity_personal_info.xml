@@ -7,29 +7,32 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="160dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:titleEnabled="false"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <ImageView
+            <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/background_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:contentDescription="@null"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/person_info_top_bg"/>
+                app:actualImageScaleType="fitXY"
+                app:failureImage="@mipmap/person_info_top_bg"
+                app:placeholderImage="@mipmap/person_info_top_bg"
+                app:placeholderImageScaleType="fitXY"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical">
+                android:layout_marginTop="20dp">
 
                 <FrameLayout
                     android:layout_width="90dp"

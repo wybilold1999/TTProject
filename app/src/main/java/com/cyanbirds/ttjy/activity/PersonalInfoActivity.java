@@ -59,8 +59,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	SimpleDraweeView mPortrait;
 	@BindView(R.id.toolbar)
 	Toolbar mToolbar;
-	@BindView(R.id.collapsingToolbarLayout)
-	CollapsingToolbarLayout mCollapsingToolbarLayout;
 	@BindView(R.id.tabs)
 	TabLayout mTabLayout;
 	@BindView(R.id.viewpager)
@@ -88,7 +86,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	private ClientUser mClientUser; //当前用户
 	private String curUserId; //当前用户id
 
-	private DecimalFormat mFormat = new DecimalFormat("#.00");
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -103,7 +100,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	private void setupView() {
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		mCollapsingToolbarLayout.setTitle(" ");
 
 		tabList = new ArrayList<>();
 		tabList.add("简介");
@@ -329,7 +325,6 @@ public class PersonalInfoActivity extends BaseActivity {
 		if (!TextUtils.isEmpty(imagePath)) {
 			mPortrait.setImageURI(Uri.parse(imagePath));
 		}
-		mCollapsingToolbarLayout.setTitle(clientUser.user_name);
 
 		if (mClientUser.isFollow) {
 			mAttention.setText("已关注");
@@ -357,7 +352,6 @@ public class PersonalInfoActivity extends BaseActivity {
 			imagePath = "res:///" + R.mipmap.default_head;
 		}
 		mPortrait.setImageURI(Uri.parse(imagePath));
-		mCollapsingToolbarLayout.setTitle(AppManager.getClientUser().user_name);
 	}
 
 	@Override
