@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.AttentionMeAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.FollowModel;
@@ -89,7 +90,7 @@ public class AttentionMeFragment extends Fragment {
         @Override
         public void onItemClick(View view, int position) {
             FollowModel followModel = mFollowModels.get(position);
-            Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+            Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(followModel.userId));
             startActivity(intent);
         }

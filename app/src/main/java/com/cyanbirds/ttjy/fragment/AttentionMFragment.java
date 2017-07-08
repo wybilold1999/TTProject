@@ -26,7 +26,7 @@ import butterknife.Unbinder;
  * 描述：
  */
 
-public class AttentionFragment extends Fragment {
+public class AttentionMFragment extends Fragment {
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.tabs)
@@ -38,8 +38,8 @@ public class AttentionFragment extends Fragment {
     private Unbinder unbinder;
     private List<String> tabList;
     private List<Fragment> fragmentList;
-    private Fragment attentionFrag;//关注我的
-    private Fragment myAttentionFrag; //我关注的
+    private Fragment attentionFrag;//礼物
+    private Fragment myAttentionFrag; //喜欢
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,7 +80,7 @@ public class AttentionFragment extends Fragment {
         fragmentList.add(myAttentionFrag);
 
         TabFragmentAdapter fragmentAdapter = new TabFragmentAdapter(
-                getFragmentManager(), fragmentList, tabList);
+                getChildFragmentManager(), fragmentList, tabList);
         mViewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
         mTabLayout.setupWithViewPager(mViewpager);//将TabLayout和ViewPager关联起来。
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

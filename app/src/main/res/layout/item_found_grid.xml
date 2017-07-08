@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_lay"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="160dp">
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/portrait"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_centerInParent="true"
         android:contentDescription="@null"
         app:actualImageScaleType="fitCenter"
@@ -22,6 +22,7 @@
         android:id="@+id/name_lay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:gravity="center"
         android:layout_below="@id/portrait"
         android:orientation="horizontal">
@@ -30,23 +31,28 @@
             android:id="@+id/tv_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
             android:textColor="@color/body_text_1"
             android:textSize="14sp"
             android:text="数星星"/>
 
         <ImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:id="@+id/is_vip"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:scaleType="fitCenter"
-            android:src="@mipmap/vip"/>
+            android:src="@mipmap/vip"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="2dp"
         android:gravity="center"
         android:layout_below="@id/name_lay"
         android:orientation="horizontal">
@@ -74,7 +80,7 @@
         android:id="@+id/from_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="10dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:textColor="@color/gray_text"
@@ -85,15 +91,15 @@
         android:id="@+id/distance_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="10dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_gravity="center_vertical">
 
         <ImageView
             android:id="@+id/distance_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:src="@mipmap/distance"/>
@@ -108,6 +114,7 @@
             android:layout_marginTop="5dp"
             android:layout_toRightOf="@id/distance_icon"
             android:text="23.78公里"
+            android:textSize="12sp"
             android:textColor="@color/gray_text"/>
 
     </RelativeLayout>

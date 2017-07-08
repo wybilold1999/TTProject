@@ -301,8 +301,8 @@
 
 						<ImageView
 							android:id="@+id/is_vip"
-							android:layout_width="16dp"
-							android:layout_height="16dp"
+							android:layout_width="12dp"
+							android:layout_height="12dp"
 							android:layout_toRightOf="@id/nickname"
 							android:layout_centerVertical="true"
 							android:layout_marginRight="20dp"

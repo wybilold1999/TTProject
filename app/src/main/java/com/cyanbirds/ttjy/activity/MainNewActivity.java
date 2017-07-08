@@ -49,18 +49,15 @@ import com.cyanbirds.ttjy.entity.FollowModel;
 import com.cyanbirds.ttjy.entity.LoveModel;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
-import com.cyanbirds.ttjy.fragment.AttentionFragment;
+import com.cyanbirds.ttjy.fragment.AttentionMFragment;
 import com.cyanbirds.ttjy.fragment.CardFragment;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
-import com.cyanbirds.ttjy.fragment.FindNewFragment;
-import com.cyanbirds.ttjy.fragment.FoundNewFragment;
+import com.cyanbirds.ttjy.fragment.FoundGridFragment;
 import com.cyanbirds.ttjy.fragment.GiftLoveFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
-import com.cyanbirds.ttjy.fragment.PersonalFragment;
 import com.cyanbirds.ttjy.fragment.SettingFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
-import com.cyanbirds.ttjy.listener.RedPointListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.net.request.FollowListRequest;
@@ -177,7 +174,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         AppManager.requestLocationPermission(this);
         requestPermission();
 
-        if (!AppManager.getClientUser().isShowVip) {
+        if (AppManager.getClientUser().isShowVip) {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -190,7 +187,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 public void run() {
                     new MyGiftListTask().request(1, 1);
                 }
-            }, 500 * 10);
+            }, 1000 * 10);
 
             mHandler.postDelayed(new Runnable() {
                 @Override
@@ -246,7 +243,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent(this, PersonalInfoActivity.class);
+        Intent intent = new Intent(this, PersonalInfoNewActivity.class);
         intent.putExtra(ValueKey.USER_ID, AppManager.getClientUser().userId);
         startActivity(intent);
     }
@@ -282,7 +279,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                     switchContent(currentFragment);
                     break;
                 case 1:
-                    currentFragment = new FoundNewFragment();
+                    currentFragment = new FoundGridFragment();
                     switchContent(currentFragment);
                     break;
                 case 2:
@@ -298,7 +295,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                     switchContent(currentFragment);
                     break;
                 case 5:
-                    currentFragment = new AttentionFragment();
+                    currentFragment = new AttentionMFragment();
                     switchContent(currentFragment);
                     break;
                 case 6:
@@ -327,7 +324,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 case R.id.navigation_item_2:
                     currentIndex = 1;
                     menuItem.setChecked(true);
-                    currentFragment = new FoundNewFragment();
+                    currentFragment = new FoundGridFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_3:
@@ -352,7 +349,7 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 case R.id.navigation_item_6:
                     currentIndex = 5;
                     menuItem.setChecked(true);
-                    currentFragment = new AttentionFragment();
+                    currentFragment = new AttentionMFragment();
                     switchContent(currentFragment);
                     mAttentionUnread.setVisibility(View.GONE);
                     return true;

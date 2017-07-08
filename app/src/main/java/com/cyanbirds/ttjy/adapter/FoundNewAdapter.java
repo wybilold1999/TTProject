@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.activity.PhotoViewActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.PictureModel;
@@ -143,7 +144,7 @@ public class FoundNewAdapter extends
             PictureModel model = pictureModels.get(position);
             switch (v.getId()){
                 case R.id.portrait :
-                    intent.setClass(mContext, PersonalInfoActivity.class);
+                    intent.setClass(mContext, PersonalInfoNewActivity.class);
                     intent.putExtra(ValueKey.USER_ID, String.valueOf(model.usersId));
                     mContext.startActivity(intent);
                     break;

@@ -28,6 +28,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.activity.RadarActivity;
 import com.cyanbirds.ttjy.adapter.FindLoveAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
@@ -232,7 +233,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         public void onItemClick(View view, int position) {
             ClientUser clientUser = mAdapter.getItem(position);
             if (clientUser != null) {
-                Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+                Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
                 intent.putExtra(ValueKey.USER_ID, clientUser.userId);
                 intent.putExtra(ValueKey.FROM_ACTIVITY, "FindLoveFragment");
                 startActivity(intent);

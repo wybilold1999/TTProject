@@ -89,7 +89,7 @@ public class LoveFormeActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             LoveModel loveModel = mLoveModels.get(position);
-            Intent intent = new Intent(LoveFormeActivity.this, PersonalInfoActivity.class);
+            Intent intent = new Intent(LoveFormeActivity.this, PersonalInfoNewActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(loveModel.userId));
             startActivity(intent);
         }

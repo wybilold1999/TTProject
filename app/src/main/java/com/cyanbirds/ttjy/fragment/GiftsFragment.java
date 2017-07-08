@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.MyGiftsAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
@@ -98,7 +99,7 @@ public class GiftsFragment extends Fragment {
         @Override
         public void onItemClick(View view, int position) {
             ReceiveGiftModel receiveGiftModel = mAdapter.getItem(position);
-            Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+            Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(receiveGiftModel.userId));
             startActivity(intent);
         }

@@ -45,7 +45,7 @@ public class GiftLoveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_attention, null);
+            rootView = inflater.inflate(R.layout.fragment_gift_love, null);
             unbinder = ButterKnife.bind(this, rootView);
             setupView();
             setHasOptionsMenu(true);

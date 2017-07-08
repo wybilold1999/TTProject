@@ -63,7 +63,7 @@ public class PopupLoveActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.other_portrait:
                 if (mLoveModel != null) {
-                    Intent intent = new Intent(this, PersonalInfoActivity.class);
+                    Intent intent = new Intent(this, PersonalInfoNewActivity.class);
                     intent.putExtra(ValueKey.USER_ID, String.valueOf(mLoveModel.userId));
                     startActivity(intent);
                     finish();

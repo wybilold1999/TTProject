@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.LoveFormeAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.LoveModel;
@@ -89,7 +90,7 @@ public class LoveMeFragment extends Fragment {
         @Override
         public void onItemClick(View view, int position) {
             LoveModel loveModel = mLoveModels.get(position);
-            Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+            Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(loveModel.userId));
             startActivity(intent);
         }

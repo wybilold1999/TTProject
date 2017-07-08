@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +21,9 @@ import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetDiscoverInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetRealUsersDiscoverInfoRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
+import com.cyanbirds.ttjy.ui.widget.DividerGridItemDecoration;
+import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
+import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -80,6 +84,7 @@ public class FoundGridFragment extends Fragment {
         layoutManager = new GridLayoutManager(getActivity(), 2);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.addItemDecoration(new DividerGridItemDecoration(getActivity()));
     }
 
     private void setupEvent(){

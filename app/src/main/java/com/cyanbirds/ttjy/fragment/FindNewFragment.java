@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.FindNewAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.FindNewData;
@@ -176,7 +177,7 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
         public void onItemClick(View view, int position, int index) {
             FindNewData findNewData = mAdapter.getItem(position);
             if (findNewData != null) {
-                Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+                Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
                 intent.putExtra(ValueKey.USER_ID, findNewData.mFindNewData.get(index).userId);
                 intent.putExtra(ValueKey.FROM_ACTIVITY, "FindLoveFragment");
                 startActivity(intent);

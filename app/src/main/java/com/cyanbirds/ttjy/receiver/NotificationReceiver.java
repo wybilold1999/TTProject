@@ -8,6 +8,7 @@ import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.activity.ChatActivity;
 import com.cyanbirds.ttjy.activity.LauncherActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.ClientUser;
@@ -45,7 +46,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 }
             }
             if (clientUser.isLocalMsg) {
-                Intent chatIntent = new Intent(context, PersonalInfoActivity.class);
+                Intent chatIntent = new Intent(context, PersonalInfoNewActivity.class);
                 chatIntent.putExtra(ValueKey.USER_ID, clientUser.userId);
                 chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | Intent.FLAG_ACTIVITY_NEW_TASK);

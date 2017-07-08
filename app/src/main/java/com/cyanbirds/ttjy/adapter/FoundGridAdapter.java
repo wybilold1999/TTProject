@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.activity.PhotoViewActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.PictureModel;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.text.DecimalFormat;
@@ -74,7 +76,7 @@ public class FoundGridAdapter extends
             if(model == null){
                 return;
             }
-            viewHolder.portrait.setImageURI(Uri.parse(model.faceUrl));
+            viewHolder.portrait.setImageURI(Uri.parse(model.path));
             viewHolder.mUserName.setText(model.nickname);
             if (null == model.distance || model.distance == 0.00) {
                 viewHolder.mFromCity.setVisibility(View.VISIBLE);
@@ -85,6 +87,13 @@ public class FoundGridAdapter extends
                 viewHolder.mFromCity.setVisibility(View.GONE);
                 viewHolder.mDistance.setText(mFormat.format(model.distance) + " km");
             }
+            if (AppManager.getClientUser().isShowVip && model.isVip) {
+                viewHolder.mIsVip.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.mIsVip.setVisibility(View.GONE);
+            }
+            viewHolder.mAge.setText(model.age);
+            viewHolder.mConstellation.setText(model.constellation);
         }
     }
 
@@ -116,7 +125,10 @@ public class FoundGridAdapter extends
         SimpleDraweeView portrait;
         TextView mDistance;
         TextView mUserName;
+        TextView mAge;
+        TextView mConstellation;
         TextView mFromCity;
+        ImageView mIsVip;
         RelativeLayout mDistanceLayout;
         RelativeLayout mItemLay;
         public ItemViewHolder(View itemView) {
@@ -124,7 +136,10 @@ public class FoundGridAdapter extends
             portrait = (SimpleDraweeView) itemView.findViewById(R.id.portrait);
             mDistance = (TextView) itemView.findViewById(R.id.distance);
             mUserName = (TextView) itemView.findViewById(R.id.tv_user_name);
+            mAge = (TextView) itemView.findViewById(R.id.age);
+            mConstellation = (TextView) itemView.findViewById(R.id.constellation);
             mFromCity = (TextView) itemView.findViewById(R.id.from_city);
+            mIsVip = (ImageView) itemView.findViewById(R.id.is_vip);
             mDistanceLayout = (RelativeLayout) itemView.findViewById(R.id.distance_layout);
             mItemLay = (RelativeLayout) itemView.findViewById(R.id.item_lay);
             mItemLay.setOnClickListener(this);
@@ -138,19 +153,9 @@ public class FoundGridAdapter extends
             }
             Intent intent = new Intent();
             PictureModel model = pictureModels.get(position);
-            switch (v.getId()){
-                case R.id.portrait :
-                    intent.setClass(mContext, PersonalInfoActivity.class);
-                    intent.putExtra(ValueKey.USER_ID, String.valueOf(model.usersId));
-                    mContext.startActivity(intent);
-                    break;
-                case R.id.img_queue :
-                    intent.setClass(mContext, PhotoViewActivity.class);
-                    intent.putExtra(ValueKey.IMAGE_URL, model.path);
-                    intent.putExtra(ValueKey.FROM_ACTIVITY, this.getClass().getSimpleName());
-                    mContext.startActivity(intent);
-                    break;
-            }
+            intent.setClass(mContext, PersonalInfoNewActivity.class);
+            intent.putExtra(ValueKey.USER_ID, String.valueOf(model.usersId));
+            mContext.startActivity(intent);
         }
     }
 

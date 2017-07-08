@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.CardAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.CardModel;
@@ -149,7 +150,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
                 break;
             case R.id.info:
                 if (curModel != null) {
-                    Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+                    Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
                     intent.putExtra(ValueKey.USER_ID, String.valueOf(curModel.userId));
                     startActivity(intent);
                 }
@@ -209,7 +210,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     @Override
     public void onItemClicked(int itemPosition, Object dataObject) {
         CardModel model = (CardModel) dataObject;
-        Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
+        Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
         intent.putExtra(ValueKey.USER_ID, String.valueOf(model.userId));
         startActivity(intent);
     }

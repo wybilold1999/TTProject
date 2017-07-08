@@ -25,7 +25,7 @@
     <color name="gray_background">#999999</color>
     <color name="gray_text_background">#F2F2F2</color>
 
-    <color name="red">#f22f2f</color>
+    <color name="circle">#ff7a7a</color>
 
     <color name="sprot_text_color">#c416ff</color>
     <color name="music_text_color">#ffaec5</color>
@@ -58,5 +58,6 @@
     <color name="red_packet_toolbar">#e95f38</color>
 
     <color name="half_transparent">#e0fffbf0</color>
+    <color name="sex_bg">#c1f2da</color>
 
 </resources>

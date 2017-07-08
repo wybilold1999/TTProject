@@ -79,7 +79,7 @@ public class MyAttentionActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             FollowModel followModel = mAdapter.getItem(position);
-            Intent intent = new Intent(MyAttentionActivity.this, PersonalInfoActivity.class);
+            Intent intent = new Intent(MyAttentionActivity.this, PersonalInfoNewActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(followModel.userId));
             startActivity(intent);
         }

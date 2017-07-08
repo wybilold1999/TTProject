@@ -449,6 +449,26 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".activity.PersonalInfoNewActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/personal_info"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".activity.PersonalPhotoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/personal_photos"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".activity.PhotoChoserNewActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/select_image"
+            android:screenOrientation="portrait"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"

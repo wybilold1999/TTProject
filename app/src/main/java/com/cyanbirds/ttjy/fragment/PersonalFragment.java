@@ -27,6 +27,7 @@ import com.cyanbirds.ttjy.activity.MyGiftsActivity;
 import com.cyanbirds.ttjy.activity.MyGoldActivity;
 import com.cyanbirds.ttjy.activity.NearPartyActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.activity.SettingActivity;
 import com.cyanbirds.ttjy.activity.SuccessCaseActivity;
 import com.cyanbirds.ttjy.activity.VipCenterActivity;
@@ -258,7 +259,7 @@ public class PersonalFragment extends Fragment {
 		Intent intent = new Intent();
 		switch (view.getId()) {
 			case R.id.head_portrait_lay:
-				intent.setClass(getActivity(), PersonalInfoActivity.class);
+				intent.setClass(getActivity(), PersonalInfoNewActivity.class);
 				intent.putExtra(ValueKey.USER_ID, AppManager.getClientUser().userId);
 				startActivity(intent);
 				break;

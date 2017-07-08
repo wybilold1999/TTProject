@@ -29,6 +29,7 @@ import com.cyanbirds.ttjy.activity.LocationDetailActivity;
 import com.cyanbirds.ttjy.activity.MakeMoneyActivity;
 import com.cyanbirds.ttjy.activity.MyGoldActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.activity.PhotoViewActivity;
 import com.cyanbirds.ttjy.activity.VipCenterActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
@@ -715,7 +716,7 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        Intent intent = new Intent(mContext, PersonalInfoActivity.class);
+                        Intent intent = new Intent(mContext, PersonalInfoNewActivity.class);
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -776,7 +777,7 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait :
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        intent.setClass(itemView.getContext(), PersonalInfoActivity.class);
+                        intent.setClass(itemView.getContext(), PersonalInfoNewActivity.class);
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -823,7 +824,7 @@ public class ChatMessageAdapter extends
             switch (v.getId()) {
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        intent.setClass(itemView.getContext(), PersonalInfoActivity.class);
+                        intent.setClass(itemView.getContext(), PersonalInfoNewActivity.class);
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -878,7 +879,7 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        Intent intent = new Intent(mContext, PersonalInfoActivity.class);
+                        Intent intent = new Intent(mContext, PersonalInfoNewActivity.class);
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -925,7 +926,7 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        Intent intent = new Intent(mContext, PersonalInfoActivity.class);
+                        Intent intent = new Intent(mContext, PersonalInfoNewActivity.class);
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
