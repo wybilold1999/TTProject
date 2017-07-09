@@ -196,7 +196,8 @@
 				android:layout_toRightOf="@id/iv_recommend"
 				android:layout_marginLeft="5dp"
 				android:textSize="10sp"
-				android:text="@string/pay_info"/>
+				android:text="@string/pay_info"
+				android:visibility="gone"/>
 
 			<CheckBox
 				android:id="@+id/select_alipay"
