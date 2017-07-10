@@ -833,10 +833,10 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 					mMapLay.setVisibility(View.GONE);
 					mMyLocation.setVisibility(View.GONE);
 				}
-				/*if (mClientUser.userId.equals(AppManager.getClientUser().userId)) {
+				if (mClientUser.userId.equals(AppManager.getClientUser().userId)) {
 					mMyLocation.setVisibility(View.GONE);
 					mMapLay.setVisibility(View.GONE);
-				}*/
+				}
 			} else {
 				mMyLocation.setVisibility(View.GONE);
 				mMapLay.setVisibility(View.GONE);
