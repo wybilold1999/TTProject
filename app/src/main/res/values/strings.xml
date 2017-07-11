@@ -47,6 +47,7 @@
     <string name="tv_party_detail">【活动详情】</string>
     <string name="party_img">【活动图片】</string>
 
+    <string name="phone_un_register">该手机号码还未注册过该软件，请先注册</string>
     <string name="regist_params_error">注册参数错误，请检查</string>
     <string name="dynamic_content_hint">表达一下此刻的心情吧...</string>
     <string name="real_name">真实姓名</string>
