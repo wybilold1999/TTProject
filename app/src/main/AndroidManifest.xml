@@ -439,6 +439,13 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".activity.PopupLoveActivity"
+            android:theme="@style/myTransparent"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:screenOrientation="portrait"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"

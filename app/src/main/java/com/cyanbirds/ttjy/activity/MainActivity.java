@@ -39,6 +39,9 @@ import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.FederationToken;
+import com.cyanbirds.ttjy.entity.FollowModel;
+import com.cyanbirds.ttjy.entity.LoveModel;
+import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FoundFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
@@ -47,19 +50,25 @@ import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
+import com.cyanbirds.ttjy.net.request.FollowListRequest;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
+import com.cyanbirds.ttjy.net.request.GetLoveFormeListRequest;
 import com.cyanbirds.ttjy.net.request.GetOSSTokenRequest;
+import com.cyanbirds.ttjy.net.request.GiftsListRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.service.MyIntentService;
 import com.cyanbirds.ttjy.service.MyPushService;
+import com.cyanbirds.ttjy.utils.MsgUtil;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
+import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.igexin.sdk.PushManager;
 import com.umeng.analytics.MobclickAgent;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.yuntongxun.ecsdk.ECInitParams;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
@@ -154,6 +163,29 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 		AppManager.requestLocationPermission(this);
 		requestPermission();
+
+		if (AppManager.getClientUser().isShowVip) {
+			mHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					new GetLoveFormeListTask().request(1, 1);
+				}
+			}, 4500 * 10);
+
+			mHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					new MyGiftListTask().request(1, 1);
+				}
+			}, 1000 * 10);
+
+			mHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					new FollowListTask().request("followFormeList", 1, 1);
+				}
+			}, 2500 * 10);
+		}
 	}
 
 	/**
@@ -349,6 +381,73 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				AppManager.getClientUser().isShowVideo = false;
 				AppManager.getClientUser().isShowVip = false;
 				AppManager.getClientUser().isShowRpt = false;
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
+		}
+	}
+
+	/**
+	 * 获取最近喜欢我的那个人
+	 */
+	class GetLoveFormeListTask extends GetLoveFormeListRequest {
+		@Override
+		public void onPostExecute(List<LoveModel> loveModels) {
+			if(loveModels != null && loveModels.size() > 0) {
+				String lastUserId = PreferencesUtils.getLoveMeUserId(MainActivity.this);
+				if (!lastUserId.equals(String.valueOf(loveModels.get(0).userId))) {
+
+					PreferencesUtils.setLoveMeUserId(
+							MainActivity.this, String.valueOf(loveModels.get(0).userId));
+					Intent intent = new Intent(MainActivity.this, PopupLoveActivity.class);
+					intent.putExtra(ValueKey.DATA, loveModels.get(0));
+					startActivity(intent);
+				}
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
+		}
+	}
+
+	class MyGiftListTask extends GiftsListRequest {
+		@Override
+		public void onPostExecute(List<ReceiveGiftModel> receiveGiftModels) {
+			if(null != receiveGiftModels && receiveGiftModels.size() > 0){
+				ReceiveGiftModel model = receiveGiftModels.get(0);
+				String lastUserId = PreferencesUtils.getGiftMeUserId(MainActivity.this);
+				if (!lastUserId.equals(String.valueOf(model.userId))) {
+					PreferencesUtils.setGiftMeUserId(
+							MainActivity.this, String.valueOf(model.userId));
+					MsgUtil.sendAttentionOrGiftMsg(String.valueOf(model.userId), model.nickname, model.faceUrl,
+							model.nickname + "给您送了一件礼物");
+
+				}
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
+			ToastUtil.showMessage(error);
+		}
+	}
+
+	class FollowListTask extends FollowListRequest {
+		@Override
+		public void onPostExecute(List<FollowModel> followModels) {
+			if(followModels != null && followModels.size() > 0){
+				FollowModel followModel = followModels.get(0);
+				String lastUserId = PreferencesUtils.getAttentionMeUserId(MainActivity.this);
+				if (!lastUserId.equals(String.valueOf(followModel.userId))) {
+					PreferencesUtils.setAttentionMeUserId(
+							MainActivity.this, String.valueOf(followModel.userId));
+					MsgUtil.sendAttentionOrGiftMsg(String.valueOf(followModel.userId),
+							followModel.nickname, followModel.faceUrl,
+							followModel.nickname + "关注了您");
+				}
 			}
 		}
 
