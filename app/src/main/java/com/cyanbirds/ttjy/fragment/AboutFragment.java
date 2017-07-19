@@ -16,7 +16,6 @@ import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by wangyb on 2017/6/29.
@@ -31,14 +30,13 @@ public class AboutFragment extends Fragment {
     TextView mVersionInfo;
 
     private View rootView;
-    private Unbinder unbinder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.activity_about, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupData();
             setHasOptionsMenu(true);
         }
@@ -75,11 +73,5 @@ public class AboutFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
     }
 }

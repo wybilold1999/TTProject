@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import android.widget.RelativeLayout;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
-import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.CardAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
@@ -44,7 +42,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by wangyb on 2017/6/29.
@@ -78,7 +75,6 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     @BindView(R.id.portrait)
     SimpleDraweeView mPortrait;
     private View rootView;
-    private Unbinder unbinder;
 
     private List<CardModel> dataList;
     private CardAdapter mAdapter;
@@ -94,7 +90,7 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_card, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupView();
             setupEvent();
             setupData();
@@ -267,14 +263,6 @@ public class CardFragment extends Fragment implements SwipeFlingAdapterView.onFl
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd(this.getClass().getName());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 
     private void startcircularAnima() {

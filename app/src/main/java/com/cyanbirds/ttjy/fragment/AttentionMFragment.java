@@ -19,7 +19,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by wangyb on 2017/7/4.
@@ -35,7 +34,6 @@ public class AttentionMFragment extends Fragment {
     ViewPager mViewpager;
 
     private View rootView;
-    private Unbinder unbinder;
     private List<String> tabList;
     private List<Fragment> fragmentList;
     private Fragment attentionFrag;//礼物
@@ -46,7 +44,7 @@ public class AttentionMFragment extends Fragment {
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_attention, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupView();
             setHasOptionsMenu(true);
         }
@@ -100,13 +98,5 @@ public class AttentionMFragment extends Fragment {
             }
         });
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (unbinder != null) {
-            unbinder.unbind();
-        }
     }
 }

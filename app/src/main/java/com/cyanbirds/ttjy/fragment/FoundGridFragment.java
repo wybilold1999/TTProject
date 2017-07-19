@@ -47,7 +47,6 @@ public class FoundGridFragment extends Fragment {
     RecyclerView mRecyclerView;
     @BindView(R.id.progress_bar)
     CircularProgress mProgressBar;
-    Unbinder unbinder;
     private View rootView;
 
     private FoundGridAdapter mAdapter;
@@ -61,7 +60,7 @@ public class FoundGridFragment extends Fragment {
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_found, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupViews();
             setupEvent();
             setupData();
@@ -175,12 +174,6 @@ public class FoundGridFragment extends Fragment {
         @Override
         public void onErrorExecute(String error) {
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
     }
 
     @Override

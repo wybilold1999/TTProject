@@ -26,7 +26,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by wangyb on 2017/6/29.
@@ -41,7 +40,6 @@ public class FoundNewFragment extends Fragment {
     RecyclerView mRecyclerView;
     @BindView(R.id.progress_bar)
     CircularProgress mProgressBar;
-    Unbinder unbinder;
     private View rootView;
 
     private FoundNewAdapter mAdapter;
@@ -55,7 +53,7 @@ public class FoundNewFragment extends Fragment {
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_found, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupViews();
             setupEvent();
             setupData();
@@ -183,12 +181,6 @@ public class FoundNewFragment extends Fragment {
         @Override
         public void onErrorExecute(String error) {
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
     }
 
     @Override

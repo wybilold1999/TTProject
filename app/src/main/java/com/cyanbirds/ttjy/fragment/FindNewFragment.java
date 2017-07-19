@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
-import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
 import com.cyanbirds.ttjy.adapter.FindNewAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
@@ -32,7 +31,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by wangyb on 2017/6/29.
@@ -49,7 +47,6 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
     SwipeRefreshLayout mSwipeRefresh;
     @BindView(R.id.progress_bar)
     CircularProgress mProgress;
-    Unbinder unbinder;
     private View rootView;
 
     private LinearLayoutManager layoutManager;
@@ -70,7 +67,7 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_find_love, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupViews();
             setupEvent();
             setupData();
@@ -271,9 +268,6 @@ public class FindNewFragment extends Fragment implements SwipeRefreshLayout.OnRe
         super.onDestroy();
         if (null != mSwipeRefresh) {
             mSwipeRefresh.setOnRefreshListener(null);
-        }
-        if (unbinder != null) {
-            unbinder.unbind();
         }
     }
 }

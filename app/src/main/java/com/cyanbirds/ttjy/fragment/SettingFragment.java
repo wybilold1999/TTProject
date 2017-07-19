@@ -33,7 +33,6 @@ import com.umeng.analytics.MobclickAgent;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 import static com.cyanbirds.ttjy.activity.base.BaseActivity.exitApp;
 import static com.cyanbirds.ttjy.activity.base.BaseActivity.finishAll;
@@ -65,14 +64,13 @@ public class SettingFragment extends Fragment {
     RelativeLayout mQuit;
 
     private View rootView;
-    private Unbinder unbinder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
             rootView = inflater.inflate(R.layout.activity_setting, null);
-            unbinder = ButterKnife.bind(this, rootView);
+            ButterKnife.bind(this, rootView);
             setupData();
             setHasOptionsMenu(true);
         }
@@ -247,11 +245,5 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
     }
 }

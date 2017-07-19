@@ -110,7 +110,6 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginBottom="5dp"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="5dp"
             android:layout_toRightOf="@id/distance_icon"
             android:text="23.78公里"
