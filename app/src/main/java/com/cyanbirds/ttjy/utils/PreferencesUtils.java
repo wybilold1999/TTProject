@@ -95,11 +95,11 @@ public class PreferencesUtils {
 	/** 定位到的城市*/
 	public static final String SETTINGS_CURRENT_CITY = "com.cyanbird.ttjy_current_city";
 	/** 最近喜欢我的userid*/
-	public static final String SETTINGS_LOVE_ME_USER_ID = "com.cyanbird.tanlove_love_me_user_id";
+	public static final String SETTINGS_LOVE_ME_USER_ID = "com.cyanbird.ttjy_love_me_user_id";
 	/** 最近关注我的userid*/
-	public static final String SETTINGS_ATTENTION_ME_USER_ID = "com.cyanbird.tanlove_attention_me_user_id";
+	public static final String SETTINGS_ATTENTION_ME_USER_ID = "com.cyanbird.ttjy_attention_me_user_id";
 	/** 最近送我礼物的userid*/
-	public static final String SETTINGS_GIFT_ME_USER_ID = "com.cyanbird.tanlove_gift_me_user_id";
+	public static final String SETTINGS_GIFT_ME_USER_ID = "com.cyanbird.ttjy_gift_me_user_id";
 
 	/**
 	 * 获取RL账号
