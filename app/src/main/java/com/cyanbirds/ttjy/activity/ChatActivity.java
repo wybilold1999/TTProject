@@ -282,7 +282,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	}
 
 	private void setupData() {
-		if (AppManager.getClientUser().isShowRpt) {
+		if (null != AppManager.getClientUser() && AppManager.getClientUser().isShowRpt) {
 			redPacket.setVisibility(View.VISIBLE);
 		} else {
 			redPacket.setVisibility(View.GONE);
