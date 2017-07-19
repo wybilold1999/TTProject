@@ -14,17 +14,21 @@
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:titleEnabled="false"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <ImageView
-                android:id="@+id/background_img"
+            <com.facebook.drawee.view.SimpleDraweeView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_centerInParent="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
                 android:contentDescription="@null"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/person_info_top_bg"/>
+                app:actualImageScaleType="fitCenter"
+                app:placeholderImage="@mipmap/person_info_top_bg"
+                app:failureImage="@mipmap/person_info_top_bg"
+                app:placeholderImageScaleType="fitCenter"
+                app:roundedCornerRadius="0dp" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

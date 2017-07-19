@@ -3,7 +3,6 @@ package com.cyanbirds.ttjy.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -39,7 +38,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +57,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	SimpleDraweeView mPortrait;
 	@BindView(R.id.toolbar)
 	Toolbar mToolbar;
-	@BindView(R.id.collapsingToolbarLayout)
-	CollapsingToolbarLayout mCollapsingToolbarLayout;
 	@BindView(R.id.tabs)
 	TabLayout mTabLayout;
 	@BindView(R.id.viewpager)
@@ -88,7 +84,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	private ClientUser mClientUser; //当前用户
 	private String curUserId; //当前用户id
 
-	private DecimalFormat mFormat = new DecimalFormat("#.00");
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -103,7 +98,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	private void setupView() {
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		mCollapsingToolbarLayout.setTitle(" ");
 
 		tabList = new ArrayList<>();
 		tabList.add("简介");
@@ -329,7 +323,6 @@ public class PersonalInfoActivity extends BaseActivity {
 		if (!TextUtils.isEmpty(imagePath)) {
 			mPortrait.setImageURI(Uri.parse(imagePath));
 		}
-		mCollapsingToolbarLayout.setTitle(clientUser.user_name);
 		if (AppManager.getClientUser().isShowVip && clientUser.is_vip) {
 			mIdentifyState.setVisibility(View.VISIBLE);
 		} else {
@@ -362,7 +355,6 @@ public class PersonalInfoActivity extends BaseActivity {
 			imagePath = "res:///" + R.mipmap.default_head;
 		}
 		mPortrait.setImageURI(Uri.parse(imagePath));
-		mCollapsingToolbarLayout.setTitle(AppManager.getClientUser().user_name);
 	}
 
 	@Override
