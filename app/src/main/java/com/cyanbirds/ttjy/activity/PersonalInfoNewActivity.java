@@ -535,9 +535,11 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 		if (AppManager.getClientUser().isShowLovers) {
 			mCardFriend.setVisibility(View.VISIBLE);
 			mTvFriend.setVisibility(View.VISIBLE);
+			mGift.setVisibility(View.VISIBLE);
 		} else {
 			mCardFriend.setVisibility(View.GONE);
 			mTvFriend.setVisibility(View.GONE);
+			mGift.setVisibility(View.GONE);
 		}
 	}
 
