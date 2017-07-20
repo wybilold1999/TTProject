@@ -170,6 +170,10 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 	LinearLayout mMapLay;
 	@BindView(R.id.my_location)
 	TextView mMyLocation;
+	@BindView(R.id.tv_friend)
+	TextView mTvFriend;
+	@BindView(R.id.card_friend)
+	LinearLayout mCardFriend;
 
 	private ClientUser mClientUser; //当前用户
 	private String curUserId; //当前用户id
@@ -527,6 +531,13 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 				}
 			}
 			mIntrestFlowlayout.setTags(mVals);
+		}
+		if (AppManager.getClientUser().isShowLovers) {
+			mCardFriend.setVisibility(View.VISIBLE);
+			mTvFriend.setVisibility(View.VISIBLE);
+		} else {
+			mCardFriend.setVisibility(View.GONE);
+			mTvFriend.setVisibility(View.GONE);
 		}
 	}
 

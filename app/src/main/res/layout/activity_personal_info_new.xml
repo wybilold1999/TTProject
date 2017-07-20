@@ -548,6 +548,7 @@
 			</LinearLayout>
 
 			<TextView
+				android:id="@+id/tv_friend"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_alignParentLeft="true"
@@ -566,6 +567,7 @@
 				android:contentDescription="@null"/>
 
 			<LinearLayout
+				android:id="@+id/lay_friend"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="#fff"
