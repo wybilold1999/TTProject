@@ -172,7 +172,7 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 	TextView mMyLocation;
 	@BindView(R.id.tv_friend)
 	TextView mTvFriend;
-	@BindView(R.id.card_friend)
+	@BindView(R.id.lay_friend)
 	LinearLayout mCardFriend;
 
 	private ClientUser mClientUser; //当前用户
