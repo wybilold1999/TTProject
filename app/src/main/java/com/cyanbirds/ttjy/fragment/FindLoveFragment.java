@@ -5,12 +5,10 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,9 +25,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
-import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
-import com.cyanbirds.ttjy.activity.RadarActivity;
 import com.cyanbirds.ttjy.adapter.FindLoveAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
@@ -243,8 +239,8 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(getActivity(), RadarActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(getActivity(), RadarActivity.class);
+//        startActivity(intent);
     }
 
     class GetFindLoveTask extends GetFindLoveRequest {
