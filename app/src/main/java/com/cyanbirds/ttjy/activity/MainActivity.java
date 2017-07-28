@@ -177,7 +177,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		AppManager.requestLocationPermission(this);
 		requestPermission();
 
-		if (AppManager.getClientUser().isShowVip) {
+		if (AppManager.getClientUser().isShowNormal) {
 			mHandler.postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -394,6 +394,9 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				AppManager.getClientUser().isShowVideo = false;
 				AppManager.getClientUser().isShowVip = false;
 				AppManager.getClientUser().isShowRpt = false;
+				AppManager.getClientUser().isShowNormal = false;
+			} else {
+				AppManager.getClientUser().isShowNormal = true;
 			}
 		}
 
@@ -444,7 +447,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 		@Override
 		public void onErrorExecute(String error) {
-			ToastUtil.showMessage(error);
 		}
 	}
 
@@ -475,7 +477,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	private void setupViews() {
 		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
-		if (AppManager.getClientUser().isShowVip) {
+		if (AppManager.getClientUser().isShowNormal) {
 			for (int i = 0; i < tableConfig.length; i++) {
 				mTabHost.addTab(
 						mTabHost.newTabSpec(getString(tableConfig[i].titleId))
@@ -508,7 +510,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		View view = View.inflate(this, R.layout.tab_indicator_view, null);
 		TextView tv = (TextView) view.findViewById(R.id.tab_item);
 		ImageView tab_icon = (ImageView) view.findViewById(R.id.tab_icon);
-		if (AppManager.getClientUser().isShowVip) {
+		if (AppManager.getClientUser().isShowNormal) {
 			tab_icon.setImageResource(tableConfig[index].tabImage);
 			tv.setText(tableConfig[index].titleId);
 		} else {

@@ -108,7 +108,7 @@ public class RegisterActivity extends BaseActivity {
         curLat = getIntent().getStringExtra(ValueKey.LATITUDE);
         curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
 
-        if (AppManager.getClientUser().isShowVip) {
+        if (AppManager.getClientUser().isShowNormal) {
             mSexLay.setVisibility(View.VISIBLE);
         } else {
             mSexLay.setVisibility(View.GONE);

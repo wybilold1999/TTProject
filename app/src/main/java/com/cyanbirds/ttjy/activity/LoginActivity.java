@@ -29,6 +29,7 @@ import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.QqLoginRequest;
+import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.net.request.WXLoginRequest;
 import com.cyanbirds.ttjy.utils.AESEncryptorUtil;
@@ -104,8 +105,9 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
         if (toolbar != null) {
             toolbar.setNavigationIcon(R.mipmap.ic_up);
         }
+        new GetCityInfoTask().request();
         setupData();
-
+        initLocationClient();
         channelId = CheckUtil.getAppMetaData(this, "UMENG_CHANNEL");
     }
 
@@ -118,9 +120,6 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             loginAccount.setText(mPhoneNum);
             loginAccount.setSelection(mPhoneNum.length());
         }
-        mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
-        curLat = getIntent().getStringExtra(ValueKey.LATITUDE);
-        curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
     }
 
     @OnClick({R.id.btn_login, R.id.forget_pwd, R.id.qq_login, R.id.weixin_login, R.id.phone_register})
@@ -420,8 +419,11 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             mCurrrentCity = aMapLocation.getCity();
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+            new UploadCityInfoTask().request(aMapLocation.getCity(),
+                    AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
         } else {
             if (mCityInfo != null) {
+                new UploadCityInfoTask().request(mCityInfo.city, curLat, curLon);
                 try {
                     String[] rectangle = mCityInfo.rectangle.split(";");
                     String[] leftBottom = rectangle[0].split(",");
@@ -436,6 +438,29 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
 
                 }
             }
+        }
+    }
+
+    class UploadCityInfoTask extends UploadCityInfoRequest {
+
+        @Override
+        public void onPostExecute(String isShow) {
+            if ("0".equals(isShow)) {
+                AppManager.getClientUser().isShowDownloadVip = false;
+                AppManager.getClientUser().isShowGold = false;
+                AppManager.getClientUser().isShowLovers = false;
+                AppManager.getClientUser().isShowMap = false;
+                AppManager.getClientUser().isShowVideo = false;
+                AppManager.getClientUser().isShowVip = false;
+                AppManager.getClientUser().isShowRpt = false;
+                AppManager.getClientUser().isShowNormal = false;
+            } else {
+                AppManager.getClientUser().isShowNormal = true;
+            }
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
         }
     }
 

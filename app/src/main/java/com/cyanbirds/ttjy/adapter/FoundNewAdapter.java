@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.ContactInfoActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Contact;
 import com.dl7.tag.TagLayout;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -32,12 +31,12 @@ public class FoundNewAdapter extends
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FOOTER = 1;
 
-    private List<ClientUser> mClientUsers;
+    private List<Contact> mContacts;
     private Context mContext;
     private boolean mShowFooter = false;
 
-    public FoundNewAdapter(List<ClientUser> clientUsers, Context mContext) {
-        this.mClientUsers = clientUsers;
+    public FoundNewAdapter(List<Contact> clientUsers, Context mContext) {
+        this.mContacts = clientUsers;
         this.mContext = mContext;
     }
 
@@ -74,13 +73,13 @@ public class FoundNewAdapter extends
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof ItemViewHolder){
-            ClientUser clientUser = mClientUsers.get(position);
+            Contact clientUser = mContacts.get(position);
             if(clientUser == null){
                 return;
             }
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.userName.setText(clientUser.user_name);
-            itemViewHolder.age.setText(String.valueOf(clientUser.age));
+            itemViewHolder.age.setText(String.valueOf(clientUser.birthday));
             if ("男".equals(clientUser.sex)) {
                 itemViewHolder.mSexImg.setImageResource(R.mipmap.list_male);
             } else {
@@ -98,17 +97,17 @@ public class FoundNewAdapter extends
     @Override
     public int getItemCount() {
         int begin = mShowFooter?1:0;
-        if(mClientUsers == null) {
+        if(mContacts == null) {
             return begin;
         }
-        return mClientUsers.size() + begin;
+        return mContacts.size() + begin;
     }
 
-    public ClientUser getItem(int position){
-        if (mClientUsers == null || mClientUsers.size() < 1) {
+    public Contact getItem(int position){
+        if (mContacts == null || mContacts.size() < 1) {
             return null;
         }
-        return mClientUsers == null ? null : mClientUsers.get(position);
+        return mContacts == null ? null : mContacts.get(position);
     }
 
     public class FooterViewHolder extends RecyclerView.ViewHolder {
@@ -142,19 +141,9 @@ public class FoundNewAdapter extends
         public void onClick(View v) {
             int position = getAdapterPosition();
             Intent intent = new Intent();
-            if (mClientUsers.size() > position) {
-                ClientUser clientUser = mClientUsers.get(position);
-                if (clientUser != null) {
-                    Contact contact = new Contact();
-                    contact.face_url = clientUser.face_url;
-                    contact.sex = "男".equals(clientUser.sex) ? Contact.Gender.MALE : Contact.Gender.FEMALE;
-                    contact.user_name = clientUser.user_name;
-                    contact.userId = clientUser.userId;
-                    contact.birthday = String.valueOf(clientUser.age);
-                    contact.constellation = clientUser.constellation;
-                    contact.state_marry = clientUser.state_marry;
-                    contact.signature = clientUser.signature;
-
+            if (mContacts.size() > position) {
+                Contact contact = mContacts.get(position);
+                if (contact != null) {
                     intent.setClass(mContext, ContactInfoActivity.class);
                     intent.putExtra(ValueKey.CONTACT, contact);
                     intent.putExtra(ValueKey.FROM_ACTIVITY, "FoundNewAdapter");
@@ -172,8 +161,8 @@ public class FoundNewAdapter extends
         return this.mShowFooter;
     }
 
-    public void setClientUsers(List<ClientUser> users){
-        this.mClientUsers = users;
+    public void setClientUsers(List<Contact> users){
+        this.mContacts = users;
         this.notifyDataSetChanged();
     }
 }

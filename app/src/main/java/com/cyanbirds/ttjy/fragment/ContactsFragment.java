@@ -17,7 +17,6 @@ import com.cyanbirds.ttjy.db.ContactSqlManager;
 import com.cyanbirds.ttjy.entity.Contact;
 import com.cyanbirds.ttjy.listener.ModifyContactsListener;
 import com.cyanbirds.ttjy.listener.ModifyContactsListener.OnDataChangedListener;
-import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.ContactsRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.utils.PinYinUtil;
@@ -59,7 +58,7 @@ public class ContactsFragment extends Fragment implements OnHeaderClickListener,
 	private StickyHeadersItemDecoration top;
 
 	private int pageIndex = 1;
-	private int pageSize = 150;
+	private int pageSize = 30;
 	private String GENDER = ""; //空表示查询和自己性别相反的用户
 	/**
 	 * 0:同城 1：缘分 2：颜值  -1:就是全国
@@ -129,26 +128,10 @@ public class ContactsFragment extends Fragment implements OnHeaderClickListener,
 		mRecyclerView.setAdapter(mAdapter);
 		mFastScroller.setRecyclerView(mRecyclerView);
 
-		if("男".equals(AppManager.getClientUser().sex)){
-			GENDER = "FeMale";
-		} else {
-			GENDER = "Male";
-		}
 		mProgress.setVisibility(View.VISIBLE);
 		List<Contact> contactList = ContactSqlManager.getInstance(getActivity()).queryAllContacts();
 		if (contactList != null && contactList.size() > 0) {
 			getNotifyContact(contactList);
-			/*mContacts.addAll(contactList);
-			for (int i = 0; i < mContacts.size(); i++) {
-				Contact c = mContacts.get(i);
-				String l = sortLetter(c);
-				if (!StringUtil.checkLetter(l)) {
-					l = "#";
-				}
-				items.add(l);
-			}
-			mProgress.setVisibility(View.GONE);
-			mAdapter.notifyDataSetChanged();*/
 		} else {
 			new ContactsTask().request(pageIndex, pageSize, GENDER, mUserScopeType);
 		}

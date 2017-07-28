@@ -12,6 +12,7 @@ import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
+import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.Md5Util;
@@ -75,10 +76,36 @@ public class LauncherActivity extends Activity {
     };
 
     private void init() {
+        if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
+            new UploadCityInfoTask().request(PreferencesUtils.getCurrentCity(this), "", "");
+        }
         if (AppManager.isLogin()) {//是否已经登录
             login();
         } else {
             mHandler.postDelayed(noLogin, SHOW_TIME_MIN);
+        }
+    }
+
+    class UploadCityInfoTask extends UploadCityInfoRequest {
+
+        @Override
+        public void onPostExecute(String isShow) {
+            if ("0".equals(isShow)) {
+                AppManager.getClientUser().isShowDownloadVip = false;
+                AppManager.getClientUser().isShowGold = false;
+                AppManager.getClientUser().isShowLovers = false;
+                AppManager.getClientUser().isShowMap = false;
+                AppManager.getClientUser().isShowVideo = false;
+                AppManager.getClientUser().isShowVip = false;
+                AppManager.getClientUser().isShowRpt = false;
+                AppManager.getClientUser().isShowNormal = false;
+            } else {
+                AppManager.getClientUser().isShowNormal = true;
+            }
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
         }
     }
 

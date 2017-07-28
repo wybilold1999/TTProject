@@ -115,7 +115,7 @@
             android:textColor="@color/gray_text" />
     </RelativeLayout>
 
-    <com.cyanbirds.lljy.ui.widget.NoScrollGridView
+    <com.cyanbirds.ttjy.ui.widget.NoScrollGridView
         android:id="@+id/img_contents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

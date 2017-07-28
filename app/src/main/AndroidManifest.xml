@@ -441,6 +441,34 @@
             android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".activity.FeedBackActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="adjustResize"
+            android:label="@string/feed_back"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".activity.ModifyUserInfoNewActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/modify_info"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activity.ExpressionActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/sticker_market"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activity.ContactInfoActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:label="@string/personal_info"
+            android:screenOrientation="portrait">
+        </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"

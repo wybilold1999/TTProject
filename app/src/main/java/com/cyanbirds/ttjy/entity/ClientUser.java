@@ -120,6 +120,10 @@ public class ClientUser implements Serializable{
      * 0:不显示  1：显示
      */
     public boolean isShowTd; //跳转到vip还是downloadvip
+    /**
+     * 0:不显示  1：显示
+     */
+    public boolean isShowNormal; //主界面布局
 
     public String latitude = "";
     public String longitude = "";

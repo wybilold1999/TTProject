@@ -237,4 +237,8 @@ public interface UserService {
     @GET("expression/getExpressionGroup")
     Call<ResponseBody> getExpressionGroup();
 
+    @FormUrlEncoded
+    @POST("user/contactList")
+    Call<ResponseBody> getContactList(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
+
 }

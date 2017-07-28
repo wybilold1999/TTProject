@@ -37,7 +37,7 @@ public class ContactsRequest extends ResultPostExecute<List<Contact>> {
 		params.put("pageSize", String.valueOf(pageSize));
 		params.put("gender", gender);
 		params.put("user_scope_type", mUserScopeType);
-		Call<ResponseBody> call = AppManager.getUserService().getFindLoveInfo(AppManager.getClientUser().sessionId, params);
+		Call<ResponseBody> call = AppManager.getUserService().getContactList(AppManager.getClientUser().sessionId, params);
 		call.enqueue(new Callback<ResponseBody>() {
 			@Override
 			public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
