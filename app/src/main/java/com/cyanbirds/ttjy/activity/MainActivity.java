@@ -42,9 +42,12 @@ import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.FollowModel;
 import com.cyanbirds.ttjy.entity.LoveModel;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
+import com.cyanbirds.ttjy.fragment.ContactsFragment;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FoundFragment;
+import com.cyanbirds.ttjy.fragment.FoundNewFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
+import com.cyanbirds.ttjy.fragment.MyPersonalFragment;
 import com.cyanbirds.ttjy.fragment.PersonalFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
@@ -129,6 +132,16 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 					R.drawable.tab_my_message_selector),
 			new TableConfig(R.string.tab_personal, PersonalFragment.class,
 					R.drawable.tab_personal_selector) };
+
+	private static final TableConfig[] tableConfigBak = new TableConfig[] {
+			new TableConfig(R.string.tab_message, MessageFragment.class,
+					R.drawable.tab_message_selector),
+			new TableConfig(R.string.tab_contacts, ContactsFragment.class,
+					R.drawable.tab_contacts_selector),
+			new TableConfig(R.string.tab_found, FoundNewFragment.class,
+					R.drawable.tab_secret_friends_selector),
+			new TableConfig(R.string.tab_personal, MyPersonalFragment.class,
+					R.drawable.tab_more_selector) };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -462,11 +475,20 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	private void setupViews() {
 		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
-		for (int i = 0; i < tableConfig.length; i++) {
-			mTabHost.addTab(
-					mTabHost.newTabSpec(getString(tableConfig[i].titleId))
-							.setIndicator(getIndicator(i)),
-					tableConfig[i].targetClass, null);
+		if (AppManager.getClientUser().isShowVip) {
+			for (int i = 0; i < tableConfig.length; i++) {
+				mTabHost.addTab(
+						mTabHost.newTabSpec(getString(tableConfig[i].titleId))
+								.setIndicator(getIndicator(i)),
+						tableConfig[i].targetClass, null);
+			}
+		} else {
+			for (int i = 0; i < tableConfigBak.length; i++) {
+				mTabHost.addTab(
+						mTabHost.newTabSpec(getString(tableConfigBak[i].titleId))
+								.setIndicator(getIndicator(i)),
+						tableConfigBak[i].targetClass, null);
+			}
 		}
 		if (Build.VERSION.SDK_INT >= 11) {
 			mTabHost.getTabWidget().setShowDividers(
@@ -486,8 +508,13 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		View view = View.inflate(this, R.layout.tab_indicator_view, null);
 		TextView tv = (TextView) view.findViewById(R.id.tab_item);
 		ImageView tab_icon = (ImageView) view.findViewById(R.id.tab_icon);
-		tab_icon.setImageResource(tableConfig[index].tabImage);
-		tv.setText(tableConfig[index].titleId);
+		if (AppManager.getClientUser().isShowVip) {
+			tab_icon.setImageResource(tableConfig[index].tabImage);
+			tv.setText(tableConfig[index].titleId);
+		} else {
+			tab_icon.setImageResource(tableConfigBak[index].tabImage);
+			tv.setText(tableConfigBak[index].titleId);
+		}
 		return view;
 
 	}

@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
@@ -68,6 +69,8 @@ public class RegisterActivity extends BaseActivity {
     ImageView mSelectMan;
     @BindView(R.id.select_lady)
     ImageView mSelectLady;
+    @BindView(R.id.sex_img_layout)
+    LinearLayout mSexLay;
 
     /**
      * 相册返回
@@ -104,6 +107,12 @@ public class RegisterActivity extends BaseActivity {
         mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
         curLat = getIntent().getStringExtra(ValueKey.LATITUDE);
         curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
+
+        if (AppManager.getClientUser().isShowVip) {
+            mSexLay.setVisibility(View.VISIBLE);
+        } else {
+            mSexLay.setVisibility(View.GONE);
+        }
     }
 
 
@@ -112,9 +121,16 @@ public class RegisterActivity extends BaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.next:
-                if(checkInput()){
-                    new CheckPhoneIsRegisterTask().request(
-                            phoneNum.getText().toString().trim());
+                if (AppManager.getClientUser().isShowVip) {
+                    if(checkInput()){
+                        new CheckPhoneIsRegisterTask().request(
+                                phoneNum.getText().toString().trim());
+                    }
+                } else {
+                    if(checkInputNoSex()){
+                        new CheckPhoneIsRegisterTask().request(
+                                phoneNum.getText().toString().trim());
+                    }
                 }
                 break;
             case R.id.portrait :
@@ -392,6 +408,22 @@ public class RegisterActivity extends BaseActivity {
             message = getResources().getString(R.string.please_select_sex);
             bool = false;
         } else if (TextUtils.isEmpty(phoneNum.getText().toString())) {
+            message = getResources().getString(R.string.input_phone);
+            bool = false;
+        } else if (!CheckUtil.isMobileNO(phoneNum.getText().toString())) {
+            message = getResources().getString(
+                    R.string.input_phone_number_error);
+            bool = false;
+        }
+        if (!bool)
+            ToastUtil.showMessage(message);
+        return bool;
+    }
+
+    private boolean checkInputNoSex() {
+        String message = "";
+        boolean bool = true;
+        if (TextUtils.isEmpty(phoneNum.getText().toString())) {
             message = getResources().getString(R.string.input_phone);
             bool = false;
         } else if (!CheckUtil.isMobileNO(phoneNum.getText().toString())) {

@@ -4,22 +4,30 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.eventtype.WeinXinEvent;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
+import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.QqLoginRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.net.request.WXLoginRequest;
@@ -54,7 +62,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 /**
  * Created by Administrator on 2016/4/23.
  */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements AMapLocationListener {
     @BindView(R.id.login_account)
     EditText loginAccount;
     @BindView(R.id.login_pwd)
@@ -67,6 +75,8 @@ public class LoginActivity extends BaseActivity {
     ImageView weiXinLogin;
     @BindView(R.id.qq_login)
     ImageView qqLogin;
+    @BindView(R.id.phone_register)
+    TextView mPhoneRegister;
 
     public static Tencent mTencent;
     private UserInfo mInfo;
@@ -76,7 +86,11 @@ public class LoginActivity extends BaseActivity {
     private String mPhoneNum;
     private String channelId;
     private boolean activityIsRunning;
+
+    private AMapLocationClientOption mLocationOption;
+    private AMapLocationClient mlocationClient;
     private String mCurrrentCity;//定位到的城市
+    private CityInfo mCityInfo;//web api返回的城市信息
     private String curLat;
     private String curLon;
 
@@ -109,7 +123,7 @@ public class LoginActivity extends BaseActivity {
         curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
     }
 
-    @OnClick({R.id.btn_login, R.id.forget_pwd, R.id.qq_login, R.id.weixin_login})
+    @OnClick({R.id.btn_login, R.id.forget_pwd, R.id.qq_login, R.id.weixin_login, R.id.phone_register})
     public void onClick(View view) {
         Intent intent = new Intent();
         switch (view.getId()) {
@@ -142,6 +156,13 @@ public class LoginActivity extends BaseActivity {
                 req.scope = "snsapi_userinfo";
                 req.state = "wechat_sdk_demo_test";
                 CSApplication.api.sendReq(req);
+                break;
+            case R.id.phone_register:
+                intent.setClass(this, RegisterActivity.class);
+                intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
+                intent.putExtra(ValueKey.LATITUDE, curLat);
+                intent.putExtra(ValueKey.LONGITUDE, curLon);
+                startActivity(intent);
                 break;
         }
     }
@@ -350,6 +371,88 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onErrorExecute(String error) {
         }
+    }
+
+    /****************************************************************定位**************/
+
+    /**
+     * 获取用户所在城市
+     */
+    class GetCityInfoTask extends GetCityInfoRequest {
+
+        @Override
+        public void onPostExecute(CityInfo cityInfo) {
+            mCityInfo = cityInfo;
+            mCurrrentCity = cityInfo.city;
+            PreferencesUtils.setCurrentCity(LoginActivity.this, mCurrrentCity);
+            EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
+        }
+    }
+
+    /**
+     * 初始化定位
+     */
+    private void initLocationClient() {
+        mlocationClient = new AMapLocationClient(this);
+        //初始化定位参数
+        mLocationOption = new AMapLocationClientOption();
+        //设置定位监听
+        mlocationClient.setLocationListener(this);
+        //设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        //获取最近3s内精度最高的一次定位结果：
+        mLocationOption.setOnceLocationLatest(true);
+        //设置定位参数
+        mlocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mlocationClient.startLocation();
+    }
+
+    @Override
+    public void onLocationChanged(AMapLocation aMapLocation) {
+        if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
+            AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
+            AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
+            mCurrrentCity = aMapLocation.getCity();
+            PreferencesUtils.setCurrentCity(this, mCurrrentCity);
+            EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+        } else {
+            if (mCityInfo != null) {
+                try {
+                    String[] rectangle = mCityInfo.rectangle.split(";");
+                    String[] leftBottom = rectangle[0].split(",");
+                    String[] rightTop = rectangle[1].split(",");
+
+                    double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
+                    curLat = String.valueOf(lat);
+
+                    double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
+                    curLon = String.valueOf(lon);
+                } catch (Exception e) {
+
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.register_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        intent.putExtra(ValueKey.LOCATION, mCurrrentCity);
+        intent.putExtra(ValueKey.LATITUDE, curLat);
+        intent.putExtra(ValueKey.LONGITUDE, curLon);
+        startActivity(intent);
+        return super.onOptionsItemSelected(item);
     }
 
     /**

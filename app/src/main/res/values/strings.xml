@@ -147,7 +147,8 @@
     <string name="weixin">微信号</string>
     <string name="ali_pay">支付宝支付(推荐)</string>
     <string name="ali_pay_info">使用支付宝支付,额外赠送500金币</string>
-    <string name="pay_info">额外赠送500金币</string>
+    <string name="pay_info">立减%1$s元</string>
+    <string name="pay_info_ali">额外赠送%1$s金币</string>
     <string name="weixin_pay">微信支付</string>
     <string name="right_now_pay">立即支付</string>
     <string name="send_telephone_fare">(送%1$s元话费)</string>
@@ -328,5 +329,17 @@
     <string name="love_name"><Data><![CDATA[<b>%1$s</b> 刚喜欢了您哦！]]></Data></string>
     <string name="send_msg">发送消息</string>
     <string name="going_find">继续寻觅</string>
+
+    <string name="tab_contacts">通讯录</string>
+    <string name="feed_back">反馈</string>
+    <string name="submit_success">提交成功</string>
+    <string name="input_hint">请输入您宝贵的意见或建议</string>
+    <string name="already_download">已下载</string>
+    <string name="download_failure">下载失败</string>
+    <string name="sticker_market">贴图商店</string>
+    <string name="action_delete_friends">删除好友</string>
+    <string name="action_add_friends">添加好友</string>
+    <string name="action_add_friends_success">添加好友成功</string>
+    <string name="phone_register">手机注册</string>
 
 </resources>

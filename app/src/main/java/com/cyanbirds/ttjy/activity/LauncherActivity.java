@@ -78,13 +78,7 @@ public class LauncherActivity extends Activity {
         if (AppManager.isLogin()) {//是否已经登录
             login();
         } else {
-            if (AppManager.getClientUser() != null
-					&& !TextUtils.isEmpty(AppManager.getClientUser().userId)){// && Integer.parseInt(AppManager.getClientUser().userId) > 0) {
-				mHandler.postDelayed(firstLauncher, SHOW_TIME_MIN);
-			} else {
-				mHandler.postDelayed(firstLauncher, SHOW_TIME_MIN);
-			}
-
+            mHandler.postDelayed(noLogin, SHOW_TIME_MIN);
         }
     }
 

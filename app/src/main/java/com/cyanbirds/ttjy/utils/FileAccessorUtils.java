@@ -18,32 +18,35 @@ public class FileAccessorUtils {
 	
 	/** 默认路径 */
 	public static final String DEFAULT_PATH = getExternalStorePath()
-			+ "/tanlove";
+			+ "/ttjy";
 	/** 文件存储路径 */
 	public static final String FILE_PATH = getExternalStorePath()
-			+ "/tanlove/.file";
+			+ "/ttjy/.file";
 	/** 图像的存储路径 */
 	public static final String IMESSAGE_IMAGE = getExternalStorePath()
-			+ "/tanlove/.image";
+			+ "/ttjy/.image";
 	/** 头像存储路径 */
 	public static final String FACE_IMAGE = getExternalStorePath()
-			+ "/tanlove/.face";
+			+ "/ttjy/.face";
 	/** 语音存储路径 */
 	public static final String VOICE_PATH = getExternalStorePath()
-			+ "/tanlove/.voice";
+			+ "/ttjy/.voice";
 	/** 视频存储路径 */
 	public static final String VIDEO_PATH = getExternalStorePath()
-			+ "/tanlove/.video";
+			+ "/ttjy/.video";
 	/** 缓存路径 */
 	public static final String CACHE_PATH = getExternalStorePath()
-			+ "/tanlove/.cache";
+			+ "/ttjy/.cache";
 	/** crash路径 */
 	public static final String CRASH_PATH = getExternalStorePath()
-			+ "/tanlove/.crash";
+			+ "/ttjy/.crash";
 
 	/** APK文件暂时存放的路径 */
 	public static final String APK_PATH = getExternalStorePath()
-			+ "/tanlove/.apk";
+			+ "/ttjy/.apk";
+	/** 在线表情存储路径 */
+	public static final String EXPRESSION_FILE = getExternalStorePath()
+			+ "/ttjy/.expression";
 
 	/**
 	 * 外置存储卡的路径
@@ -84,6 +87,24 @@ public class FileAccessorUtils {
 		}
 
 		File directory = new File(FILE_PATH);
+		if (!directory.exists() && !directory.mkdirs()) {
+			ToastUtil.showMessage("Path to file could not be created");
+			return null;
+		}
+		return directory;
+	}
+
+	/**
+	 * 获取在线表情存放目录
+	 * @return
+	 */
+	public static File getExpressionPathName(){
+		if (!isExistExternalStore()) {
+			ToastUtil.showMessage(R.string.media_ejected);
+			return null;
+		}
+
+		File directory = new File(EXPRESSION_FILE);
 		if (!directory.exists() && !directory.mkdirs()) {
 			ToastUtil.showMessage("Path to file could not be created");
 			return null;

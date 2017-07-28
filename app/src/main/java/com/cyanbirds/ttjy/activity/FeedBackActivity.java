@@ -1,0 +1,86 @@
+package com.cyanbirds.ttjy.activity;
+
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.activity.base.BaseActivity;
+import com.cyanbirds.ttjy.utils.ToastUtil;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import mehdi.sakout.fancybuttons.FancyButton;
+
+/**
+ * Created by wangyb on 2017/7/21.
+ * 描述：
+ */
+
+public class FeedBackActivity extends BaseActivity {
+
+    @BindView(R.id.content)
+    EditText mContent;
+    @BindView(R.id.text_num)
+    TextView mTextNum;
+    @BindView(R.id.submit)
+    FancyButton mSubmit;
+
+    private int limit = 100;//最多允许输入
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_feed_back);
+        ButterKnife.bind(this);
+        Toolbar toolbar = getActionBarToolbar();
+        if (toolbar != null) {
+            toolbar.setNavigationIcon(R.mipmap.ic_up);
+        }
+        setupView();
+        setupEvent();
+    }
+
+    private void setupView() {
+        //设置EditText的显示方式为多行文本输入
+        mContent.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        //改变默认的单行模式
+        mContent.setSingleLine(false);
+        //水平滚动设置为False
+        mContent.setHorizontallyScrolling(false);
+        mContent.setFocusable(true);
+        mTextNum.setText(String.valueOf(limit));
+    }
+
+    private void setupEvent() {
+        mContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int value = limit - s.toString().length();
+                mTextNum.setText(String.valueOf(value));
+            }
+        });
+
+    }
+
+    @OnClick(R.id.submit)
+    public void onViewClicked() {
+        ToastUtil.showMessage(R.string.submit_success);
+        finish();
+    }
+}
