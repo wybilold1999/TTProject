@@ -81,6 +81,7 @@ public class MyStickerFragment extends Fragment {
 		mExpressionGroups = new ArrayList<>();
 		List<ExpressionGroup> list = ExpressionGroupSqlManager.getInstance(getActivity()).getExpressionGroup();
 		if (list != null) {
+			mExpressionGroups.clear();
 			mExpressionGroups.addAll(list);
 			mAdapter = new DownloadExpressionAdapter(mExpressionGroups, isMySticker);
 			mRecyclerView.setAdapter(mAdapter);
@@ -95,6 +96,7 @@ public class MyStickerFragment extends Fragment {
 	private void updateMyExpressionGroups() {
 		List<ExpressionGroup> list = ExpressionGroupSqlManager.getInstance(getActivity()).getExpressionGroup();
 		if (list != null) {
+			mExpressionGroups.clear();
 			mExpressionGroups.addAll(list);
 			if (mAdapter != null) {
 				mAdapter.notifyDataSetChanged();
