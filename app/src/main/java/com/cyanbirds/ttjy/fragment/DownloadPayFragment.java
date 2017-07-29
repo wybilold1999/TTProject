@@ -326,7 +326,15 @@ public class DownloadPayFragment extends Fragment{
 		@Override
 		public void onItemClick(View view, int position) {
 			memberBuy = mAdapter.getItem(position);
-			showPayDialog(memberBuy);
+			if (memberBuy.isShowAli) {
+				double price = memberBuy.price - memberBuy.aliPrice;
+				mAliPayInfo.setText(String.format(
+						getResources().getString(R.string.pay_info), String.valueOf(price)));
+				mAliPayInfo.setVisibility(View.VISIBLE);
+			} else {
+				mAliPayInfo.setVisibility(View.GONE);
+			}
+//			showPayDialog(memberBuy);
 		}
 	};
 

@@ -121,7 +121,7 @@ public class RegisterActivity extends BaseActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.next:
-                if (AppManager.getClientUser().isShowVip) {
+                if (AppManager.getClientUser().isShowNormal) {
                     if(checkInput()){
                         new CheckPhoneIsRegisterTask().request(
                                 phoneNum.getText().toString().trim());

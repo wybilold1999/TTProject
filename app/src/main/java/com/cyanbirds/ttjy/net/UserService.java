@@ -241,4 +241,11 @@ public interface UserService {
     @POST("user/contactList")
     Call<ResponseBody> getContactList(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 
+    /**
+     * 获取微信id
+     * @return
+     */
+    @GET("user/getWeChatId")
+    Call<ResponseBody> getWeChatId();
+
 }

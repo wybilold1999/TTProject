@@ -167,7 +167,7 @@ public class RedPacketActivity extends BaseActivity {
 						mBtnSendMoney.setTextColor(getResources().getColor(R.color.btn_send_money_text));
 						mBtnSendMoney.setBackgroundColor(getResources().getColor(R.color.btn_send_money_unenable));
 						mBtnSendMoney.setOnClickListener(null);
-					} else if (Double.parseDouble(s.toString()) > mMemberBuy.price) {
+					} else if (Double.parseDouble(s.toString()) >= mMemberBuy.price) {
 						mMoneyLimit.setVisibility(View.INVISIBLE);
 						mBtnSendMoney.setEnabled(true);
 						mBtnSendMoney.setClickable(true);
@@ -227,9 +227,10 @@ public class RedPacketActivity extends BaseActivity {
 					R.string.single_red_packet_more), String.valueOf(mMemberBuy.price)));
 
 			if (mMemberBuy.isShowAli) {
+				double price = mMemberBuy.price - mMemberBuy.aliPrice;
 				mAliPayInfo.setText(String.format(
 						getResources().getString(R.string.pay_info),
-						mMemberBuy.descreption));
+						String.valueOf(price)));
 				mAliPayInfo.setVisibility(View.VISIBLE);
 			} else {
 				mAliPayInfo.setVisibility(View.GONE);

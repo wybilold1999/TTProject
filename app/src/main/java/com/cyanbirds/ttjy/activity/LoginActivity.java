@@ -28,6 +28,7 @@ import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
+import com.cyanbirds.ttjy.net.request.GetWeChatIdRequest;
 import com.cyanbirds.ttjy.net.request.QqLoginRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
@@ -105,6 +106,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
         if (toolbar != null) {
             toolbar.setNavigationIcon(R.mipmap.ic_up);
         }
+        new GetWeChatIdRequest().request();
         new GetCityInfoTask().request();
         setupData();
         initLocationClient();
@@ -192,6 +194,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
             clientUser.longitude = curLon;
+            clientUser.isShowNormal = AppManager.getClientUser().isShowNormal;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
@@ -225,6 +228,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
             clientUser.longitude = curLon;
+            clientUser.isShowNormal = AppManager.getClientUser().isShowNormal;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
@@ -336,6 +340,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
             clientUser.longitude = curLon;
+            clientUser.isShowNormal = AppManager.getClientUser().isShowNormal;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
@@ -385,6 +390,8 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             mCurrrentCity = cityInfo.city;
             PreferencesUtils.setCurrentCity(LoginActivity.this, mCurrrentCity);
             EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+
+            new UploadCityInfoTask().request(mCurrrentCity,"", "");
         }
 
         @Override
