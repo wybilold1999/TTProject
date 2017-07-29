@@ -704,11 +704,9 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 			if (s.equals("已关注")) {
 				ToastUtil.showMessage(R.string.attention_success);
 				mAttention.setText(s);
-				mAttention.setTextColor(getResources().getColor(R.color.colorPrimary));
 			} else {
 				ToastUtil.showMessage(R.string.cancle_attention);
 				mAttention.setText(R.string.attention);
-				mAttention.setTextColor(getResources().getColor(R.color.gray_text));
 			}
 		}
 
@@ -727,10 +725,8 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 			if (s.equals("已喜欢")) {
 				mLove.setText(s);
 				ToastUtil.showMessage(R.string.like_success);
-				mLove.setTextColor(getResources().getColor(R.color.colorPrimary));
 			} else {
 				mLove.setText(R.string.like);
-				mLove.setTextColor(getResources().getColor(R.color.gray_text));
 			}
 		}
 
