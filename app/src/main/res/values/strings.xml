@@ -341,5 +341,6 @@
     <string name="action_add_friends">添加好友</string>
     <string name="action_add_friends_success">添加好友成功</string>
     <string name="phone_register">手机注册</string>
+    <string name="please_input_suggestion">您还未输入意见或建议</string>
 
 </resources>

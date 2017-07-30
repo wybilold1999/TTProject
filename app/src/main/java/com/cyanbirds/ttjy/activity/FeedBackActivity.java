@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -80,7 +81,11 @@ public class FeedBackActivity extends BaseActivity {
 
     @OnClick(R.id.submit)
     public void onViewClicked() {
-        ToastUtil.showMessage(R.string.submit_success);
-        finish();
+        if (TextUtils.isEmpty(mContent.getText().toString())) {
+            ToastUtil.showMessage(R.string.please_input_suggestion);
+        } else {
+            ToastUtil.showMessage(R.string.submit_success);
+            finish();
+        }
     }
 }
