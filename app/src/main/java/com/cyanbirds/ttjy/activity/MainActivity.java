@@ -546,7 +546,11 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	 */
 	private void updateConversationUnRead() {
 		View view;
-		view = mTabHost.getTabWidget().getChildTabViewAt(0);
+		if (AppManager.getClientUser().isShowNormal) {
+			view = mTabHost.getTabWidget().getChildTabViewAt(2);
+		} else {
+			view = mTabHost.getTabWidget().getChildTabViewAt(0);
+		}
 		TextView unread_message_num = (TextView) view
 				.findViewById(R.id.unread_message_num);
 
