@@ -241,6 +241,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
         @Override
         public void onErrorExecute(String error) {
             ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
+            ToastUtil.showMessage(error);
         }
     }
 
