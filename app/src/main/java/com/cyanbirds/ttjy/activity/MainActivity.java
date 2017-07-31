@@ -64,7 +64,6 @@ import com.cyanbirds.ttjy.service.MyPushService;
 import com.cyanbirds.ttjy.utils.MsgUtil;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
-import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.igexin.sdk.PushManager;
 import com.umeng.analytics.MobclickAgent;
 import com.xiaomi.mipush.sdk.MiPushClient;

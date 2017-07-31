@@ -199,7 +199,6 @@ public class RegisterActivity extends BaseActivity {
         @Override
         public void onErrorExecute(String error) {
             ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
-            ToastUtil.showMessage(error);
         }
     }
 
