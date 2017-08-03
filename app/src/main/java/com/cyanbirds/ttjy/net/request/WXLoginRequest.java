@@ -9,6 +9,7 @@ import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.base.ResultPostExecute;
 import com.cyanbirds.ttjy.utils.AESOperator;
+import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -43,6 +44,7 @@ public class WXLoginRequest extends ResultPostExecute<ClientUser> {
 		} else {
 			params.put("currentCity", "");
 		}
+		params.put("loginTime", String.valueOf(PreferencesUtils.getLoginTime(CSApplication.getInstance())));
 		Call<ResponseBody> call = AppManager.getUserService().wxLogin(AppManager.getClientUser().sessionId, params);
 		call.enqueue(new Callback<ResponseBody>() {
 			@Override
