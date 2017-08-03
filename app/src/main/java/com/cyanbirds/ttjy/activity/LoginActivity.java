@@ -198,6 +198,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
+            PreferencesUtils.setLoginTime(LoginActivity.this, System.currentTimeMillis());
             IMChattingHelper.getInstance().sendInitLoginMsg();
             Intent intent = new Intent();
             intent.setClass(LoginActivity.this, MainActivity.class);
@@ -231,6 +232,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
+            PreferencesUtils.setLoginTime(LoginActivity.this, System.currentTimeMillis());
             IMChattingHelper.getInstance().sendInitLoginMsg();
             Intent intent = new Intent();
             intent.setClass(LoginActivity.this, MainActivity.class);
@@ -343,6 +345,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
+            PreferencesUtils.setLoginTime(LoginActivity.this, System.currentTimeMillis());
             IMChattingHelper.getInstance().sendInitLoginMsg();
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);

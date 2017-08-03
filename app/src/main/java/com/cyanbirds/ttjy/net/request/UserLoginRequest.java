@@ -11,6 +11,7 @@ import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.base.ResultPostExecute;
 import com.cyanbirds.ttjy.utils.AESOperator;
 import com.cyanbirds.ttjy.utils.CheckUtil;
+import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -45,6 +46,7 @@ public class UserLoginRequest extends ResultPostExecute<ClientUser> {
 		} else {
 			params.put("currentCity", "");
 		}
+		params.put("loginTime", String.valueOf(PreferencesUtils.getLoginTime(CSApplication.getInstance())));
 		Call<ResponseBody> call = AppManager.getUserService().userLogin(AppManager.getClientUser().sessionId, params);
 		call.enqueue(new Callback<ResponseBody>() {
 			@Override
