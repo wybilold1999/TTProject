@@ -180,21 +180,21 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 public void run() {
                     new GetLoveFormeListTask().request(1, 1);
                 }
-            }, 4500 * 10);
+            }, 9000 * 10);
 
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     new MyGiftListTask().request(1, 1);
                 }
-            }, 1000 * 10);
+            }, 1500 * 10);
 
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     new FollowListTask().request("followFormeList", 1, 1);
                 }
-            }, 2500 * 10);
+            }, 5000 * 10);
         }
     }
 
