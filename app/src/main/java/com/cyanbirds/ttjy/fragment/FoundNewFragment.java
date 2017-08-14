@@ -41,7 +41,7 @@ public class FoundNewFragment extends Fragment implements ModifyContactsListener
     private List<Contact> mNetContacts;//网络请求的联系人
     private List<Contact> mContacts;//通讯录已存在的好友
     private int pageIndex = 1;
-    private int pageSize = 50;
+    private int pageSize = 30;
     private String GENDER = ""; //空表示查询和自己性别相反的用户
     /**
      * 0:同城 1：缘分 2：颜值  -1:就是全国
@@ -83,7 +83,7 @@ public class FoundNewFragment extends Fragment implements ModifyContactsListener
     }
 
     private void setupEvent(){
-        mRecyclerView.addOnScrollListener(mOnScrollListener);
+//        mRecyclerView.addOnScrollListener(mOnScrollListener);
         ModifyContactsListener.getInstance().addOnDataChangedListener(this);
     }
 
