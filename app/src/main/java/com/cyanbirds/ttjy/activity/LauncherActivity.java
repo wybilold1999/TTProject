@@ -12,6 +12,7 @@ import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
+import com.cyanbirds.ttjy.net.request.GetWeChatIdRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.Md5Util;
@@ -75,6 +76,7 @@ public class LauncherActivity extends Activity {
     };
 
     private void init() {
+        new GetWeChatIdRequest().request();
         if (AppManager.isLogin()) {//是否已经登录
             login();
         } else {
