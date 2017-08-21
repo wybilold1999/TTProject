@@ -122,7 +122,7 @@ public class InputNewPwdActivity extends BaseActivity implements
 			AppManager.setClientUser(clientUser);
 			AppManager.saveUserInfo();
 			Intent intent = new Intent();
-			intent.setClass(InputNewPwdActivity.this, MainActivity.class);
+			intent.setClass(InputNewPwdActivity.this, MainNewActivity.class);
 			startActivity(intent);
 			finishAll();
 		}

@@ -175,7 +175,7 @@ public class RegisterActivity extends BaseActivity {
             PreferencesUtils.setLoginTime(RegisterActivity.this, System.currentTimeMillis());
             IMChattingHelper.getInstance().sendInitLoginMsg();
             Intent intent = new Intent();
-            intent.setClass(RegisterActivity.this, MainActivity.class);
+            intent.setClass(RegisterActivity.this, MainNewActivity.class);
             startActivity(intent);
             finishAll();
         }
@@ -317,7 +317,7 @@ public class RegisterActivity extends BaseActivity {
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
             PreferencesUtils.setLoginTime(RegisterActivity.this, System.currentTimeMillis());
             IMChattingHelper.getInstance().sendInitLoginMsg();
-            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            Intent intent = new Intent(RegisterActivity.this, MainNewActivity.class);
             startActivity(intent);
             finishAll();
         }

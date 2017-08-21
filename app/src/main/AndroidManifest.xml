@@ -205,12 +205,6 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".activity.MainActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
-            android:label="@string/login_register"
-            android:screenOrientation="portrait"/>
-
-        <activity
             android:name=".activity.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:windowSoftInputMode="stateAlwaysHidden"

@@ -80,17 +80,6 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     private final String BEAUTIFUL = "2";
     private final String ALL_COUNTRY = "-1";
 
-    private static final String FRAGMENT_INDEX = "fragment_index";
-    private int mCurIndex = -1;
-    private boolean isNewData = false;
-
-    public static FindLoveFragment newInstance(int index) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(FRAGMENT_INDEX, index);
-        FindLoveFragment fragment = new FindLoveFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

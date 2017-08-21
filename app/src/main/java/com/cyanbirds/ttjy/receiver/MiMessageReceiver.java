@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.LauncherActivity;
-import com.cyanbirds.ttjy.activity.MainActivity;
+import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
@@ -76,7 +76,7 @@ public class MiMessageReceiver extends PushMessageReceiver {
 //            if (!AppActivityLifecycleCallbacks.getInstance().getIsForeground()) {
             if (AppManager.isAppIsInBackground(context)) {
                 if (PreferencesUtils.getIsLogin(context)) {
-                    Intent mainIntent = new Intent(context, MainActivity.class);
+                    Intent mainIntent = new Intent(context, MainNewActivity.class);
                     if (!TextUtils.isEmpty(message.getContent())) {
                         mainIntent.putExtra(ValueKey.DATA, message.getContent());
                     }

@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.cyanbirds.ttjy.activity.LauncherActivity;
-import com.cyanbirds.ttjy.activity.MainActivity;
+import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
@@ -80,7 +80,7 @@ public class JPushReceiver extends BroadcastReceiver {
 			String message = bundle.getString(JPushInterface.EXTRA_EXTRA);
 			if (AppManager.isAppAlive(context, AppManager.pkgName)) {
 				if (AppManager.isAppIsInBackground(context)) {
-					Intent mainIntent = new Intent(context, MainActivity.class);
+					Intent mainIntent = new Intent(context, MainNewActivity.class);
 					if (!TextUtils.isEmpty(message)) {
 						mainIntent.putExtra(ValueKey.DATA, message);
 					}
