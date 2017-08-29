@@ -101,10 +101,6 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        Toolbar toolbar = getActionBarToolbar();
-        if (toolbar != null) {
-            toolbar.setNavigationIcon(R.mipmap.ic_up);
-        }
         new GetCityInfoTask().request();
         setupData();
         initLocationClient();

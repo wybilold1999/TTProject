@@ -201,7 +201,7 @@
         <activity
             android:name=".activity.LoginActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
-            android:label="@string/login"
+            android:label="@string/login_register"
             android:screenOrientation="portrait"/>
 
         <activity
