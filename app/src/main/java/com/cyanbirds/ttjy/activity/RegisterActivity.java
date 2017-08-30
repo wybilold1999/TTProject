@@ -113,6 +113,9 @@ public class RegisterActivity extends BaseActivity {
         } else {
             mSexLay.setVisibility(View.GONE);
         }
+        mClientUser = new ClientUser();
+        mClientUser.sex = "男";
+        mClientUser.age = 20;
     }
 
 
