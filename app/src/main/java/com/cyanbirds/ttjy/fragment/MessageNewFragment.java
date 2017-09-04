@@ -1,16 +1,18 @@
 package com.cyanbirds.ttjy.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.adapter.MessageAdapter;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.Conversation;
@@ -28,8 +30,9 @@ import java.util.List;
  * @email: 395044952@qq.com
  * @description:
  */
-public class MessageFragment extends Fragment implements MessageChangedListener.OnMessageChangedListener {
+public class MessageNewFragment extends Fragment implements MessageChangedListener.OnMessageChangedListener {
     private View rootView;
+    private Toolbar mToolbar;
     private RecyclerView mMessageRecyclerView;
     private MessageAdapter mAdapter;
     private List<Conversation> mConversations;
@@ -38,7 +41,7 @@ public class MessageFragment extends Fragment implements MessageChangedListener.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_message, null);
+            rootView = inflater.inflate(R.layout.fragment_new_message, null);
             setupViews();
             setupEvent();
             setupData();
@@ -48,13 +51,18 @@ public class MessageFragment extends Fragment implements MessageChangedListener.
         if (parent != null) {
             parent.removeView(rootView);
         }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                R.string.tab_message);
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mToolbar.setTitle("消息");
+        ((MainNewActivity) getActivity()).initDrawer(mToolbar);
+    }
+
     private void setupViews(){
+        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.message_recycler_view);
         LinearLayoutManager layoutManager = new WrapperLinearLayoutManager(
                 getActivity(), LinearLayoutManager.VERTICAL, false);

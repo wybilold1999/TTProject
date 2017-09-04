@@ -716,7 +716,12 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        Intent intent = new Intent(mContext, PersonalInfoNewActivity.class);
+                        Intent intent = new Intent();
+                        if (AppManager.getClientUser().isShowNormal) {
+                            intent.setClass(mContext, PersonalInfoActivity.class);
+                        } else {
+                            intent.setClass(mContext, PersonalInfoNewActivity.class);
+                        }
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -777,7 +782,11 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait :
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        intent.setClass(itemView.getContext(), PersonalInfoNewActivity.class);
+                        if (AppManager.getClientUser().isShowNormal) {
+                            intent.setClass(mContext, PersonalInfoActivity.class);
+                        } else {
+                            intent.setClass(mContext, PersonalInfoNewActivity.class);
+                        }
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -824,7 +833,11 @@ public class ChatMessageAdapter extends
             switch (v.getId()) {
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        intent.setClass(itemView.getContext(), PersonalInfoNewActivity.class);
+                        if (AppManager.getClientUser().isShowNormal) {
+                            intent.setClass(mContext, PersonalInfoActivity.class);
+                        } else {
+                            intent.setClass(mContext, PersonalInfoNewActivity.class);
+                        }
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -879,7 +892,12 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        Intent intent = new Intent(mContext, PersonalInfoNewActivity.class);
+                        Intent intent = new Intent();
+                        if (AppManager.getClientUser().isShowNormal) {
+                            intent.setClass(mContext, PersonalInfoActivity.class);
+                        } else {
+                            intent.setClass(mContext, PersonalInfoNewActivity.class);
+                        }
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }
@@ -926,7 +944,12 @@ public class ChatMessageAdapter extends
                     break;
                 case R.id.portrait:
                     if(null != mConversation && !"-1".equals(mConversation.talker)){
-                        Intent intent = new Intent(mContext, PersonalInfoNewActivity.class);
+                        Intent intent = new Intent();
+                        if (AppManager.getClientUser().isShowNormal) {
+                            intent.setClass(mContext, PersonalInfoActivity.class);
+                        } else {
+                            intent.setClass(mContext, PersonalInfoNewActivity.class);
+                        }
                         intent.putExtra(ValueKey.USER_ID, mConversation.talker);
                         mContext.startActivity(intent);
                     }

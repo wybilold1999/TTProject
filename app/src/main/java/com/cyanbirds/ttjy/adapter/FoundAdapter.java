@@ -145,7 +145,7 @@ public class FoundAdapter extends
             PictureModel model = pictureModels.get(position);
             switch (v.getId()){
                 case R.id.portrait :
-                    intent.setClass(mContext, PersonalInfoNewActivity.class);
+                    intent.setClass(mContext, PersonalInfoActivity.class);
                     intent.putExtra(ValueKey.USER_ID, String.valueOf(model.usersId));
                     mContext.startActivity(intent);
                     break;

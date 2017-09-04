@@ -22,6 +22,7 @@ import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
+import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.umeng.analytics.MobclickAgent;
 
@@ -51,7 +52,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     private AMapLocationClientOption mLocationOption;
     private AMapLocationClient mlocationClient;
     private String mCurrrentCity;//定位到的城市
-    private CityInfo mCityInfo;//web api返回的城市信息
     private String curLat;
     private String curLon;
 
@@ -93,10 +93,48 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
 
         @Override
         public void onPostExecute(CityInfo cityInfo) {
-            mCityInfo = cityInfo;
-            mCurrrentCity = cityInfo.city;
-            PreferencesUtils.setCurrentCity(EntranceActivity.this, mCurrrentCity);
-            EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+            try {
+                mCurrrentCity = cityInfo.city;
+                PreferencesUtils.setCurrentCity(EntranceActivity.this, mCurrrentCity);
+                EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+
+                String[] rectangle = cityInfo.rectangle.split(";");
+                String[] leftBottom = rectangle[0].split(",");
+                String[] rightTop = rectangle[1].split(",");
+
+                double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
+                curLat = String.valueOf(lat);
+
+                double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
+                curLon = String.valueOf(lon);
+                AppManager.getClientUser().latitude = curLat;
+                AppManager.getClientUser().longitude = curLon;
+            } catch (Exception e) {
+
+            }
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
+        }
+    }
+
+    class UploadCityInfoTask extends UploadCityInfoRequest {
+
+        @Override
+        public void onPostExecute(String isShow) {
+            if ("0".equals(isShow)) {
+                AppManager.getClientUser().isShowDownloadVip = false;
+                AppManager.getClientUser().isShowGold = false;
+                AppManager.getClientUser().isShowLovers = false;
+                AppManager.getClientUser().isShowMap = false;
+                AppManager.getClientUser().isShowVideo = false;
+                AppManager.getClientUser().isShowVip = false;
+                AppManager.getClientUser().isShowRpt = false;
+                AppManager.getClientUser().isShowNormal = false;
+            } else {
+                AppManager.getClientUser().isShowNormal = true;
+            }
         }
 
         @Override
@@ -131,22 +169,11 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
             mCurrrentCity = aMapLocation.getCity();
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+
+            new UploadCityInfoTask().request(aMapLocation.getCity(),
+                    AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
         } else {
-            if (mCityInfo != null) {
-                try {
-                    String[] rectangle = mCityInfo.rectangle.split(";");
-                    String[] leftBottom = rectangle[0].split(",");
-                    String[] rightTop = rectangle[1].split(",");
-
-                    double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
-                    curLat = String.valueOf(lat);
-
-                    double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
-                    curLon = String.valueOf(lon);
-                } catch (Exception e) {
-
-                }
-            }
+            new UploadCityInfoTask().request(mCurrrentCity, curLat, curLon);
         }
     }
 

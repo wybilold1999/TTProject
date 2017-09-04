@@ -458,6 +458,18 @@
             android:label="@string/select_image"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".activity.MainActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/login_register"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activity.CardActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:label="@string/yuan_fen"
+            android:screenOrientation="portrait"/>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"

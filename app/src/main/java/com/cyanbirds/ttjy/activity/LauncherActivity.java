@@ -13,6 +13,7 @@ import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
 import com.cyanbirds.ttjy.net.request.GetWeChatIdRequest;
+import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.Md5Util;
@@ -42,10 +43,19 @@ public class LauncherActivity extends Activity {
                 case LONG_SCUESS:
                     long loadingTime = System.currentTimeMillis() - mStartTime;// 计算一下总共花费的时间
                     if (loadingTime < SHOW_TIME_MIN) {// 如果比最小显示时间还短，就延时进入MainActivity，否则直接进入
-                        mHandler.postDelayed(mainActivity, SHOW_TIME_MIN
-                                - loadingTime);
+                        if (AppManager.getClientUser().isShowNormal) {
+                            mHandler.postDelayed(mainActivity, SHOW_TIME_MIN
+                                    - loadingTime);
+                        } else {
+                            mHandler.postDelayed(mainNewActivity, SHOW_TIME_MIN
+                                    - loadingTime);
+                        }
                     } else {
-                        mHandler.postDelayed(mainActivity, 0);
+                        if (AppManager.getClientUser().isShowNormal) {
+                            mHandler.postDelayed(mainActivity, 0);
+                        } else {
+                            mHandler.postDelayed(mainNewActivity, 0);
+                        }
                     }
                     break;
                 case LONG_FAIURE:
@@ -63,7 +73,7 @@ public class LauncherActivity extends Activity {
         loadData();
     }
 
-    Runnable mainActivity = new Runnable() {
+    Runnable mainNewActivity = new Runnable() {
 
         @Override
         public void run() {
@@ -75,8 +85,23 @@ public class LauncherActivity extends Activity {
         }
     };
 
+    Runnable mainActivity = new Runnable() {
+
+        @Override
+        public void run() {
+            Intent intent = new Intent(LauncherActivity.this,
+                    MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
+    };
+
     private void init() {
         new GetWeChatIdRequest().request();
+        if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
+            new UploadCityInfoTask().request(PreferencesUtils.getCurrentCity(this), "", "");
+        }
         if (AppManager.isLogin()) {//是否已经登录
             login();
         } else {
@@ -87,6 +112,29 @@ public class LauncherActivity extends Activity {
 				mHandler.postDelayed(firstLauncher, SHOW_TIME_MIN);
 			}
 
+        }
+    }
+
+    class UploadCityInfoTask extends UploadCityInfoRequest {
+
+        @Override
+        public void onPostExecute(String isShow) {
+            if ("0".equals(isShow)) {
+                AppManager.getClientUser().isShowDownloadVip = false;
+                AppManager.getClientUser().isShowGold = false;
+                AppManager.getClientUser().isShowLovers = false;
+                AppManager.getClientUser().isShowMap = false;
+                AppManager.getClientUser().isShowVideo = false;
+                AppManager.getClientUser().isShowVip = false;
+                AppManager.getClientUser().isShowRpt = false;
+                AppManager.getClientUser().isShowNormal = false;
+            } else {
+                AppManager.getClientUser().isShowNormal = true;
+            }
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
         }
     }
 

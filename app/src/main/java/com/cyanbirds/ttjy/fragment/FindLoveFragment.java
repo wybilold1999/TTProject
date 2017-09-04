@@ -4,15 +4,15 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,8 +24,8 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.MainNewActivity;
-import com.cyanbirds.ttjy.activity.PersonalInfoNewActivity;
+import com.cyanbirds.ttjy.activity.CardActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.adapter.FindLoveAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
@@ -49,10 +49,9 @@ import java.util.List;
  * @description:
  */
 public class FindLoveFragment extends Fragment implements OnRefreshListener, View.OnClickListener{
-    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefresh;
-//    private FloatingActionButton mFab;
+    private FloatingActionButton mFab;
     private CircularProgress mProgress;
     private View rootView;
     private View searchView;
@@ -80,6 +79,16 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     private final String BEAUTIFUL = "2";
     private final String ALL_COUNTRY = "-1";
 
+    private static final String FRAGMENT_INDEX = "fragment_index";
+    private int mCurIndex = -1;
+
+    public static FindLoveFragment newInstance(int index) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(FRAGMENT_INDEX, index);
+        FindLoveFragment fragment = new FindLoveFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,19 +104,14 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         if (parent != null) {
             parent.removeView(rootView);
         }
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
+                R.string.tab_find_love);
         return rootView;
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mToolbar.setTitle("同城");
-        ((MainNewActivity) getActivity()).initDrawer(mToolbar);
-    }
-
     private void setupViews() {
-        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-//        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        mFab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         mProgress = (CircularProgress) rootView.findViewById(R.id.progress_bar);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         mSwipeRefresh = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh);
@@ -131,11 +135,11 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     private void setupEvent() {
         mSwipeRefresh.setOnRefreshListener(this);
         mRecyclerView.addOnScrollListener(mOnScrollListener);
-//        mFab.setOnClickListener(this);
+        mFab.setOnClickListener(this);
     }
 
     private void setupData() {
-        /*//获得索引值
+        //获得索引值
         Bundle bundle = getArguments();
         if (bundle != null) {
             mCurIndex = bundle.getInt(FRAGMENT_INDEX);
@@ -150,9 +154,8 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
             case 2 :
                 mUserScopeType = ALL_COUNTRY;
                 break;
-        }*/
+        }
 
-        mUserScopeType = SAME_CITY;
         mClientUsers = new ArrayList<>();
         mAdapter = new FindLoveAdapter(mClientUsers, getActivity());
         mAdapter.setOnItemClickListener(mOnItemClickListener);
@@ -218,7 +221,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         public void onItemClick(View view, int position) {
             ClientUser clientUser = mAdapter.getItem(position);
             if (clientUser != null) {
-                Intent intent = new Intent(getActivity(), PersonalInfoNewActivity.class);
+                Intent intent = new Intent(getActivity(), PersonalInfoActivity.class);
                 intent.putExtra(ValueKey.USER_ID, clientUser.userId);
                 intent.putExtra(ValueKey.FROM_ACTIVITY, "FindLoveFragment");
                 startActivity(intent);
@@ -228,8 +231,8 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
 
     @Override
     public void onClick(View v) {
-//        Intent intent = new Intent(getActivity(), RadarActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(getActivity(), CardActivity.class);
+        startActivity(intent);
     }
 
     class GetFindLoveTask extends GetFindLoveRequest {
@@ -387,7 +390,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         }
     }
 
-    class GetFreshFindLoveTask extends GetFindLoveRequest{
+    class GetFreshFindLoveTask extends GetFindLoveRequest {
         @Override
         public void onPostExecute(List<ClientUser> userList) {
             mProgress.setVisibility(View.GONE);
@@ -411,7 +414,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
         }
     }
 
-    class GetRealLoveFreshFindLoveTask extends GetRealUserRequest{
+    class GetRealLoveFreshFindLoveTask extends GetRealUserRequest {
         @Override
         public void onPostExecute(List<ClientUser> userList) {
             mProgress.setVisibility(View.GONE);

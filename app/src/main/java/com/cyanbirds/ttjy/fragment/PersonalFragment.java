@@ -259,7 +259,11 @@ public class PersonalFragment extends Fragment {
 		Intent intent = new Intent();
 		switch (view.getId()) {
 			case R.id.head_portrait_lay:
-				intent.setClass(getActivity(), PersonalInfoNewActivity.class);
+				if (AppManager.getClientUser().isShowNormal) {
+					intent.setClass(getActivity(), PersonalInfoActivity.class);
+				} else {
+					intent.setClass(getActivity(), PersonalInfoNewActivity.class);
+				}
 				intent.putExtra(ValueKey.USER_ID, AppManager.getClientUser().userId);
 				startActivity(intent);
 				break;

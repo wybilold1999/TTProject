@@ -199,7 +199,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	private TabPersonalPhotosAdapter mAdapter;
 	private LinearLayoutManager layoutManager;
 	private LinearLayoutManager mGiftLayoutManager;
-//	private Gson gson = new Gson();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -295,16 +294,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 				/**
 				 * 用户收到的礼物
 				 */
-				if (!TextUtils.isEmpty(clientUser.gifts)) {
-					mGiftText.setVisibility(View.VISIBLE);
-					mGiftCard.setVisibility(View.VISIBLE);
-					mAdapter = new TabPersonalPhotosAdapter(getActivity(),
-							StringUtil.stringToIntList(clientUser.gifts));
-					mGiftRecyclerview.setAdapter(mAdapter);
-				} else {
-					mGiftText.setVisibility(View.GONE);
-					mGiftCard.setVisibility(View.GONE);
-				}
 				if (AppManager.getClientUser().isShowLovers) {
 					mGiftText.setVisibility(View.VISIBLE);
 					mGiftCard.setVisibility(View.VISIBLE);
@@ -315,6 +304,16 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 					mGiftCard.setVisibility(View.GONE);
 					mCardFriend.setVisibility(View.GONE);
 					mTvFriend.setVisibility(View.GONE);
+				}
+				if (!TextUtils.isEmpty(clientUser.gifts)) {
+					mGiftText.setVisibility(View.VISIBLE);
+					mGiftCard.setVisibility(View.VISIBLE);
+					mAdapter = new TabPersonalPhotosAdapter(getActivity(),
+							StringUtil.stringToIntList(clientUser.gifts));
+					mGiftRecyclerview.setAdapter(mAdapter);
+				} else {
+					mGiftText.setVisibility(View.GONE);
+					mGiftCard.setVisibility(View.GONE);
 				}
 			}
 		}

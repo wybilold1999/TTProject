@@ -51,10 +51,11 @@ import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
 import com.cyanbirds.ttjy.fragment.AttentionMFragment;
 import com.cyanbirds.ttjy.fragment.CardFragment;
-import com.cyanbirds.ttjy.fragment.FindLoveFragment;
+import com.cyanbirds.ttjy.fragment.FindNewFragment;
 import com.cyanbirds.ttjy.fragment.FoundGridFragment;
 import com.cyanbirds.ttjy.fragment.GiftLoveFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
+import com.cyanbirds.ttjy.fragment.MessageNewFragment;
 import com.cyanbirds.ttjy.fragment.SettingFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
@@ -283,11 +284,11 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                     switchContent(currentFragment);
                     break;
                 case 2:
-                    currentFragment = new FindLoveFragment();
+                    currentFragment = new FindNewFragment();
                     switchContent(currentFragment);
                     break;
                 case 3:
-                    currentFragment = new MessageFragment();
+                    currentFragment = new MessageNewFragment();
                     switchContent(currentFragment);
                     break;
                 case 4:
@@ -330,13 +331,13 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 case R.id.navigation_item_3:
                     currentIndex = 2;
                     menuItem.setChecked(true);
-                    currentFragment = new FindLoveFragment();
+                    currentFragment = new FindNewFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_4:
                     currentIndex = 3;
                     menuItem.setChecked(true);
-                    currentFragment = new MessageFragment();
+                    currentFragment = new MessageNewFragment();
                     switchContent(currentFragment);
                     return true;
                 case R.id.navigation_item_5:

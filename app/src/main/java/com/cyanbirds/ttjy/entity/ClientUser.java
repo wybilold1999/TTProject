@@ -130,4 +130,9 @@ public class ClientUser implements Serializable{
 
     public boolean isLocalMsg;//是否是本地创建的消息(礼物、关注、喜欢)
 
+    /**
+     * 0:不显示  1：显示
+     */
+    public boolean isShowNormal; //主界面布局
+
 }

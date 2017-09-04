@@ -59,7 +59,7 @@ public class FoundGridFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_found, null);
+            rootView = inflater.inflate(R.layout.fragment_grid, null);
             ButterKnife.bind(this, rootView);
             setupViews();
             setupEvent();

@@ -46,7 +46,12 @@ public class NotificationReceiver extends BroadcastReceiver {
                 }
             }
             if (clientUser.isLocalMsg) {
-                Intent chatIntent = new Intent(context, PersonalInfoNewActivity.class);
+                Intent chatIntent = new Intent();
+                if (AppManager.getClientUser().isShowNormal) {
+                    chatIntent.setClass(context, PersonalInfoActivity.class);
+                } else {
+                    chatIntent.setClass(context, PersonalInfoNewActivity.class);
+                }
                 chatIntent.putExtra(ValueKey.USER_ID, clientUser.userId);
                 chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                         | Intent.FLAG_ACTIVITY_NEW_TASK);
