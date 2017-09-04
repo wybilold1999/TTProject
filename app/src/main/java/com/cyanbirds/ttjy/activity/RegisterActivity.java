@@ -104,6 +104,7 @@ public class RegisterActivity extends BaseActivity {
         mCurrrentCity = getIntent().getStringExtra(ValueKey.LOCATION);
         curLat = getIntent().getStringExtra(ValueKey.LATITUDE);
         curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
+
     }
 
 
@@ -169,6 +170,7 @@ public class RegisterActivity extends BaseActivity {
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
             clientUser.longitude = curLon;
+            clientUser.isShowNormal = AppManager.getClientUser().isShowNormal;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
@@ -205,6 +207,7 @@ public class RegisterActivity extends BaseActivity {
                 intent.putExtra(ValueKey.PHONE_NUMBER, phone_num);
                 intent.putExtra(ValueKey.INPUT_PHONE_TYPE, 0);
                 mClientUser.currentCity = mCurrrentCity;
+                mClientUser.isShowNormal = AppManager.getClientUser().isShowNormal;
                 intent.putExtra(ValueKey.USER, mClientUser);
                 startActivity(intent);
             }
@@ -316,6 +319,7 @@ public class RegisterActivity extends BaseActivity {
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
             clientUser.longitude = curLon;
+            clientUser.isShowNormal = AppManager.getClientUser().isShowNormal;
             AppManager.setClientUser(clientUser);
             AppManager.saveUserInfo();
             AppManager.getClientUser().loginTime = System.currentTimeMillis();
