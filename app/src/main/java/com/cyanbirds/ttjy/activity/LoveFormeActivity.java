@@ -15,6 +15,7 @@ import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.adapter.LoveFormeAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.LoveModel;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetLoveFormeListRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
@@ -89,7 +90,12 @@ public class LoveFormeActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             LoveModel loveModel = mLoveModels.get(position);
-            Intent intent = new Intent(LoveFormeActivity.this, PersonalInfoNewActivity.class);
+            Intent intent = new Intent();
+            if (AppManager.getClientUser().isShowNormal) {
+                intent.setClass(LoveFormeActivity.this, PersonalInfoActivity.class);
+            } else {
+                intent.setClass(LoveFormeActivity.this, PersonalInfoNewActivity.class);
+            }
             intent.putExtra(ValueKey.USER_ID, String.valueOf(loveModel.userId));
             startActivity(intent);
         }

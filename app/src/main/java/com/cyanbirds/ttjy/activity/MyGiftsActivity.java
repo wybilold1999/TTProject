@@ -90,7 +90,12 @@ public class MyGiftsActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             ReceiveGiftModel receiveGiftModel = mAdapter.getItem(position);
-            Intent intent = new Intent(MyGiftsActivity.this, PersonalInfoNewActivity.class);
+            Intent intent = new Intent();
+            if (AppManager.getClientUser().isShowNormal) {
+                intent.setClass(MyGiftsActivity.this, PersonalInfoActivity.class);
+            } else {
+                intent.setClass(MyGiftsActivity.this, PersonalInfoNewActivity.class);
+            }
             intent.putExtra(ValueKey.USER_ID, String.valueOf(receiveGiftModel.userId));
             startActivity(intent);
         }

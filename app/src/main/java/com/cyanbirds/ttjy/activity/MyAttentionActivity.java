@@ -14,6 +14,7 @@ import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.adapter.MyAttentionAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.FollowModel;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.FollowListRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
@@ -79,7 +80,12 @@ public class MyAttentionActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             FollowModel followModel = mAdapter.getItem(position);
-            Intent intent = new Intent(MyAttentionActivity.this, PersonalInfoNewActivity.class);
+            Intent intent = new Intent();
+            if (AppManager.getClientUser().isShowNormal) {
+                intent.setClass(MyAttentionActivity.this, PersonalInfoActivity.class);
+            } else {
+                intent.setClass(MyAttentionActivity.this, PersonalInfoNewActivity.class);
+            }
             intent.putExtra(ValueKey.USER_ID, String.valueOf(followModel.userId));
             startActivity(intent);
         }

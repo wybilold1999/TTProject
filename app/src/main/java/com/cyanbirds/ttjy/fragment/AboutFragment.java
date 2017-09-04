@@ -35,7 +35,7 @@ public class AboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.activity_about, null);
+            rootView = inflater.inflate(R.layout.fragment_about, null);
             ButterKnife.bind(this, rootView);
             setupData();
             setHasOptionsMenu(true);

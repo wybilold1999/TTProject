@@ -86,7 +86,12 @@ public class AttentionMeActivity extends BaseActivity {
         @Override
         public void onItemClick(View view, int position) {
             FollowModel followModel = mFollowModels.get(position);
-            Intent intent = new Intent(AttentionMeActivity.this, PersonalInfoNewActivity.class);
+            Intent intent = new Intent();
+            if (AppManager.getClientUser().isShowNormal) {
+                intent.setClass(AttentionMeActivity.this, PersonalInfoActivity.class);
+            } else {
+                intent.setClass(AttentionMeActivity.this, PersonalInfoNewActivity.class);
+            }
             intent.putExtra(ValueKey.USER_ID, String.valueOf(followModel.userId));
             startActivity(intent);
         }

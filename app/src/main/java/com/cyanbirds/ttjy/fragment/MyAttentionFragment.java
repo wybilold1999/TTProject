@@ -48,7 +48,7 @@ public class MyAttentionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.activity_my_attention, null);
+            rootView = inflater.inflate(R.layout.fragment_my_attention, null);
             setupView();
             setupData();
             setHasOptionsMenu(true);
