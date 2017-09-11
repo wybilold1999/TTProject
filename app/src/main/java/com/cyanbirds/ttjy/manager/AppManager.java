@@ -30,6 +30,7 @@ import com.cyanbirds.ttjy.net.PictureService;
 import com.cyanbirds.ttjy.net.UserService;
 import com.cyanbirds.ttjy.net.VideoService;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
+import com.tencent.mm.sdk.openapi.IWXAPI;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -78,6 +79,8 @@ public class AppManager {
 	private static VideoService mVideoService;
 	private static DynamicService mDynamicService;
 
+	private static IWXAPI sIWX_PAY_API;
+	private static IWXAPI sIWXAPI;
 
 	private static ExecutorService mExecutorService;
 
@@ -446,6 +449,22 @@ public class AppManager {
 		}
 
 		return true;
+	}
+
+	public static IWXAPI getIWX_PAY_API() {
+		return sIWX_PAY_API;
+	}
+
+	public static void setIWX_PAY_API(IWXAPI IWX_PAY_API) {
+		sIWX_PAY_API = IWX_PAY_API;
+	}
+
+	public static IWXAPI getIWXAPI() {
+		return sIWXAPI;
+	}
+
+	public static void setIWXAPI(IWXAPI IWXAPI) {
+		sIWXAPI = IWXAPI;
 	}
 
 	public static void goToMarket(Context context, String channel) {

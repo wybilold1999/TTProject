@@ -452,7 +452,7 @@ public class VipCenterActivity extends BaseActivity {
 			payReq.nonceStr = weChatPay.nonce_str;
 			payReq.timeStamp = weChatPay.timeStamp;
 			payReq.sign = weChatPay.appSign;
-			CSApplication.api.sendReq(payReq);
+			AppManager.getIWX_PAY_API().sendReq(payReq);
 		}
 
 		@Override

@@ -20,6 +20,7 @@ import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.LoveParty;
 import com.cyanbirds.ttjy.entity.PayResult;
 import com.cyanbirds.ttjy.entity.WeChatPay;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.CreateOrderRequest;
 import com.cyanbirds.ttjy.net.request.GetAliPayOrderInfoRequest;
 import com.cyanbirds.ttjy.utils.StringUtil;
@@ -196,7 +197,7 @@ public class PartyDetailActivity extends BaseActivity {
 			payReq.nonceStr = weChatPay.nonce_str;
 			payReq.timeStamp = weChatPay.timeStamp;
 			payReq.sign = weChatPay.appSign;
-			CSApplication.api.sendReq(payReq);
+			AppManager.getIWX_PAY_API().sendReq(payReq);
 		}
 
 		@Override

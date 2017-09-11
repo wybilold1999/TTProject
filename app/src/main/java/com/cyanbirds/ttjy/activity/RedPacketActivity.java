@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alipay.sdk.app.PayTask;
-import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.AppConstants;
@@ -212,6 +211,12 @@ public class RedPacketActivity extends BaseActivity {
 		mSelectAlipay.setChecked(true);
 		mSelectWechatpay.setChecked(false);
 		new GetGoldListTask().request(MEMBER_BUY_TYPE_RED_PACKET);
+
+		if (AppManager.getClientUser().isShowLovers) {
+			mPayLay.setVisibility(View.GONE);
+		} else {
+			mPayLay.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**
@@ -225,7 +230,6 @@ public class RedPacketActivity extends BaseActivity {
 					R.string.single_red_packet_limit), mMemberBuy.months));
 			mSingleMore.setText(String.format(getResources().getString(
 					R.string.single_red_packet_more), String.valueOf(mMemberBuy.price)));
-
 			if (mMemberBuy.isShowAli) {
 				double price = mMemberBuy.price - mMemberBuy.aliPrice;
 				mAliPayInfo.setText(String.format(
@@ -281,7 +285,7 @@ public class RedPacketActivity extends BaseActivity {
 			payReq.nonceStr = weChatPay.nonce_str;
 			payReq.timeStamp = weChatPay.timeStamp;
 			payReq.sign = weChatPay.appSign;
-			CSApplication.api.sendReq(payReq);
+			AppManager.getIWX_PAY_API().sendReq(payReq);
 		}
 
 		@Override

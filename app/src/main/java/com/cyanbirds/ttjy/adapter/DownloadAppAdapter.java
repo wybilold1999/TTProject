@@ -1,7 +1,6 @@
 package com.cyanbirds.ttjy.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -12,14 +11,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.MyGoldDaoManager;
 import com.cyanbirds.ttjy.entity.ApkInfo;
 import com.cyanbirds.ttjy.entity.Gold;
 import com.cyanbirds.ttjy.eventtype.MakeMoneyEvent;
 import com.cyanbirds.ttjy.eventtype.SnackBarEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.service.DownloadAppService;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -127,12 +124,6 @@ public class DownloadAppAdapter extends
                     MyGoldDaoManager.getInstance(mContext).updateGold(gold);
                     EventBus.getDefault().post(new SnackBarEvent());
 
-					/**
-					 * 开启服务下载app
-                     */
-                    Intent intent = new Intent(mContext, DownloadAppService.class);
-                    intent.putExtra(ValueKey.DATA, mApkInfos.get(getAdapterPosition()));
-                    mContext.startService(intent);
                 }
             } else {//不是赚钱会员，每天只允许点一次；点第二次的时候提示不是赚钱会员
                 if (System.currentTimeMillis() > gold.downloadTime + daySpan) {
@@ -141,9 +132,6 @@ public class DownloadAppAdapter extends
                     MyGoldDaoManager.getInstance(mContext).updateGold(gold);
                     EventBus.getDefault().post(new SnackBarEvent());
 
-                    Intent intent = new Intent(mContext, DownloadAppService.class);
-                    intent.putExtra(ValueKey.DATA, mApkInfos.get(getAdapterPosition()));
-                    mContext.startService(intent);
                 } else {
                     EventBus.getDefault().post(new MakeMoneyEvent());
                 }

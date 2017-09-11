@@ -470,6 +470,22 @@
             android:label="@string/yuan_fen"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".activity.MoneyPacketActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:label="@string/my_money"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
+            android:name=".activity.MoneyOutputActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:label="@string/money_output"
+            android:screenOrientation="portrait">
+        </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"
@@ -532,10 +548,8 @@
         <service android:name=".receiver.YuntxNotifyReceiver$NotifyService" />
 
         //下载主apk的service
-        <service android:name=".service.DownloadUpdateService"/>
 
         //下载apk的service
-        <service android:name=".service.DownloadAppService"/>
 
         //====================小米推送开始=================================
         <service

@@ -20,8 +20,8 @@ import retrofit2.Callback;
 
 public class GetWeChatIdRequest extends ResultPostExecute<String> {
 
-    public void request() {
-        Call<ResponseBody> call = AppManager.getUserService().getWeChatId();
+    public void request(String pay) {
+        Call<ResponseBody> call = AppManager.getUserService().getWeChatId(pay);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
@@ -47,7 +47,6 @@ public class GetWeChatIdRequest extends ResultPostExecute<String> {
         try {
             String decryptData = AESOperator.getInstance().decrypt(json);
             if (!TextUtils.isEmpty(decryptData)) {
-                AppConstants.WEIXIN_ID = decryptData;
                 onPostExecute(decryptData);
             }
         } catch (Exception e) {

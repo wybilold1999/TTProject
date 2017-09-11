@@ -125,9 +125,6 @@ public class UserLoginRequest extends ResultPostExecute<ClientUser> {
 			clientUser.do_what_first = data.get("doWhatFirst").getAsString();
 			clientUser.conception = data.get("conception").getAsString();
 			clientUser.sessionId = data.get("sessionId").getAsString();
-			clientUser.versionCode = data.get("versionCode").getAsInt();
-			clientUser.apkUrl = data.get("apkUrl").getAsString();
-			clientUser.versionUpdateInfo = data.get("versionUpdateInfo").getAsString();
 			clientUser.imgUrls = data.get("pictures") == null ? "" : data.get("pictures").getAsString();
 			clientUser.gifts = data.get("gifts").getAsString();
 			onPostExecute(clientUser);
