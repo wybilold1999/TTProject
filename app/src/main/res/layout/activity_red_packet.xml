@@ -146,7 +146,8 @@
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
 		android:background="@android:color/white"
-		android:layout_marginTop="30dp">
+		android:layout_marginTop="30dp"
+		android:visibility="gone">
 
 		<View
 			android:layout_width="match_parent"

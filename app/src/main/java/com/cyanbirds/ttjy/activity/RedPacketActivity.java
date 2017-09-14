@@ -104,7 +104,7 @@ public class RedPacketActivity extends BaseActivity {
 						new GetPayResultTask().request();
 					} else {
 						// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-						ToastUtil.showMessage("支付失败");
+						ToastUtil.showMessage(R.string.pay_ali_failure);
 					}
 					break;
 				}
@@ -211,12 +211,6 @@ public class RedPacketActivity extends BaseActivity {
 		mSelectAlipay.setChecked(true);
 		mSelectWechatpay.setChecked(false);
 		new GetGoldListTask().request(MEMBER_BUY_TYPE_RED_PACKET);
-
-		if (AppManager.getClientUser().isShowLovers) {
-			mPayLay.setVisibility(View.GONE);
-		} else {
-			mPayLay.setVisibility(View.VISIBLE);
-		}
 	}
 
 	/**

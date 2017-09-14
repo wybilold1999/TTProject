@@ -128,18 +128,18 @@ public class VipCenterActivity extends BaseActivity {
 						if (AppManager.getClientUser().isShowLovers) {
 							aliPayCount++;
 							if (aliPayCount > 1) {
-								ToastUtil.showMessage("支付成功");
+								ToastUtil.showMessage(R.string.pay_success);
 								new GetPayResultTask().request();
 							} else {
-								ToastUtil.showMessage("支付失败，请重新支付");
+								ToastUtil.showMessage(R.string.pay_ali_failure);
 							}
 						} else {
-							ToastUtil.showMessage("支付成功");
+							ToastUtil.showMessage(R.string.pay_success);
 							new GetPayResultTask().request();
 						}
 					} else {
 						// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-						ToastUtil.showMessage("支付失败");
+						ToastUtil.showMessage(R.string.pay_ali_failure);
 					}
 					break;
 				}
@@ -445,7 +445,7 @@ public class VipCenterActivity extends BaseActivity {
 		@Override
 		public void onPostExecute(WeChatPay weChatPay) {
 			PayReq payReq = new PayReq();
-			payReq.appId = AppConstants.WEIXIN_ID;
+			payReq.appId = AppConstants.WEIXIN_PAY_ID;
 			payReq.partnerId = weChatPay.mch_id;
 			payReq.prepayId = weChatPay.prepay_id;
 			payReq.packageValue = "Sign=WXPay";
