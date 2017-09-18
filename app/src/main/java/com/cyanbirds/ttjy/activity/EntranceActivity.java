@@ -17,12 +17,15 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
+import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
+import com.cyanbirds.ttjy.net.request.GetWeChatIdRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -62,6 +65,7 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         ButterKnife.bind(this);
         saveFirstLauncher();
         setupViews();
+        new GetWeChatIdTask().request("");
         new GetCityInfoTask().request();
         initLocationClient();
         AppManager.requestLocationPermission(this);
@@ -84,6 +88,25 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    class GetWeChatIdTask extends GetWeChatIdRequest {
+        @Override
+        public void onPostExecute(String s) {
+            AppConstants.WEIXIN_ID = s;
+            registerWeiXin();
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
+            registerWeiXin();
+        }
+    }
+
+    private void registerWeiXin() {
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        AppManager.setIWXAPI(WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_ID, true));
+        AppManager.getIWXAPI().registerApp(AppConstants.WEIXIN_ID);
     }
 
     /**

@@ -245,7 +245,12 @@ public interface UserService {
      * 获取微信id
      * @return
      */
-    @GET("user/getWeChatId")
-    Call<ResponseBody> getWeChatId();
+    @FormUrlEncoded
+    @POST("user/getWeChatId")
+    Call<ResponseBody> getWeChatId(@Field("pay") String pay);
+
+    @FormUrlEncoded
+    @POST("memberOrders/outputMoney")
+    Call<ResponseBody> outputMoney(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 
 }

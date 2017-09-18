@@ -150,7 +150,7 @@ public class LoginActivity extends BaseActivity implements AMapLocationListener 
                 SendAuth.Req req = new SendAuth.Req();
                 req.scope = "snsapi_userinfo";
                 req.state = "wechat_sdk_demo_test";
-                CSApplication.api.sendReq(req);
+                AppManager.getIWXAPI().sendReq(req);
                 break;
             case R.id.phone_register:
                 intent.setClass(this, RegisterActivity.class);

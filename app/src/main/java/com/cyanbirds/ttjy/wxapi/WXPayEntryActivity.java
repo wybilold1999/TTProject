@@ -8,6 +8,7 @@ import android.util.Log;
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.eventtype.PayEvent;
+import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.tencent.mm.sdk.constants.ConstantsAPI;
 import com.tencent.mm.sdk.modelbase.BaseReq;
@@ -31,7 +32,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 	}
 
 	private void handleIntent(Intent paramIntent) {
-		CSApplication.api.handleIntent(paramIntent, this);
+		AppManager.getIWX_PAY_API().handleIntent(paramIntent, this);
 	}
 
 	@Override

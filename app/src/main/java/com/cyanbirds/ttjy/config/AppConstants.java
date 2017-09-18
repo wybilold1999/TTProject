@@ -41,6 +41,11 @@ public class AppConstants {
 	public static String WEIXIN_ID = "wx86ced05dbee0ad6b";
 
 	/**
+	 * 微信登录
+	 */
+	public static String WEIXIN_PAY_ID = "wx86ced05dbee0ad6b";
+
+	/**
 	 * 短信
 	 */
 	public static final String SMS_INIT_KEY = "1b6b963e439a6";

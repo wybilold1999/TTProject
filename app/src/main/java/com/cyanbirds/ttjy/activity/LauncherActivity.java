@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 
+import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
@@ -77,7 +78,7 @@ public class LauncherActivity extends Activity {
     };
 
     private void init() {
-        new GetWeChatIdRequest().request();
+        new GetWeChatIdTask().request("pay");
         if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
             new UploadCityInfoTask().request(PreferencesUtils.getCurrentCity(this), "", "");
         }
@@ -85,6 +86,17 @@ public class LauncherActivity extends Activity {
             login();
         } else {
             mHandler.postDelayed(noLogin, SHOW_TIME_MIN);
+        }
+    }
+
+    class GetWeChatIdTask extends GetWeChatIdRequest {
+        @Override
+        public void onPostExecute(String s) {
+            AppConstants.WEIXIN_PAY_ID = s;
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
         }
     }
 
