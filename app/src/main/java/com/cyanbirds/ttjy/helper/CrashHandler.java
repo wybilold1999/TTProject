@@ -14,6 +14,7 @@ import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.UploadCrashRequest;
 import com.cyanbirds.ttjy.utils.CheckUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
+import com.cyanbirds.ttjy.utils.NetworkUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -136,6 +137,10 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 		//CPU架构
 		pw.print("CPU ABI：");
 		pw.println(Build.CPU_ABI);
+
+		//网络环境
+		pw.print("NETWORK：");
+		pw.println(NetworkUtils.getNetType(mContext));
 
 	}
 

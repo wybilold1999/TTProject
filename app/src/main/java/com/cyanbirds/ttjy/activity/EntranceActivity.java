@@ -65,7 +65,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         ButterKnife.bind(this);
         saveFirstLauncher();
         setupViews();
-        new GetWeChatIdTask().request("");
         new GetCityInfoTask().request();
         initLocationClient();
         AppManager.requestLocationPermission(this);
@@ -88,25 +87,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    class GetWeChatIdTask extends GetWeChatIdRequest {
-        @Override
-        public void onPostExecute(String s) {
-            AppConstants.WEIXIN_ID = s;
-            registerWeiXin();
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            registerWeiXin();
-        }
-    }
-
-    private void registerWeiXin() {
-        // 通过WXAPIFactory工厂，获取IWXAPI的实例
-        AppManager.setIWXAPI(WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_ID, true));
-        AppManager.getIWXAPI().registerApp(AppConstants.WEIXIN_ID);
     }
 
     /**

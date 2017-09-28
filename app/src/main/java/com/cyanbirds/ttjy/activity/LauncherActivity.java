@@ -21,6 +21,7 @@ import com.cyanbirds.ttjy.utils.Md5Util;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
@@ -99,7 +100,8 @@ public class LauncherActivity extends Activity {
     };
 
     private void init() {
-        new GetWeChatIdTask().request("pay");
+        new GetWeChatIdTask().request("");
+        new GetWeChatPayIdTask().request("pay");
         if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
             new UploadCityInfoTask().request(PreferencesUtils.getCurrentCity(this), "", "");
         }
@@ -117,6 +119,25 @@ public class LauncherActivity extends Activity {
     }
 
     class GetWeChatIdTask extends GetWeChatIdRequest {
+        @Override
+        public void onPostExecute(String s) {
+            AppConstants.WEIXIN_ID = s;
+            registerWeiXin();
+        }
+
+        @Override
+        public void onErrorExecute(String error) {
+            registerWeiXin();
+        }
+    }
+
+    private void registerWeiXin() {
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        AppManager.setIWXAPI(WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_ID, true));
+        AppManager.getIWXAPI().registerApp(AppConstants.WEIXIN_ID);
+    }
+
+    class GetWeChatPayIdTask extends GetWeChatIdRequest {
         @Override
         public void onPostExecute(String s) {
             AppConstants.WEIXIN_PAY_ID = s;
