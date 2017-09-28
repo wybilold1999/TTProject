@@ -100,8 +100,7 @@ public class LauncherActivity extends Activity {
     };
 
     private void init() {
-        new GetWeChatIdTask().request("");
-        new GetWeChatPayIdTask().request("pay");
+        new GetIdKeysTask().request();
         if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
             new UploadCityInfoTask().request(PreferencesUtils.getCurrentCity(this), "", "");
         }
@@ -118,10 +117,14 @@ public class LauncherActivity extends Activity {
         }
     }
 
-    class GetWeChatIdTask extends GetWeChatIdRequest {
+    class GetIdKeysTask extends GetWeChatIdRequest {
         @Override
         public void onPostExecute(String s) {
-            AppConstants.WEIXIN_ID = s;
+            String[] ids = s.split(";");
+            if (ids != null && ids.length == 2) {
+                AppConstants.WEIXIN_ID = ids[0];
+                AppConstants.WEIXIN_PAY_ID = ids[1];
+            }
             registerWeiXin();
         }
 
@@ -135,17 +138,6 @@ public class LauncherActivity extends Activity {
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
         AppManager.setIWXAPI(WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_ID, true));
         AppManager.getIWXAPI().registerApp(AppConstants.WEIXIN_ID);
-    }
-
-    class GetWeChatPayIdTask extends GetWeChatIdRequest {
-        @Override
-        public void onPostExecute(String s) {
-            AppConstants.WEIXIN_PAY_ID = s;
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
     }
 
     class UploadCityInfoTask extends UploadCityInfoRequest {

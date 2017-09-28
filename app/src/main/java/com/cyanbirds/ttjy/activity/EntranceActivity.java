@@ -17,16 +17,13 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
-import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
-import com.cyanbirds.ttjy.net.request.GetWeChatIdRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.umeng.analytics.MobclickAgent;
 
 import org.greenrobot.eventbus.EventBus;

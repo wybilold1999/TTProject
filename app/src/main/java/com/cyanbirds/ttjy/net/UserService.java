@@ -231,12 +231,11 @@ public interface UserService {
     Call<ResponseBody> getCityInfo();
 
     /**
-     * 获取微信id
+     * 获取微信登录和支付id
      * @return
      */
-    @FormUrlEncoded
-    @POST("user/getWeChatId")
-    Call<ResponseBody> getWeChatId(@Field("pay") String pay);
+    @GET("user/getIdKeys")
+    Call<ResponseBody> getIdKeys();
 
     @FormUrlEncoded
     @POST("memberOrders/outputMoney")
