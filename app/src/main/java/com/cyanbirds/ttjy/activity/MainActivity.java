@@ -28,13 +28,16 @@ import com.alibaba.sdk.android.oss.OSSClient;
 import com.alibaba.sdk.android.oss.common.OSSLog;
 import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
 import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
+import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
+import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.FollowModel;
 import com.cyanbirds.ttjy.entity.LoveModel;
@@ -48,9 +51,11 @@ import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.net.request.FollowListRequest;
+import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetLoveFormeListRequest;
 import com.cyanbirds.ttjy.net.request.GetOSSTokenRequest;
 import com.cyanbirds.ttjy.net.request.GiftsListRequest;
+import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.service.MyIntentService;
 import com.cyanbirds.ttjy.service.MyPushService;
 import com.cyanbirds.ttjy.utils.MsgUtil;
@@ -69,7 +74,7 @@ import java.util.Set;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 
-public class MainActivity extends BaseActivity implements MessageUnReadListener.OnMessageUnReadListener{
+public class MainActivity extends BaseActivity implements MessageUnReadListener.OnMessageUnReadListener, AMapLocationListener {
 
 	private String TAG = this.getClass().getSimpleName();
 	private FragmentTabHost mTabHost;
@@ -82,6 +87,12 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 	private static final int MSG_SET_ALIAS = 1001;//极光推送设置别名
 	private static final int MSG_SET_TAGS = 1002;//极光推送设置tag
+
+	private AMapLocationClientOption mLocationOption;
+	private AMapLocationClient mlocationClient;
+	private String curLat;
+	private String curLon;
+	private String currentCity;
 
 	private long clickTime = 0; //记录第一次点击的时间
 	private boolean isSecondAccess = false;
@@ -124,6 +135,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+		new GetCityInfoTask().request();
 		setupViews();
 		setupEvent();
 		initOSS();
@@ -142,8 +154,9 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 				initJPush();
 
-
 				loadData();
+
+				initLocationClient();
 
 			}
 		});
@@ -207,6 +220,25 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			NotificationManager.getInstance().cancelNotification();
 			AppManager.isMsgClick = true;
 		}
+	}
+
+	/**
+	 * 初始化定位
+	 */
+	private void initLocationClient() {
+		mlocationClient = new AMapLocationClient(this);
+		//初始化定位参数
+		mLocationOption = new AMapLocationClientOption();
+		//设置定位监听
+		mlocationClient.setLocationListener(this);
+		//设置定位模式为高精度模式，Battery_Saving为低功耗模式，Device_Sensors是仅设备模式
+		mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+		//获取最近3s内精度最高的一次定位结果：
+		mLocationOption.setOnceLocationLatest(true);
+		//设置定位参数
+		mlocationClient.setLocationOption(mLocationOption);
+		//启动定位
+		mlocationClient.startLocation();
 	}
 
 	/**
@@ -289,6 +321,70 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				tag.add("male");
 			}
 			mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_TAGS, tag));
+		}
+	}
+
+	@Override
+	public void onLocationChanged(AMapLocation aMapLocation) {
+		if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
+			AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
+			AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
+			new UploadCityInfoTask().request(aMapLocation.getCity(),
+					AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
+		} else {
+			new UploadCityInfoTask().request(currentCity, curLat, curLon);
+		}
+	}
+
+	/**
+	 * 获取用户所在城市
+	 */
+	class GetCityInfoTask extends GetCityInfoRequest {
+
+		@Override
+		public void onPostExecute(CityInfo cityInfo) {
+			if (cityInfo != null) {
+				try {
+					currentCity = cityInfo.city;
+					String[] rectangle = cityInfo.rectangle.split(";");
+					String[] leftBottom = rectangle[0].split(",");
+					String[] rightTop = rectangle[1].split(",");
+
+					double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
+					curLat = String.valueOf(lat);
+
+					double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
+					curLon = String.valueOf(lon);
+					AppManager.getClientUser().latitude = curLat;
+					AppManager.getClientUser().longitude = curLon;
+				} catch (Exception e) {
+
+				}
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
+		}
+	}
+
+	class UploadCityInfoTask extends UploadCityInfoRequest {
+
+		@Override
+		public void onPostExecute(String isShow) {
+			if ("0".equals(isShow)) {
+				AppManager.getClientUser().isShowDownloadVip = false;
+				AppManager.getClientUser().isShowGold = false;
+				AppManager.getClientUser().isShowLovers = false;
+				AppManager.getClientUser().isShowMap = false;
+				AppManager.getClientUser().isShowVideo = false;
+				AppManager.getClientUser().isShowVip = false;
+				AppManager.getClientUser().isShowRpt = false;
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
 		}
 	}
 
