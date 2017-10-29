@@ -128,13 +128,14 @@ public class PushMsgUtil {
 				conversation.content = CSApplication.getInstance().getResources()
 						.getString(R.string.voip_symbol);
 			} else if (pushMsgModel.msgType == PushMsgModel.MessageType.RPT) {
-				conversation.type = ECMessage.Type.RICH_TEXT.ordinal();
+				conversation.type = ECMessage.Type.STATE.ordinal();
 				conversation.content = CSApplication.getInstance().getResources()
 						.getString(R.string.rpt_symbol);
 			}
 			conversation.talker = pushMsgModel.sender;
 			conversation.talkerName = pushMsgModel.senderName;
 			conversation.createTime = pushMsgModel.serverTime;
+			conversation.faceUrl = pushMsgModel.faceUrl;
 			conversation.unreadCount++;
 			long conversationId = ConversationSqlManager.getInstance(
 					CSApplication.getInstance()).inserConversation(conversation);
@@ -171,7 +172,7 @@ public class PushMsgUtil {
 						conversation.content = CSApplication.getInstance().getResources()
 								.getString(R.string.voip_symbol);
 					} else if (pushMsgModel.msgType == PushMsgModel.MessageType.RPT) {
-						conversation.type = ECMessage.Type.RICH_TEXT.ordinal();
+						conversation.type = ECMessage.Type.STATE.ordinal();
 						conversation.content = CSApplication.getInstance().getResources()
 								.getString(R.string.rpt_symbol);
 					}

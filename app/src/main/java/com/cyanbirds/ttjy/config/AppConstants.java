@@ -10,8 +10,8 @@ package com.cyanbirds.ttjy.config;
  */
 public class AppConstants {
 	
-	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-//	public static final String BASE_URL = "http://192.168.1.100/TTLoveServer/";
+//	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
+	public static final String BASE_URL = "http://192.168.1.100/TTLoveServer/";
 //	public static final String BASE_URL = "http://10.0.108.198:8080/TTLoveServer/";
 
 	/**
@@ -27,8 +27,8 @@ public class AppConstants {
 	/**
 	 *容联云IM
 	 */
-	public static final String YUNTONGXUN_ID = "8aaf07085a3c0ea1015a50eaef9408e5";
-	public static final String YUNTONGXUN_TOKEN = "7010bb5f320ae628102e25518f5b45f2";
+	public static String YUNTONGXUN_ID = "8aaf07085a3c0ea1015a50eaef9408e5";
+	public static String YUNTONGXUN_TOKEN = "7010bb5f320ae628102e25518f5b45f2";
 
 	/**
 	 * QQ登录的appid和appkey
@@ -69,9 +69,8 @@ public class AppConstants {
 
 	public static final String ALI_PAY_PLATFORM = "alipay";
 
-	public static final String MZ_APP_ID = "110467";
-	public static final String MZ_APP_KEY = "74e7258593474bb0a04a91239243105b";
-
 	public static final String CURRENT_INDEX = "currentIndex";
+
+	public static final int CHAT_LIMIT = 3;
 
 }

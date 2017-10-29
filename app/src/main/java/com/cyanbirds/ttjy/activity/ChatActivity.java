@@ -49,13 +49,15 @@ import com.cyanbirds.ttjy.adapter.ChatEmoticonsAdapter;
 import com.cyanbirds.ttjy.adapter.ChatEmoticonsAdapter.OnEmojiItemClickListener;
 import com.cyanbirds.ttjy.adapter.ChatMessageAdapter;
 import com.cyanbirds.ttjy.adapter.PagerGridAdapter;
+import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.db.ChatLimitDaoManager;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
+import com.cyanbirds.ttjy.entity.ChatLimit;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.entity.Emoticon;
-import com.cyanbirds.ttjy.entity.ExpressionGroup;
 import com.cyanbirds.ttjy.entity.IMessage;
 import com.cyanbirds.ttjy.eventtype.SnackBarEvent;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
@@ -110,19 +112,20 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	private LinearLayout mEmoticonPageIndicator;
 	private RecyclerView mEmoticonRecyclerview;
 	private SwipeRefreshLayout mSwipeRefresh;
+	private LinearLayout mInputToolWork;
 
 	private String mPhotoPath;
 	private File mPhotoFile;
 	private Uri mPhotoOnSDCardUri;
 
-	private String mConversationId;
 	private ClientUser mClientUser;
 	private Conversation mConversation;
 
 	private List<IMessage> mIMessages;
 	private List<GridView> mChatEmoticonsGridView;
 	private LinearLayoutManager mLinearLayoutManager;
-	private List<ExpressionGroup> mExpressionGroups;
+
+	private ChatLimit mChatLimit;
 
 	/**
 	 * 消息分页条数
@@ -150,6 +153,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	 * 发红包
 	 */
 	public static final int  SEND_RED_PACKET = 107;
+
 	/**
 	 * 跳转设置界面
 	 */
@@ -216,11 +220,18 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		mMorePageIndicator = (LinearLayout) findViewById(R.id.more_page_indicator);
 		mEmoticonPager = (ViewPager) findViewById(R.id.emoticon_pager);
 		mEmoticonPageIndicator = (LinearLayout) findViewById(R.id.emoticon_page_indicator);
+		mInputToolWork = (LinearLayout) findViewById(R.id.input_tool_work);
 
 		mEmoticonRecyclerview = (RecyclerView) findViewById(R.id.emoticon_recyclerview);
 		LinearLayoutManager layoutManager = new WrapperLinearLayoutManager(this);
 		layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 		mEmoticonRecyclerview.setLayoutManager(layoutManager);
+
+		if (!AppManager.getClientUser().isShowVip) {
+			mInputToolWork.setVisibility(View.GONE);
+		} else {
+			mInputToolWork.setVisibility(View.VISIBLE);
+		}
 
 	}
 
@@ -290,7 +301,8 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	}
 
 	private void setupData() {
-		if (AppManager.getClientUser().isShowRpt) {
+		if (null != AppManager.getClientUser() &&
+				AppManager.getClientUser().isShowRpt) {
 			redPacket.setVisibility(View.VISIBLE);
 		} else {
 			redPacket.setVisibility(View.GONE);
@@ -299,7 +311,14 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		if (mClientUser != null) {
 			mConversation = ConversationSqlManager.getInstance(this)
 					.queryConversationForByTalkerId(mClientUser.userId);
+			mChatLimit = ChatLimitDaoManager.getInstance(this).getChatLimitByUid(mClientUser.userId);
+			if (mChatLimit == null) {
+				mChatLimit = new ChatLimit();
+				mChatLimit.userId = mClientUser.userId;
+				mChatLimit.count = 0;
+			}
 		}
+
 		initEmoticon();
 		initEmotionUI();
 		mIMessages = new ArrayList<>();
@@ -456,31 +475,39 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 				break;
 			case R.id.tool_view_input_text:
 				if (AppManager.getClientUser().isShowVip) {
-					if (AppManager.getClientUser().is_vip) {
-						if (AppManager.getClientUser().gold_num  < 101) {
-							showGoldDialog();
-						} else {
-							if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
-								if (null != IMChattingHelper.getInstance().getChatManager()) {
-									IMChattingHelper.getInstance().sendTextMsg(
-											mClientUser, mContentInput.getText().toString());
-									mContentInput.setText("");
+					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
+						if (null != IMChattingHelper.getInstance().getChatManager()) {
+							if (mChatLimit.count < AppConstants.CHAT_LIMIT) {
+								++mChatLimit.count;
+								sendTextMsg();
+							} else {
+								if (AppManager.getClientUser().is_vip) {
+									if (AppManager.getClientUser().gold_num  < 101) {
+										showGoldDialog();
+									} else {
+										sendTextMsg();
+									}
+								} else {
+									showBeyondChatLimitDialog();
 								}
 							}
 						}
-					} else {
-						showVipDialog();
 					}
 				} else {
 					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
-						if (null != IMChattingHelper.getInstance().getChatManager()) {
-							IMChattingHelper.getInstance().sendTextMsg(
-									mClientUser, mContentInput.getText().toString());
-							mContentInput.setText("");
-						}
+						sendTextMsg();
 					}
 				}
 				break;
+		}
+	}
+
+	private void sendTextMsg() {
+		IMChattingHelper.getInstance().sendTextMsg(
+				mClientUser, mContentInput.getText().toString());
+		mContentInput.setText("");
+		if (mChatLimit.count < AppConstants.CHAT_LIMIT) {
+			ChatLimitDaoManager.getInstance(this).insertOrReplace(mChatLimit);
 		}
 	}
 
@@ -844,12 +871,15 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 
 	@Override
 	public void onPushMessage(IMessage message) {
-		boolean isScrollBottom = isScrollBottom();
-		message.isRead = true;
-		mIMessages.add(message);
-		mMessageAdapter.notifyItemInserted(mIMessages.size() - 1);
-		if (isScrollBottom || message.isSend == IMessage.MessageIsSend.SEND) {
-			scrollToBottom();
+		if (mIMessages.isEmpty() ||//主动发送
+				//在某一个用户会话界面，但是另一个用户发来消息
+				(!mIMessages.isEmpty() && mIMessages.get(0).conversationId == message.conversationId)) {
+			boolean isScrollBottom = isScrollBottom();
+			mIMessages.add(message);
+			mMessageAdapter.notifyItemInserted(mIMessages.size() - 1);
+			if (isScrollBottom || message.isSend == IMessage.MessageIsSend.SEND) {
+				scrollToBottom();
+			}
 		}
 	}
 
@@ -966,16 +996,39 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		builder.show();
 	}
 
+	private void showBeyondChatLimitDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("您的免费聊天次数已经用完，会员可无限畅聊，立即开通会员？");
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Intent intent = new Intent(ChatActivity.this, VipCenterActivity.class);
+				startActivity(intent);
+			}
+		});
+		builder.setNegativeButton(R.string.until_single, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		builder.show();
+	}
+
 	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void showSnackBar(SnackBarEvent event) {
-		Snackbar.make(findViewById(R.id.message_recycler_view), "红包已存入您的钱包", Snackbar.LENGTH_LONG)
-				.setActionTextColor(Color.RED)
-				.setAction("点击查看", new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(ChatActivity.this, MoneyPacketActivity.class);
-						startActivity(intent);
-					}
-				}).show();
+		if (!TextUtils.isEmpty(event.content)) {
+			Snackbar.make(findViewById(R.id.message_recycler_view), event.content, Snackbar.LENGTH_LONG)
+					.setActionTextColor(Color.RED)
+					.setAction("点击查看", new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Intent intent = new Intent(ChatActivity.this, MoneyPacketActivity.class);
+							startActivity(intent);
+						}
+					}).show();
+		}
 	}
 }
+

@@ -176,13 +176,14 @@ public class RedPacketActivity extends BaseActivity {
 						mBtnSendMoney.setOnClickListener(new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								if (mMemberBuy != null) {
+								/*if (mMemberBuy != null) {
 									if (mPayType.equals(AppConstants.ALI_PAY_PLATFORM)) {
 										new GetAliPayOrderInfoTask().request(mMemberBuy.id, AppConstants.ALI_PAY_PLATFORM, mReadPacketAmount.getText().toString());
 									} else {
 										new CreateOrderTask().request(mMemberBuy.id, AppConstants.WX_PAY_PLATFORM, mReadPacketAmount.getText().toString());
 									}
-								}
+								}*/
+								finishActivity();
 							}
 						});
 					} else {
@@ -193,10 +194,21 @@ public class RedPacketActivity extends BaseActivity {
 						mBtnSendMoney.setBackgroundColor(getResources().getColor(R.color.btn_send_money_unenable));
 						mBtnSendMoney.setOnClickListener(null);
 					}
-					String finalMoney = mFormat.format(Double.parseDouble(s.toString()));
+					double money = Double.parseDouble(s.toString());
+					String finalMoney = "";
+					if (money < 1) {
+						finalMoney = String.valueOf(money);
+					} else {
+						finalMoney = mFormat.format(money);
+					}
 					mMoney.setText(String.format(getResources().getString(R.string.money), finalMoney));
 				} else {
 					mMoney.setText("￥0.00");
+					mBtnSendMoney.setClickable(false);
+					mBtnSendMoney.setEnabled(false);
+					mBtnSendMoney.setTextColor(getResources().getColor(R.color.btn_send_money_text));
+					mBtnSendMoney.setBackgroundColor(getResources().getColor(R.color.btn_send_money_unenable));
+					mBtnSendMoney.setOnClickListener(null);
 				}
 			}
 		});
@@ -344,9 +356,6 @@ public class RedPacketActivity extends BaseActivity {
 	class GetPayResultTask extends GetPayResultRequest {
 		@Override
 		public void onPostExecute(UserVipModel userVipModel) {
-			AppManager.getClientUser().is_vip = userVipModel.isVip;
-			AppManager.getClientUser().is_download_vip = userVipModel.isDownloadVip;
-			AppManager.getClientUser().gold_num = userVipModel.goldNum;
 			finishActivity();
 		}
 
@@ -359,10 +368,17 @@ public class RedPacketActivity extends BaseActivity {
 
 	private void finishActivity() {
 		Intent intent = new Intent();
+		StringBuilder content = new StringBuilder();
 		if (!TextUtils.isEmpty(mBlessings.getText().toString())) {
-			intent.putExtra(ValueKey.DATA, mBlessings.getText().toString());
+			content.append(mBlessings.getText().toString())
+					.append(";")
+					.append(mReadPacketAmount.getText().toString());
+			intent.putExtra(ValueKey.DATA, content.toString());
 		} else {
-			intent.putExtra(ValueKey.DATA, getResources().getString(R.string.feedback_info));
+			content.append(getResources().getString(R.string.feedback_info))
+					.append(";")
+					.append(mReadPacketAmount.getText().toString());
+			intent.putExtra(ValueKey.DATA, content.toString());
 		}
 		setResult(RESULT_OK, intent);
 		finish();

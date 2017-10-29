@@ -54,18 +54,25 @@ public class Conversation implements Serializable{
 	/** 本地头像地址 */
 	@Property
 	public String localPortrait;
-	@Generated(hash = 2040917716)
-	public Conversation(Long id, @NotNull String talker, @NotNull String talkerName,
-									@NotNull String content, int unreadCount, long createTime, int type,
-									String localPortrait) {
-					this.id = id;
-					this.talker = talker;
-					this.talkerName = talkerName;
-					this.content = content;
-					this.unreadCount = unreadCount;
-					this.createTime = createTime;
-					this.type = type;
-					this.localPortrait = localPortrait;
+
+	/** 头像地址 */
+	@Property
+	public String faceUrl;
+
+	
+	@Generated(hash = 1491216450)
+	public Conversation(Long id, @NotNull String talker,
+			@NotNull String talkerName, @NotNull String content, int unreadCount,
+			long createTime, int type, String localPortrait, String faceUrl) {
+		this.id = id;
+		this.talker = talker;
+		this.talkerName = talkerName;
+		this.content = content;
+		this.unreadCount = unreadCount;
+		this.createTime = createTime;
+		this.type = type;
+		this.localPortrait = localPortrait;
+		this.faceUrl = faceUrl;
 	}
 	@Generated(hash = 1893991898)
 	public Conversation() {
@@ -117,6 +124,12 @@ public class Conversation implements Serializable{
 	}
 	public void setLocalPortrait(String localPortrait) {
 					this.localPortrait = localPortrait;
+	}
+	public String getFaceUrl() {
+		return this.faceUrl;
+	}
+	public void setFaceUrl(String faceUrl) {
+		this.faceUrl = faceUrl;
 	}
 
 

@@ -9,11 +9,12 @@ import android.view.KeyEvent;
 
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.entity.AllKeys;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
-import com.cyanbirds.ttjy.net.request.GetWeChatIdRequest;
+import com.cyanbirds.ttjy.net.request.GetIdKeysRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
@@ -53,6 +54,11 @@ public class LauncherActivity extends Activity {
                                     - loadingTime);
                         }
                     } else {
+                        /*if (AppManager.getClientUser().isShowNormal) {
+                            mHandler.postDelayed(mainActivity, 0);
+                        } else {
+                            mHandler.postDelayed(mainNewActivity, 0);
+                        }*/
                         if (AppManager.getClientUser().isShowNormal) {
                             mHandler.postDelayed(mainActivity, 0);
                         } else {
@@ -117,14 +123,13 @@ public class LauncherActivity extends Activity {
         }
     }
 
-    class GetIdKeysTask extends GetWeChatIdRequest {
+    class GetIdKeysTask extends GetIdKeysRequest {
         @Override
-        public void onPostExecute(String s) {
-            String[] ids = s.split(";");
-            if (ids != null && ids.length == 2) {
-                AppConstants.WEIXIN_ID = ids[0];
-                AppConstants.WEIXIN_PAY_ID = ids[1];
-            }
+        public void onPostExecute(AllKeys allKeys) {
+            AppConstants.WEIXIN_ID = allKeys.weChatId;
+            AppConstants.WEIXIN_PAY_ID = allKeys.weChatPayId;
+            AppConstants.YUNTONGXUN_ID = allKeys.ytxId;
+            AppConstants.YUNTONGXUN_TOKEN = allKeys.ytxKey;
             registerWeiXin();
         }
 

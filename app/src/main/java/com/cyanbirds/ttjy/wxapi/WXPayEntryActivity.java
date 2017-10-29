@@ -33,7 +33,11 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 	}
 
 	private void handleIntent(Intent paramIntent) {
-		AppManager.getIWX_PAY_API().handleIntent(paramIntent, this);
+		if (null != AppManager.getIWXAPI()) {
+			AppManager.getIWX_PAY_API().handleIntent(paramIntent, this);
+		} else {
+			CSApplication.api.handleIntent(paramIntent, this);
+		}
 	}
 
 	@Override
