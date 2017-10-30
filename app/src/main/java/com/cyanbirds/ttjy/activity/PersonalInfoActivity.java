@@ -205,7 +205,7 @@ public class PersonalInfoActivity extends BaseActivity {
 				break;
 			case R.id.love:
 				if (null != mClientUser) {
-					new SendGreetRequest().request(mClientUser.userId);
+					new SenderGreetTask().request(mClientUser.userId);
 					new AddLoveTask().request(mClientUser.userId);
 				}
 				break;
@@ -252,23 +252,31 @@ public class PersonalInfoActivity extends BaseActivity {
 		}
 	}
 
-	/**
-	 * 喜欢
-	 */
-	class AddLoveTask extends AddLoveRequest {
+	class SenderGreetTask extends SendGreetRequest {
 		@Override
 		public void onPostExecute(String s) {
-			if (s.equals("已喜欢")) {
-				mLove.setText(s);
-				ToastUtil.showMessage(R.string.like_success);
-			} else {
-				mLove.setText(R.string.like);
-			}
+			ToastUtil.showMessage(s);
 		}
 
 		@Override
 		public void onErrorExecute(String error) {
 			ToastUtil.showMessage(error);
+		}
+	}
+
+	class AddLoveTask extends AddLoveRequest {
+
+		@Override
+		public void onPostExecute(Boolean s) {
+			if (s) {
+				mLove.setText("已喜欢");
+			} else {
+				mLove.setText("喜欢");
+			}
+		}
+
+		@Override
+		public void onErrorExecute(String error) {
 		}
 	}
 

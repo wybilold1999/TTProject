@@ -277,6 +277,8 @@
     <string name="revoke_pkt">确定撤回该红包吗？</string>
     <string name="receive_pkt">该红包已领</string>
     <string name="revoked_pkt">该红包已被撤回</string>
+    <string name="chat_count_zero">您与%1$s的免费聊天次数已经用完，会员可无限畅聊，立即开通会员？</string>
+    <string name="chat_count_zero_bak">您的免费聊天次数已经用完，会员可无限畅聊，立即开通会员？</string>
 
     <string name="errcode_success">发送成功</string>
     <string name="errcode_cancel">发送取消</string>

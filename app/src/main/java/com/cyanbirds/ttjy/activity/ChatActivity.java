@@ -478,7 +478,9 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
 						if (null != IMChattingHelper.getInstance().getChatManager()) {
 							if (mChatLimit.count < AppConstants.CHAT_LIMIT) {
-								++mChatLimit.count;
+								if (!"-1".equals(mClientUser.userId)) {
+									++mChatLimit.count;
+								}
 								sendTextMsg();
 							} else {
 								if (AppManager.getClientUser().is_vip) {
@@ -506,7 +508,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		IMChattingHelper.getInstance().sendTextMsg(
 				mClientUser, mContentInput.getText().toString());
 		mContentInput.setText("");
-		if (mChatLimit.count < AppConstants.CHAT_LIMIT) {
+		if (!"-1".equals(mClientUser.userId) && mChatLimit.count < AppConstants.CHAT_LIMIT) {
 			ChatLimitDaoManager.getInstance(this).insertOrReplace(mChatLimit);
 		}
 	}
@@ -997,8 +999,14 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	}
 
 	private void showBeyondChatLimitDialog() {
+		String message = "";
+		if (mClientUser != null && !TextUtils.isEmpty(mClientUser.user_name)) {
+			message = String.format(getResources().getString(R.string.chat_count_zero), mClientUser.user_name);
+		} else {
+			message = getResources().getString(R.string.chat_count_zero_bak);
+		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("您的免费聊天次数已经用完，会员可无限畅聊，立即开通会员？");
+		builder.setMessage(message);
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
