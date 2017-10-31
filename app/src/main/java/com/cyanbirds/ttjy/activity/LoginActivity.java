@@ -46,9 +46,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -177,12 +174,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         public void onPostExecute(ClientUser clientUser) {
             MobclickAgent.onProfileSignIn(String.valueOf(AppManager
                     .getClientUser().userId));
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
+            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
+            File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
+                    Md5Util.md5(clientUser.face_url) + ".jpg");
+            if(!faceLocalFile.exists()
                     && !TextUtils.isEmpty(clientUser.face_url)){
                 new DownloadPortraitTask().request(clientUser.face_url,
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
+            } else {
+                clientUser.face_local = faceLocalFile.getAbsolutePath();
             }
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
@@ -216,12 +217,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             hideSoftKeyboard();
             MobclickAgent.onProfileSignIn(String.valueOf(AppManager
                     .getClientUser().userId));
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
+            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
+            File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
+                    Md5Util.md5(clientUser.face_url) + ".jpg");
+            if(!faceLocalFile.exists()
                     && !TextUtils.isEmpty(clientUser.face_url)){
                 new DownloadPortraitTask().request(clientUser.face_url,
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
+            } else {
+                clientUser.face_local = faceLocalFile.getAbsolutePath();
             }
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
@@ -333,12 +338,16 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         public void onPostExecute(ClientUser clientUser) {
             MobclickAgent.onProfileSignIn(String.valueOf(AppManager
                     .getClientUser().userId));
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
+            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
+            File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
+                    Md5Util.md5(clientUser.face_url) + ".jpg");
+            if(!faceLocalFile.exists()
                     && !TextUtils.isEmpty(clientUser.face_url)){
                 new DownloadPortraitTask().request(clientUser.face_url,
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
+            } else {
+                clientUser.face_local = faceLocalFile.getAbsolutePath();
             }
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
@@ -361,6 +370,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         @Override
         public void onErrorExecute(String error) {
+            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
         }
     }
 
@@ -419,12 +429,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         activityIsRunning = false;
         MobclickAgent.onPageEnd(this.getClass().getName());
         MobclickAgent.onPause(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ProgressDialogUtils.getInstance(this).dismiss();
     }
 
     @Override

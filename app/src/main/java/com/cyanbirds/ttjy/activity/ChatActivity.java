@@ -51,10 +51,8 @@ import com.cyanbirds.ttjy.adapter.ChatMessageAdapter;
 import com.cyanbirds.ttjy.adapter.PagerGridAdapter;
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.db.ChatLimitDaoManager;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
-import com.cyanbirds.ttjy.entity.ChatLimit;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.entity.Emoticon;
@@ -74,6 +72,7 @@ import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.FileUtils;
 import com.cyanbirds.ttjy.utils.ImageUtil;
+import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -124,8 +123,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	private List<IMessage> mIMessages;
 	private List<GridView> mChatEmoticonsGridView;
 	private LinearLayoutManager mLinearLayoutManager;
-
-	private ChatLimit mChatLimit;
 
 	/**
 	 * 消息分页条数
@@ -311,12 +308,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		if (mClientUser != null) {
 			mConversation = ConversationSqlManager.getInstance(this)
 					.queryConversationForByTalkerId(mClientUser.userId);
-			mChatLimit = ChatLimitDaoManager.getInstance(this).getChatLimitByUid(mClientUser.userId);
-			if (mChatLimit == null) {
-				mChatLimit = new ChatLimit();
-				mChatLimit.userId = mClientUser.userId;
-				mChatLimit.count = 0;
-			}
 		}
 
 		initEmoticon();
@@ -477,11 +468,14 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 				if (AppManager.getClientUser().isShowVip) {
 					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
 						if (null != IMChattingHelper.getInstance().getChatManager()) {
-							if (mChatLimit.count < AppConstants.CHAT_LIMIT) {
-								if (!"-1".equals(mClientUser.userId)) {
-									++mChatLimit.count;
-								}
+							int count = PreferencesUtils.getChatLimit(this);
+							if (count < AppConstants.CHAT_LIMIT) {
+								count = count + 1;
+								PreferencesUtils.setChatLimit(this, count);
 								sendTextMsg();
+								if (AppConstants.CHAT_LIMIT - count == 3) {
+									ToastUtil.showMessage(R.string.chat_count_three);
+								}
 							} else {
 								if (AppManager.getClientUser().is_vip) {
 									if (AppManager.getClientUser().gold_num  < 101) {
@@ -508,9 +502,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		IMChattingHelper.getInstance().sendTextMsg(
 				mClientUser, mContentInput.getText().toString());
 		mContentInput.setText("");
-		if (!"-1".equals(mClientUser.userId) && mChatLimit.count < AppConstants.CHAT_LIMIT) {
-			ChatLimitDaoManager.getInstance(this).insertOrReplace(mChatLimit);
-		}
 	}
 
 	private void showVipDialog() {
@@ -999,12 +990,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	}
 
 	private void showBeyondChatLimitDialog() {
-		String message = "";
-		if (mClientUser != null && !TextUtils.isEmpty(mClientUser.user_name)) {
-			message = String.format(getResources().getString(R.string.chat_count_zero), mClientUser.user_name);
-		} else {
-			message = getResources().getString(R.string.chat_count_zero_bak);
-		}
+		String message = getResources().getString(R.string.chat_count_zero_bak);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(message);
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

@@ -130,6 +130,7 @@ public class LauncherActivity extends Activity {
             AppConstants.WEIXIN_PAY_ID = allKeys.weChatPayId;
             AppConstants.YUNTONGXUN_ID = allKeys.ytxId;
             AppConstants.YUNTONGXUN_TOKEN = allKeys.ytxKey;
+            AppConstants.CHAT_LIMIT = allKeys.chatLimit;
             registerWeiXin();
         }
 
@@ -230,12 +231,15 @@ public class LauncherActivity extends Activity {
         public void onPostExecute(ClientUser clientUser) {
             if (clientUser != null) {
                 mHandler.sendEmptyMessage(LONG_SCUESS);
-                if(!new File(FileAccessorUtils.FACE_IMAGE,
-                        Md5Util.md5(clientUser.face_url) + ".jpg").exists()
+                File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
+                        Md5Util.md5(clientUser.face_url) + ".jpg");
+                if(!faceLocalFile.exists()
                         && !TextUtils.isEmpty(clientUser.face_url)){
                     new DownloadPortraitTask().request(clientUser.face_url,
                             FileAccessorUtils.FACE_IMAGE,
                             Md5Util.md5(clientUser.face_url) + ".jpg");
+                } else {
+                    clientUser.face_local = faceLocalFile.getAbsolutePath();
                 }
                 AppManager.setClientUser(clientUser);
                 AppManager.saveUserInfo();

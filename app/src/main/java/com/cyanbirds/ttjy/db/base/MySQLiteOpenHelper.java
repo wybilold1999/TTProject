@@ -3,7 +3,6 @@ package com.cyanbirds.ttjy.db.base;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.cyanbirds.ttjy.greendao.ChatLimitDao;
 import com.cyanbirds.ttjy.greendao.ConversationDao;
 import com.cyanbirds.ttjy.greendao.DaoMaster;
 import com.cyanbirds.ttjy.greendao.DynamicDao;
@@ -33,7 +32,6 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
 				GoldDao.class,
 				LocationModelDao.class,
 				IMessageDao.class,
-				NameListDao.class,
-				ChatLimitDao.class);
+				NameListDao.class);
 	}
 }

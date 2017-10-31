@@ -8,7 +8,6 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
-import com.cyanbirds.ttjy.entity.ChatLimit;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.entity.Dynamic;
 import com.cyanbirds.ttjy.entity.Gold;
@@ -16,7 +15,6 @@ import com.cyanbirds.ttjy.entity.IMessage;
 import com.cyanbirds.ttjy.entity.LocationModel;
 import com.cyanbirds.ttjy.entity.NameList;
 
-import com.cyanbirds.ttjy.greendao.ChatLimitDao;
 import com.cyanbirds.ttjy.greendao.ConversationDao;
 import com.cyanbirds.ttjy.greendao.DynamicDao;
 import com.cyanbirds.ttjy.greendao.GoldDao;
@@ -33,7 +31,6 @@ import com.cyanbirds.ttjy.greendao.NameListDao;
  */
 public class DaoSession extends AbstractDaoSession {
 
-    private final DaoConfig chatLimitDaoConfig;
     private final DaoConfig conversationDaoConfig;
     private final DaoConfig dynamicDaoConfig;
     private final DaoConfig goldDaoConfig;
@@ -41,7 +38,6 @@ public class DaoSession extends AbstractDaoSession {
     private final DaoConfig locationModelDaoConfig;
     private final DaoConfig nameListDaoConfig;
 
-    private final ChatLimitDao chatLimitDao;
     private final ConversationDao conversationDao;
     private final DynamicDao dynamicDao;
     private final GoldDao goldDao;
@@ -52,9 +48,6 @@ public class DaoSession extends AbstractDaoSession {
     public DaoSession(Database db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
         super(db);
-
-        chatLimitDaoConfig = daoConfigMap.get(ChatLimitDao.class).clone();
-        chatLimitDaoConfig.initIdentityScope(type);
 
         conversationDaoConfig = daoConfigMap.get(ConversationDao.class).clone();
         conversationDaoConfig.initIdentityScope(type);
@@ -74,7 +67,6 @@ public class DaoSession extends AbstractDaoSession {
         nameListDaoConfig = daoConfigMap.get(NameListDao.class).clone();
         nameListDaoConfig.initIdentityScope(type);
 
-        chatLimitDao = new ChatLimitDao(chatLimitDaoConfig, this);
         conversationDao = new ConversationDao(conversationDaoConfig, this);
         dynamicDao = new DynamicDao(dynamicDaoConfig, this);
         goldDao = new GoldDao(goldDaoConfig, this);
@@ -82,7 +74,6 @@ public class DaoSession extends AbstractDaoSession {
         locationModelDao = new LocationModelDao(locationModelDaoConfig, this);
         nameListDao = new NameListDao(nameListDaoConfig, this);
 
-        registerDao(ChatLimit.class, chatLimitDao);
         registerDao(Conversation.class, conversationDao);
         registerDao(Dynamic.class, dynamicDao);
         registerDao(Gold.class, goldDao);
@@ -92,17 +83,12 @@ public class DaoSession extends AbstractDaoSession {
     }
     
     public void clear() {
-        chatLimitDaoConfig.clearIdentityScope();
         conversationDaoConfig.clearIdentityScope();
         dynamicDaoConfig.clearIdentityScope();
         goldDaoConfig.clearIdentityScope();
         iMessageDaoConfig.clearIdentityScope();
         locationModelDaoConfig.clearIdentityScope();
         nameListDaoConfig.clearIdentityScope();
-    }
-
-    public ChatLimitDao getChatLimitDao() {
-        return chatLimitDao;
     }
 
     public ConversationDao getConversationDao() {

@@ -24,5 +24,7 @@ public class AllKeys implements Serializable {
 	public String ytxId;
 	/**云通讯id**/
 	public String ytxKey;
+	/**聊天次数限制**/
+	public int chatLimit;
 	
 }

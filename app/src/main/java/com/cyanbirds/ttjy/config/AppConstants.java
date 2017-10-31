@@ -11,8 +11,8 @@ package com.cyanbirds.ttjy.config;
 public class AppConstants {
 	
 //	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-	public static final String BASE_URL = "http://192.168.1.100/TTLoveServer/";
-//	public static final String BASE_URL = "http://10.0.108.198:8080/TTLoveServer/";
+//	public static final String BASE_URL = "http://192.168.1.100/TTLoveServer/";
+	public static final String BASE_URL = "http://10.0.108.198:8080/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙
@@ -71,6 +71,6 @@ public class AppConstants {
 
 	public static final String CURRENT_INDEX = "currentIndex";
 
-	public static final int CHAT_LIMIT = 3;
+	public static int CHAT_LIMIT = 3;
 
 }

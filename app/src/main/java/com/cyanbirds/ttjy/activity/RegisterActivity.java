@@ -46,27 +46,20 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.smssdk.SMSSDK;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by Administrator on 2016/4/23.
  */
-public class RegisterActivity extends BaseActivity {
-    @BindView(R.id.phone_num)
+public class RegisterActivity extends BaseActivity implements View.OnClickListener {
+
     EditText phoneNum;
-    @BindView(R.id.next)
     FancyButton next;
-    @BindView(R.id.qq_login)
     ImageView qqLogin;
-    @BindView(R.id.weixin_login)
     ImageView weiXinLogin;
-    @BindView(R.id.select_man)
     ImageView mSelectMan;
-    @BindView(R.id.select_lady)
     ImageView mSelectLady;
 
     /**
@@ -105,11 +98,31 @@ public class RegisterActivity extends BaseActivity {
         curLat = getIntent().getStringExtra(ValueKey.LATITUDE);
         curLon = getIntent().getStringExtra(ValueKey.LONGITUDE);
 
+        setupView();
+        setupEvent();
+
+    }
+
+    private void setupView() {
+        phoneNum = (EditText) findViewById(R.id.phone_num);
+        next = (FancyButton) findViewById(R.id.next);
+        weiXinLogin = (ImageView) findViewById(R.id.weixin_login);
+        qqLogin = (ImageView) findViewById(R.id.qq_login);
+        mSelectMan = (ImageView) findViewById(R.id.select_man);
+        mSelectLady = (ImageView) findViewById(R.id.select_lady);
+
+    }
+
+    private void setupEvent() {
+        next.setOnClickListener(this);
+        mSelectMan.setOnClickListener(this);
+        mSelectLady.setOnClickListener(this);
+        qqLogin.setOnClickListener(this);
+        weiXinLogin.setOnClickListener(this);
     }
 
 
-    @OnClick({R.id.next, R.id.qq_login,
-            R.id.select_man, R.id.select_lady, R.id.weixin_login})
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.next:
@@ -162,14 +175,18 @@ public class RegisterActivity extends BaseActivity {
     class WXLoginTask extends WXLoginRequest {
         @Override
         public void onPostExecute(ClientUser clientUser) {
+            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
             MobclickAgent.onProfileSignIn(String.valueOf(AppManager
                     .getClientUser().userId));
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
+            File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
+                    Md5Util.md5(clientUser.face_url) + ".jpg");
+            if(!faceLocalFile.exists()
                     && !TextUtils.isEmpty(clientUser.face_url)){
                 new DownloadPortraitTask().request(clientUser.face_url,
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
+            } else {
+                clientUser.face_local = faceLocalFile.getAbsolutePath();
             }
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
@@ -313,12 +330,18 @@ public class RegisterActivity extends BaseActivity {
     class QqLoginTask extends QqLoginRequest {
         @Override
         public void onPostExecute(ClientUser clientUser) {
-            if(!new File(FileAccessorUtils.FACE_IMAGE,
-                    Md5Util.md5(clientUser.face_url) + ".jpg").exists()
+            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
+            MobclickAgent.onProfileSignIn(String.valueOf(AppManager
+                    .getClientUser().userId));
+            File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
+                    Md5Util.md5(clientUser.face_url) + ".jpg");
+            if(!faceLocalFile.exists()
                     && !TextUtils.isEmpty(clientUser.face_url)){
                 new DownloadPortraitTask().request(clientUser.face_url,
                         FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
+            } else {
+                clientUser.face_local = faceLocalFile.getAbsolutePath();
             }
             clientUser.currentCity = mCurrrentCity;
             clientUser.latitude = curLat;
@@ -438,12 +461,6 @@ public class RegisterActivity extends BaseActivity {
         activityIsRunning = false;
         MobclickAgent.onPageEnd(this.getClass().getName());
         MobclickAgent.onPause(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ProgressDialogUtils.getInstance(this).dismiss();
     }
 
     @Override
