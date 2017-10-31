@@ -1119,7 +1119,8 @@
 				android:gravity="center_vertical|center_horizontal"
 				android:text="@string/gift"
 				android:textColor="@color/colorPrimary"
-				android:textSize="16sp"/>
+				android:textSize="16sp"
+				android:visibility="gone"/>
 
 			<TextView
 				android:id="@+id/love"
