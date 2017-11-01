@@ -102,7 +102,12 @@ public class PushMsgUtil {
 					}, 60000);
 				}
 			} else {
-				handleConversation(pushMsgModel);
+				mHandler.post(new Runnable() {
+					@Override
+					public void run() {
+						handleConversation(pushMsgModel);
+					}
+				});
 			}
 		}
 	}

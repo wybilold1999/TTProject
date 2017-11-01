@@ -589,10 +589,12 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 		switch (view.getId()) {
 			case R.id.portrait:
 				intent.setClass(this, PhotoViewActivity.class);
-				if (!TextUtils.isEmpty(mClientUser.face_local) && new File(mClientUser.face_local).exists()) {
-					intent.putExtra(ValueKey.IMAGE_URL, "file://" + mClientUser.face_local);
-				} else {
-					intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
+				if (mClientUser != null) {
+					if (!TextUtils.isEmpty(mClientUser.face_local) && new File(mClientUser.face_local).exists()) {
+						intent.putExtra(ValueKey.IMAGE_URL, "file://" + mClientUser.face_local);
+					} else {
+						intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
+					}
 				}
 				intent.putExtra(ValueKey.FROM_ACTIVITY, "PersonalInfoNewActivity");
 				startActivity(intent);
@@ -607,8 +609,10 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 				startActivity(intent);
 				break;
 			case R.id.love:
-				new SenderGreetTask().request(mClientUser.userId);
-				new AddLoveTask().request(mClientUser.userId);
+				if (mClientUser != null) {
+					new SenderGreetTask().request(mClientUser.userId);
+					new AddLoveTask().request(mClientUser.userId);
+				}
 				break;
 			case R.id.message:
 				intent.setClass(this, ChatActivity.class);

@@ -39,8 +39,6 @@ public class JPushReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
 
         if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
-            //send the Registration Id to your server...
-			Log.d("test", intent.getStringExtra(JPushInterface.EXTRA_REGISTRATION_ID));
         } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
 			if (AppManager.getClientUser().isShowVip) {
 				final String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
