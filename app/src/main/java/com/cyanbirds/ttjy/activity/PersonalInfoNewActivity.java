@@ -532,7 +532,7 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 			}
 			mIntrestFlowlayout.setTags(mVals);
 		}
-		if (AppManager.getClientUser().isShowLovers) {
+		/*if (AppManager.getClientUser().isShowLovers) {
 			mCardFriend.setVisibility(View.VISIBLE);
 			mTvFriend.setVisibility(View.VISIBLE);
 			mGift.setVisibility(View.VISIBLE);
@@ -540,7 +540,7 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 			mCardFriend.setVisibility(View.GONE);
 			mTvFriend.setVisibility(View.GONE);
 			mGift.setVisibility(View.GONE);
-		}
+		}*/
 	}
 
 	@Subscribe(threadMode = ThreadMode.MAIN)
