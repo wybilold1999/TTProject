@@ -206,7 +206,7 @@
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="20dp"
                             android:contentDescription="@null"
-                            android:src="@mipmap/my_gold"/>
+                            android:src="@mipmap/sales_amount"/>
 
                         <TextView
                             android:layout_width="wrap_content"
