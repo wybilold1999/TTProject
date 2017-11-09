@@ -128,6 +128,7 @@ public class LauncherActivity extends Activity {
         public void onPostExecute(AllKeys allKeys) {
             AppConstants.WEIXIN_ID = allKeys.weChatId;
             AppConstants.WEIXIN_PAY_ID = allKeys.weChatPayId;
+            AppConstants.mAppid = allKeys.qqId;
             AppConstants.YUNTONGXUN_ID = allKeys.ytxId;
             AppConstants.YUNTONGXUN_TOKEN = allKeys.ytxKey;
             AppConstants.CHAT_LIMIT = allKeys.chatLimit;
