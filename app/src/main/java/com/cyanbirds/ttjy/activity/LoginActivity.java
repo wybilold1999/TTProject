@@ -418,7 +418,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     protected void onResume() {
         super.onResume();
         activityIsRunning = true;
-        ProgressDialogUtils.getInstance(this).dismiss();
         MobclickAgent.onPageStart(this.getClass().getName());
         MobclickAgent.onResume(this);
     }
