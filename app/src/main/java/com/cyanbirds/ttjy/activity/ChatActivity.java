@@ -990,7 +990,12 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	}
 
 	private void showBeyondChatLimitDialog() {
-		String message = getResources().getString(R.string.chat_count_zero_bak);
+		String message = "";
+		if (AppConstants.CHAT_LIMIT == 0) {
+			message = getResources().getString(R.string.un_send_msg);
+		} else {
+			message = getResources().getString(R.string.chat_count_zero_bak);
+		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(message);
 		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
