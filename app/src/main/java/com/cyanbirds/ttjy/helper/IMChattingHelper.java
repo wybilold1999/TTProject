@@ -692,7 +692,7 @@ public class IMChattingHelper implements OnChatReceiveListener {
 			convs.talker = String.valueOf(-1);
 			convs.talkerName = mContext.getResources().getString(R.string.app_name) + "团队";
 			convs.localPortrait = "res:///" + R.mipmap.ic_launcher;
-			convs.faceUrl = "http://real-love-server.oss-cn-shenzhen.aliyuncs.com/tan_love/img/tl_168.png";
+			convs.faceUrl = "http://real-love-server.oss-cn-shenzhen.aliyuncs.com/tan_love/img/ttjy.png";
 			convs.content = CSApplication.getInstance().getResources()
 					.getString(R.string.init_official_message);
 			convs.createTime = System.currentTimeMillis();
