@@ -54,7 +54,7 @@ public class IMChattingHelper implements OnChatReceiveListener {
 	/** 是否是同步消息 */
 	private boolean isSyncOffline = false;
 	private List<IMessage> offlineMsg = null;
-	private static final String CITY = "深圳市东莞市广州市惠州市";
+	private static final String CITY = "深圳市";
 
 	public static IMChattingHelper getInstance() {
 		return IMChattingHelper.SingletonHolder.INSTANCE;

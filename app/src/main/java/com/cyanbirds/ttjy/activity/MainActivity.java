@@ -38,6 +38,7 @@ import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.CityInfo;
+import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.FollowModel;
 import com.cyanbirds.ttjy.entity.LoveModel;
@@ -327,10 +328,13 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	@Override
 	public void onLocationChanged(AMapLocation aMapLocation) {
 		if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
-			AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
-			AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
 			new UploadCityInfoTask().request(aMapLocation.getCity(),
-					AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
+					String.valueOf(aMapLocation.getLatitude()), String.valueOf(aMapLocation.getLongitude()));
+			PreferencesUtils.setCurrentCity(this, aMapLocation.getCity());
+			ClientUser clientUser = AppManager.getClientUser();
+			clientUser.latitude = String.valueOf(aMapLocation.getLatitude());
+			clientUser.longitude = String.valueOf(aMapLocation.getLongitude());
+			AppManager.setClientUser(clientUser);
 		} else {
 			new UploadCityInfoTask().request(currentCity, curLat, curLon);
 		}
@@ -355,8 +359,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 					double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
 					curLon = String.valueOf(lon);
-					AppManager.getClientUser().latitude = curLat;
-					AppManager.getClientUser().longitude = curLon;
 				} catch (Exception e) {
 
 				}

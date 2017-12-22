@@ -1,12 +1,9 @@
 package com.cyanbirds.ttjy.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -44,47 +41,27 @@ import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.CityInfo;
+import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.FederationToken;
-import com.cyanbirds.ttjy.entity.FollowModel;
-import com.cyanbirds.ttjy.entity.LoveModel;
-import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
 import com.cyanbirds.ttjy.fragment.AttentionMFragment;
 import com.cyanbirds.ttjy.fragment.CardFragment;
-import com.cyanbirds.ttjy.fragment.FindNewFragment;
 import com.cyanbirds.ttjy.fragment.FoundGridFragment;
 import com.cyanbirds.ttjy.fragment.GiftLoveFragment;
-import com.cyanbirds.ttjy.fragment.MessageFragment;
 import com.cyanbirds.ttjy.fragment.MessageNewFragment;
 import com.cyanbirds.ttjy.fragment.SettingFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
-import com.cyanbirds.ttjy.net.request.FollowListRequest;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
-import com.cyanbirds.ttjy.net.request.GetLoveFormeListRequest;
 import com.cyanbirds.ttjy.net.request.GetOSSTokenRequest;
-import com.cyanbirds.ttjy.net.request.GiftsListRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
-import com.cyanbirds.ttjy.service.MyIntentService;
-import com.cyanbirds.ttjy.service.MyPushService;
-import com.cyanbirds.ttjy.utils.MsgUtil;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
-import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.igexin.sdk.PushManager;
 import com.umeng.analytics.MobclickAgent;
-import com.xiaomi.mipush.sdk.MiPushClient;
 import com.yuntongxun.ecsdk.ECInitParams;
-
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import cn.jpush.android.api.JPushInterface;
-import cn.jpush.android.api.TagAliasCallback;
 
 /**
  * Created by wangyb on 2017/7/3.
@@ -124,23 +101,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
      */
     public int mOSSTokenRetryCount = 0;
 
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_SET_ALIAS:
-                    JPushInterface.setAliasAndTags(getApplicationContext(), null, null, mAliasCallback);
-                    JPushInterface.setAliasAndTags(getApplicationContext(), (String) msg.obj, null, mAliasCallback);
-                    break;
-                case MSG_SET_TAGS:
-                    JPushInterface.setAliasAndTags(getApplicationContext(), null, null, mAliasCallback);
-                    JPushInterface.setAliasAndTags(getApplicationContext(), null, (Set<String>) msg.obj, mAliasCallback);
-                    break;
-            }
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,50 +113,11 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         SDKCoreHelper.init(this, ECInitParams.LoginMode.FORCE_LOGIN);
         updateConversationUnRead();
 
-        AppManager.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                /**
-                 * 注册小米推送
-                 */
-                MiPushClient.registerPush(MainNewActivity.this, AppConstants.MI_PUSH_APP_ID, AppConstants.MI_PUSH_APP_KEY);
-                //个推
-                initGeTuiPush();
-
-                initJPush();
-
-
-                loadData();
-
-                initLocationClient();
-            }
-        });
+        loadData();
+        initLocationClient();
 
         AppManager.requestLocationPermission(this);
         requestPermission();
-
-        if (AppManager.getClientUser().isShowVip) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    new GetLoveFormeListTask().request(1, 1);
-                }
-            }, 9000 * 10);
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    new MyGiftListTask().request(1, 1);
-                }
-            }, 1500 * 10);
-
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    new FollowListTask().request("followFormeList", 1, 1);
-                }
-            }, 5000 * 10);
-        }
     }
 
     private void initNavigationViewHeader() {
@@ -479,41 +400,16 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    /**
-     * 个推注册
-     */
-    private void initGeTuiPush() {
-        // SDK初始化，第三方程序启动时，都要进行SDK初始化工作
-        PushManager.getInstance().initialize(this.getApplicationContext(), MyPushService.class);
-        PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), MyIntentService.class);
-    }
-
-    private void initJPush() {
-        // 初始化 JPush
-        JPushInterface.init(this);
-//		JPushInterface.setDebugMode(true);
-
-        if (!PreferencesUtils.getJpushSetAliasState(this)) {
-            //调用JPush API设置Alias
-            mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_ALIAS, AppManager.getClientUser().userId));
-            //调用JPush API设置Tag
-            Set<String> tag = new LinkedHashSet<>(1);
-            if ("男".equals(AppManager.getClientUser().sex)) {
-                tag.add("female");
-            } else {
-                tag.add("male");
-            }
-            mHandler.sendMessage(mHandler.obtainMessage(MSG_SET_TAGS, tag));
-        }
-    }
-
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
-            AppManager.getClientUser().latitude = String.valueOf(aMapLocation.getLatitude());
-            AppManager.getClientUser().longitude = String.valueOf(aMapLocation.getLongitude());
             new UploadCityInfoTask().request(aMapLocation.getCity(),
-                    AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
+                    String.valueOf(aMapLocation.getLatitude()), String.valueOf(aMapLocation.getLongitude()));
+            PreferencesUtils.setCurrentCity(this, aMapLocation.getCity());
+            ClientUser clientUser = AppManager.getClientUser();
+            clientUser.latitude = String.valueOf(aMapLocation.getLatitude());
+            clientUser.longitude = String.valueOf(aMapLocation.getLongitude());
+            AppManager.setClientUser(clientUser);
         } else {
             new UploadCityInfoTask().request(currentCity, curLat, curLon);
         }
@@ -563,78 +459,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 AppManager.getClientUser().isShowVideo = false;
                 AppManager.getClientUser().isShowVip = false;
                 AppManager.getClientUser().isShowRpt = false;
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
-    }
-
-    /**
-     * 获取最近喜欢我的那个人
-     */
-    class GetLoveFormeListTask extends GetLoveFormeListRequest {
-        @Override
-        public void onPostExecute(List<LoveModel> loveModels) {
-            if(loveModels != null && loveModels.size() > 0) {
-                String lastUserId = PreferencesUtils.getLoveMeUserId(MainNewActivity.this);
-                if (!lastUserId.equals(String.valueOf(loveModels.get(0).userId))) {
-
-                    PreferencesUtils.setLoveMeUserId(
-                            MainNewActivity.this, String.valueOf(loveModels.get(0).userId));
-                    Intent intent = new Intent(MainNewActivity.this, PopupLoveActivity.class);
-                    intent.putExtra(ValueKey.DATA, loveModels.get(0));
-                    startActivity(intent);
-
-                    mGiftUnread.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
-    }
-
-    class MyGiftListTask extends GiftsListRequest {
-        @Override
-        public void onPostExecute(List<ReceiveGiftModel> receiveGiftModels) {
-            if(null != receiveGiftModels && receiveGiftModels.size() > 0){
-                ReceiveGiftModel model = receiveGiftModels.get(0);
-                String lastUserId = PreferencesUtils.getGiftMeUserId(MainNewActivity.this);
-                if (!lastUserId.equals(String.valueOf(model.userId))) {
-                    PreferencesUtils.setGiftMeUserId(
-                            MainNewActivity.this, String.valueOf(model.userId));
-                    MsgUtil.sendAttentionOrGiftMsg(String.valueOf(model.userId), model.nickname, model.faceUrl,
-                            model.nickname + "给您送了一件礼物");
-
-                    mGiftUnread.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            ToastUtil.showMessage(error);
-        }
-    }
-
-    class FollowListTask extends FollowListRequest {
-        @Override
-        public void onPostExecute(List<FollowModel> followModels) {
-            if(followModels != null && followModels.size() > 0){
-                FollowModel followModel = followModels.get(0);
-                String lastUserId = PreferencesUtils.getAttentionMeUserId(MainNewActivity.this);
-                if (!lastUserId.equals(String.valueOf(followModel.userId))) {
-                    PreferencesUtils.setAttentionMeUserId(
-                            MainNewActivity.this, String.valueOf(followModel.userId));
-                    MsgUtil.sendAttentionOrGiftMsg(String.valueOf(followModel.userId),
-                            followModel.nickname, followModel.faceUrl,
-                            followModel.nickname + "关注了您");
-
-                    mAttentionUnread.setVisibility(View.VISIBLE);
-                }
             }
         }
 
@@ -724,32 +548,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         });
         builder.show();
     }
-
-    /**
-     * 极光推送设置别名后的回调
-     */
-    private final TagAliasCallback mAliasCallback = new TagAliasCallback() {
-
-        @Override
-        public void gotResult(int code, String alias, Set<String> tags) {
-            switch (code) {
-                case 0:
-                    //Set tag and alias success
-                    PreferencesUtils.setJpushSetAliasState(MainNewActivity.this, true);
-                    break;
-
-                case 6002:
-                    //"Failed to set alias and tags due to timeout. Try again after 60s.";
-                    ConnectivityManager conn = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo info = conn.getActiveNetworkInfo();
-                    if (info != null && info.isConnected()) {
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_ALIAS, alias), 1000 * 60);
-                        mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_TAGS, tags), 1000 * 60);
-                    }
-                    break;
-            }
-        }
-    };
 
     @Override
     protected void onResume() {

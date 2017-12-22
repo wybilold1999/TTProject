@@ -107,8 +107,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
 
                 double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
                 curLon = String.valueOf(lon);
-                AppManager.getClientUser().latitude = curLat;
-                AppManager.getClientUser().longitude = curLon;
             } catch (Exception e) {
 
             }
@@ -165,13 +163,12 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
             curLat = String.valueOf(aMapLocation.getLatitude());
-            curLat = String.valueOf(aMapLocation.getLongitude());
+            curLon = String.valueOf(aMapLocation.getLongitude());
             mCurrrentCity = aMapLocation.getCity();
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
 
-            new UploadCityInfoTask().request(aMapLocation.getCity(),
-                    AppManager.getClientUser().latitude, AppManager.getClientUser().longitude);
+            new UploadCityInfoTask().request(aMapLocation.getCity(), curLat, curLon);
         } else {
             new UploadCityInfoTask().request(mCurrrentCity, curLat, curLon);
         }
