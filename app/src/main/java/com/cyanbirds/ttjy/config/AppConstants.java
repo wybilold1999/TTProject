@@ -71,6 +71,6 @@ public class AppConstants {
 
 	public static final String CURRENT_INDEX = "currentIndex";
 
-	public static int CHAT_LIMIT = 3;
+	public static int CHAT_LIMIT = 0;
 
 }
