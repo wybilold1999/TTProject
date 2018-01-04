@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -25,12 +24,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.alibaba.sdk.android.oss.ClientConfiguration;
-import com.alibaba.sdk.android.oss.OSS;
-import com.alibaba.sdk.android.oss.OSSClient;
-import com.alibaba.sdk.android.oss.common.OSSLog;
-import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
-import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -42,7 +35,6 @@ import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.entity.ClientUser;
-import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.fragment.AboutFragment;
 import com.cyanbirds.ttjy.fragment.AttentionMFragment;
 import com.cyanbirds.ttjy.fragment.CardFragment;
@@ -55,7 +47,6 @@ import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
-import com.cyanbirds.ttjy.net.request.GetOSSTokenRequest;
 import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
@@ -79,14 +70,9 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
     private ImageView mGiftUnread;
     private ImageView mAttentionUnread;
 
-    private ClientConfiguration mOSSConf;
-
     private static final int REQUEST_PERMISSION = 0;
     private final int REQUEST_LOCATION_PERMISSION = 1000;
     private final int REQUEST_PERMISSION_SETTING = 10001;
-
-    private static final int MSG_SET_ALIAS = 1001;//极光推送设置别名
-    private static final int MSG_SET_TAGS = 1002;//极光推送设置tag
 
     private AMapLocationClientOption mLocationOption;
     private AMapLocationClient mlocationClient;
@@ -96,11 +82,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
     private String curLon;
     private String currentCity;
 
-    /**
-     * oss鉴权获取失败重试次数
-     */
-    public int mOSSTokenRetryCount = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +90,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
         initNavigationViewHeader();
         initFragment(savedInstanceState);
         setupEvent();
-        initOSS();
         SDKCoreHelper.init(this, ECInitParams.LoginMode.FORCE_LOGIN);
         updateConversationUnRead();
 
@@ -342,61 +322,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
             PushMsgUtil.getInstance().handlePushMsg(false, msg);
             NotificationManager.getInstance().cancelNotification();
             AppManager.isMsgClick = true;
-        }
-    }
-
-    /**
-     * 初始化oss
-     */
-    private void initOSS() {
-        mOSSConf = new ClientConfiguration();
-        mOSSConf.setConnectionTimeout(30 * 1000); // 连接超时，默认15秒
-        mOSSConf.setSocketTimeout(30 * 1000); // socket超时，默认15秒
-        mOSSConf.setMaxConcurrentRequest(50); // 最大并发请求书，默认5个
-        mOSSConf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
-        OSSLog.enableLog();
-
-        final Handler handler = new Handler();
-        // 每30分钟请求一次鉴权
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                new GetFederationTokenTask().request();
-                handler.postDelayed(this, 60 * 30 * 1000);
-            }
-        };
-
-        handler.postDelayed(runnable, 0);
-    }
-
-    class GetFederationTokenTask extends GetOSSTokenRequest {
-
-        @Override
-        public void onPostExecute(FederationToken result) {
-            try {
-                if (result != null) {
-                    AppManager.setFederationToken(result);
-                    OSSCredentialProvider credentialProvider = new OSSStsTokenCredentialProvider(result.accessKeyId, result.accessKeySecret, result.securityToken);
-                    OSS oss = new OSSClient(getApplicationContext(), result.endpoint, credentialProvider, mOSSConf);
-                    AppManager.setOSS(oss);
-                    mOSSTokenRetryCount = 0;
-                } else {
-                    if (mOSSTokenRetryCount < 5) {
-                        new GetFederationTokenTask().request();
-                        mOSSTokenRetryCount++;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            if (mOSSTokenRetryCount < 5) {
-                new GetFederationTokenTask().request();
-                mOSSTokenRetryCount++;
-            }
         }
     }
 

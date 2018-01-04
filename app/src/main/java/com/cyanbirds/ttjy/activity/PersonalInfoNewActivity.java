@@ -222,10 +222,8 @@ public class PersonalInfoNewActivity extends BaseActivity implements GeocodeSear
 		if (!TextUtils.isEmpty(curUserId)) {
 			initMap();
 			if (AppManager.getClientUser().userId.equals(curUserId)) {
-				mFab.setVisibility(View.VISIBLE);
 				mBottomLayout.setVisibility(View.GONE);
 			} else {
-				mFab.setVisibility(View.GONE);
 				mBottomLayout.setVisibility(View.VISIBLE);
 			}
 			new GetUserInfoTask().request(curUserId);

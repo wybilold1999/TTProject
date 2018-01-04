@@ -80,18 +80,7 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     private final String BEAUTIFUL = "2";
     private final String ALL_COUNTRY = "-1";
 
-    private static final String FRAGMENT_INDEX = "fragment_index";
-    private int mCurIndex = -1;
-
     private boolean mIsRefreshing = false;
-
-    public static FindLoveFragment newInstance(int index) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(FRAGMENT_INDEX, index);
-        FindLoveFragment fragment = new FindLoveFragment();
-        fragment.setArguments(bundle);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -151,22 +140,6 @@ public class FindLoveFragment extends Fragment implements OnRefreshListener, Vie
     }
 
     private void setupData() {
-        //获得索引值
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            mCurIndex = bundle.getInt(FRAGMENT_INDEX);
-        }
-        switch (mCurIndex) {
-            case 0 :
-                mUserScopeType = BEAUTIFUL;
-                break;
-            case 1 :
-                mUserScopeType = SAME_CITY;
-                break;
-            case 2 :
-                mUserScopeType = ALL_COUNTRY;
-                break;
-        }
 
         mClientUsers = new ArrayList<>();
         mAdapter = new FindLoveAdapter(mClientUsers, getActivity());
