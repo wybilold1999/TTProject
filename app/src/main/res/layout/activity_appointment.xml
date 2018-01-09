@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <include layout="@layout/toolbar_actionbar_with_headerbar"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:textSize="14sp"
+        android:textColor="@color/gray_text"
+        android:text="@string/tv_appointment_content"/>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:cardBackgroundColor="#fff"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/divider_color"
+            android:contentDescription="@null"/>
+
+        <RelativeLayout
+            android:id="@+id/appointment_prj_lay"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:text="@string/tv_project"
+                android:textSize="16sp"/>
+
+
+            <ImageView
+                android:id="@+id/personal_enter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:contentDescription="@null"
+                android:src="@mipmap/personal_enter"/>
+
+            <TextView
+                android:id="@+id/appointment_prj"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/personal_enter"
+                android:text="看电影"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:textSize="14sp"
+        android:textColor="@color/gray_text"
+        android:text="@string/tv_appointment_info"/>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:cardBackgroundColor="#fff"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
+
+            <RelativeLayout
+                android:id="@+id/appointment_info_lay"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:descendantFocusability="blocksDescendants">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/tv_appointment_time"
+                    android:textSize="16sp"/>
+
+
+                <ImageView
+                    android:id="@id/personal_enter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:contentDescription="@null"
+                    android:src="@mipmap/personal_enter"/>
+
+                <TextView
+                    android:id="@+id/appointment_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/personal_enter"
+                    android:text="2018-01-10 10:00"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="@dimen/divider_margin_left"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
+
+            <RelativeLayout
+                android:id="@+id/appointment_long_lay"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:descendantFocusability="blocksDescendants">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/tv_appointment_long"
+                    android:textSize="16sp"/>
+
+
+                <ImageView
+                    android:id="@id/personal_enter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:contentDescription="@null"
+                    android:src="@mipmap/personal_enter"/>
+
+                <TextView
+                    android:id="@+id/appointment_long"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/personal_enter"
+                    android:text="2小时"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="@dimen/divider_margin_left"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
+
+            <RelativeLayout
+                android:id="@+id/appointment_address_lay"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true"
+                android:descendantFocusability="blocksDescendants">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/tv_appointment_address"
+                    android:textSize="16sp"/>
+
+
+                <ImageView
+                    android:id="@id/personal_enter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:contentDescription="@null"
+                    android:src="@mipmap/personal_enter"/>
+
+                <TextView
+                    android:id="@+id/appointment_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@id/personal_enter"
+                    android:text=""/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:textSize="14sp"
+        android:textColor="@color/gray_text"
+        android:text="@string/tv_appointment_remark"/>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:cardBackgroundColor="#fff"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="true">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/divider_height"
+            android:background="@color/divider_color"
+            android:contentDescription="@null"/>
+
+
+        <RelativeLayout
+            android:id="@+id/appointment_remark_lay"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:descendantFocusability="blocksDescendants">
+
+            <EditText
+                android:id="@+id/appointment_remark"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:hint="@string/tv_appointment_remark_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:textSize="12sp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

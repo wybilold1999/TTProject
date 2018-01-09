@@ -357,4 +357,14 @@
     <string name="pay_ali_failure">支付失败,请重试</string>
     <string name="pay_wechat_failure">支付失败,请使用支付宝支付</string>
 
+    <string name="tv_appointment_content">约会内容</string>
+    <string name="tv_project">约会项目</string>
+    <string name="tv_appointment_info">约会信息</string>
+    <string name="tv_appointment_time">约会时间</string>
+    <string name="tv_appointment_long">时长</string>
+    <string name="tv_appointment_address">地点</string>
+    <string name="tv_appointment_remark">留言</string>
+    <string name="tv_appointment_remark_content">请尊重对方并详细说明本次约会的具体内容，这样被对方接受的概率更大。</string>
+    <string name="appointment_apply_for">约会申请</string>
+
 </resources>
