@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +13,12 @@ import android.view.ViewGroup;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.MainNewActivity;
 import com.cyanbirds.ttjy.adapter.FoundGridAdapter;
-import com.cyanbirds.ttjy.adapter.FoundNewAdapter;
 import com.cyanbirds.ttjy.entity.PictureModel;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetDiscoverInfoRequest;
 import com.cyanbirds.ttjy.net.request.GetRealUsersDiscoverInfoRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.ui.widget.DividerGridItemDecoration;
-import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
-import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -32,7 +27,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * Created by wangyb on 2017/6/29.
