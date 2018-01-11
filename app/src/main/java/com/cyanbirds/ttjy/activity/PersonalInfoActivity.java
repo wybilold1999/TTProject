@@ -158,11 +158,13 @@ public class PersonalInfoActivity extends BaseActivity {
 			Intent intent = new Intent(this, ModifyUserInfoActivity.class);
 			startActivity(intent);
 		} else if (item.getItemId() == R.id.call) {
-			Intent intent = new Intent(this, VoipCallActivity.class);
-			intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
-			intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
-			intent.putExtra(ValueKey.FROM_ACTIVITY, "PersonalInfoActivity");
-			startActivity(intent);
+			if (null != mClientUser) {
+				Intent intent = new Intent(this, VoipCallActivity.class);
+				intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
+				intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
+				intent.putExtra(ValueKey.FROM_ACTIVITY, "PersonalInfoActivity");
+				startActivity(intent);
+			}
 		} else {
 			finish();
 		}
@@ -208,6 +210,8 @@ public class PersonalInfoActivity extends BaseActivity {
 					new SenderGreetTask().request(mClientUser.userId);
 					new AddLoveTask().request(mClientUser.userId);
 				}
+//				intent.setClass(this, AppointmentActivity.class);
+//				startActivity(intent);
 				break;
 			case R.id.message:
 				if (null != mClientUser) {
