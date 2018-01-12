@@ -366,5 +366,8 @@
     <string name="tv_appointment_remark">留言</string>
     <string name="tv_appointment_remark_content">请尊重对方并详细说明本次约会的具体内容，这样被对方接受的概率更大。</string>
     <string name="appointment_apply_for">约会申请</string>
+    <string name="right_now_sure">马上约TA</string>
+    <string name="appointment_apply_for_success">约会申请成功，等待对方回应</string>
+    <string name="appointment_apply_for_faiure">约会申请失败</string>
 
 </resources>

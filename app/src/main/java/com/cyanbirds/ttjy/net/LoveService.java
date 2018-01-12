@@ -18,6 +18,7 @@ import retrofit2.http.POST;
  * @description
  */
 public interface LoveService {
+
     @FormUrlEncoded
     @POST("love/addLove")
     Call<ResponseBody> addLove(@Header("token") String token, @Field("loveId") String loveId);
@@ -29,4 +30,14 @@ public interface LoveService {
     @FormUrlEncoded
     @POST("greet/sendGreet")
     Call<ResponseBody> sendGreet(@Header("token") String token, @Field("greetId") String greetId);
+
+    /**
+     * 约会申请
+     * @param token
+     * @param params
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("love/applyForAppointment")
+    Call<ResponseBody> applyForAppointment(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 }

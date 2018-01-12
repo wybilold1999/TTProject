@@ -250,4 +250,18 @@ public class DateUtil {
 		Date date = new Date(millSec);
 		return formatDateByFormat(date, TIMESTAMP_PATTERN);
 	}
+
+	public static String toDateTime_2(long time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+		Date longD = new Date(time);
+		String resultD = sdf.format(longD);
+		return resultD;
+	}
+
+	public static String toTimeM(long time) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		Date longD = new Date(time);
+		String resultD = sdf.format(longD);
+		return resultD;
+	}
 }
