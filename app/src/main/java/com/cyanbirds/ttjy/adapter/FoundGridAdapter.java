@@ -47,7 +47,7 @@ public class FoundGridAdapter extends
         this.pictureModels = pics;
         mContext = context;
         mFormat = new DecimalFormat("#.00");
-        mCurCity = PreferencesUtils.getCity(context);
+        mCurCity = PreferencesUtils.getCurrentCity(context);
     }
 
     @Override

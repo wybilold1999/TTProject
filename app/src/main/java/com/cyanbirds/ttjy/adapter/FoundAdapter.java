@@ -46,7 +46,7 @@ public class FoundAdapter extends
         this.pictureModels = pics;
         mContext = context;
         mFormat = new DecimalFormat("#.00");
-        mCurCity = PreferencesUtils.getCity(context);
+        mCurCity = PreferencesUtils.getCurrentCity(context);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class FoundAdapter extends
                 viewHolder.mFromCity.setVisibility(View.VISIBLE);
                 viewHolder.mDistanceLayout.setVisibility(View.GONE);
                 viewHolder.mFromCity.setText("来自" + mCurCity);
-            } else if (!"待定".equals(model.city) && (null == model.distance || model.distance == 0.00)) {
+            } else if (null == model.distance || model.distance == 0.00) {
                 viewHolder.mFromCity.setVisibility(View.VISIBLE);
                 viewHolder.mDistanceLayout.setVisibility(View.GONE);
                 viewHolder.mFromCity.setText("来自" + model.city);
