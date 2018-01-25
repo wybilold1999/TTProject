@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 public class VideoShowActivity extends BaseActivity {
 
 	@BindView(R.id.recyclerview)
-	RecyclerView mRecyclerview;
+    RecyclerView mRecyclerview;
 	@BindView(R.id.progress_bar)
 	CircularProgress mProgressBar;
 

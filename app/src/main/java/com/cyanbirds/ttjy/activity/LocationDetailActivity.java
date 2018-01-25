@@ -3,8 +3,8 @@ package com.cyanbirds.ttjy.activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,8 +36,8 @@ import com.umeng.analytics.MobclickAgent;
  * @Date:2015年7月13日下午3:01:46
  */
 public class LocationDetailActivity extends BaseActivity implements
-		AMapLocationListener, LocationSource,
-		OnInfoWindowClickListener, InfoWindowAdapter {
+        AMapLocationListener, LocationSource,
+        OnInfoWindowClickListener, InfoWindowAdapter {
 
 	private MapView mMapView;
 	private AMap aMap;
@@ -48,8 +48,7 @@ public class LocationDetailActivity extends BaseActivity implements
 
 	private LatLng mMessageLatLng;
 	private String mAddress;
-
-	private Handler handler = new Handler();
+	private String from;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +75,6 @@ public class LocationDetailActivity extends BaseActivity implements
 	 * 设置数据
 	 */
 	private void setupData() {
-
 	}
 
 	/**
@@ -129,9 +127,12 @@ public class LocationDetailActivity extends BaseActivity implements
 								.decodeResource(getResources(),
 										R.mipmap.icon_marked)))
 						.draggable(true));
-		marker.setTitle("");
+		from = getIntent().getStringExtra(ValueKey.FROM_ACTIVITY);
+		if (TextUtils.isEmpty(from)) {
+			marker.setTitle("");
 
-		marker.showInfoWindow();// 设置默认显示一个infowinfow
+			marker.showInfoWindow();// 设置默认显示一个infowinfow
+		}
 	}
 
 	/**
@@ -152,6 +153,7 @@ public class LocationDetailActivity extends BaseActivity implements
 		super.onDestroy();
 		mMapView.onDestroy();
 	}
+
 
 	@Override
 	public void onLocationChanged(AMapLocation location) {

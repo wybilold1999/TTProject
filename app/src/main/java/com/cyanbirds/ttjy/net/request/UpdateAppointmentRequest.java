@@ -22,12 +22,12 @@ import retrofit2.Callback;
  * @datetime 2016-05-03 10:38 GMT+8
  * @email 395044952@qq.com
  */
-public class ApplyForAppointmentRequest extends ResultPostExecute<String> {
+public class UpdateAppointmentRequest extends ResultPostExecute<String> {
     public void request(AppointmentModel model){
         Gson gson = new Gson();
         ArrayMap<String, String> params = new ArrayMap<>(1);
         params.put("appointmentData", gson.toJson(model));
-        Call<ResponseBody> call = AppManager.getLoveService().applyForAppointment(AppManager.getClientUser().sessionId, params);
+        Call<ResponseBody> call = AppManager.getLoveService().updateAppointment(AppManager.getClientUser().sessionId, params);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {

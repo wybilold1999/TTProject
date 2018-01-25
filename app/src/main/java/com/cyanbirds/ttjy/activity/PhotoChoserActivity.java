@@ -40,7 +40,7 @@ public class PhotoChoserActivity extends BaseActivity implements
 	private List<ImageBean> mImages;
 	private int mSelectedCount = 0;
 
-	private static final int MAX_SELECT_NUMBER = 9;
+	private static final int MAX_SELECT_NUMBER = 6;
 
 	/**
 	 * 已经选中的url

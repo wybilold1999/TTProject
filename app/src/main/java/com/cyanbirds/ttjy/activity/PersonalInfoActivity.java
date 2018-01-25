@@ -115,6 +115,12 @@ public class PersonalInfoActivity extends BaseActivity {
 		fragmentList.add(personalFragment);
 		fragmentList.add(dynamicFragment);
 
+		if (AppManager.getClientUser().isShowAppointment) {
+			mLove.setText(R.string.tv_appointment);
+		} else {
+			mLove.setText(R.string.like);
+		}
+
 	}
 
 
@@ -206,12 +212,20 @@ public class PersonalInfoActivity extends BaseActivity {
 				startActivity(intent);
 				break;
 			case R.id.love:
-				if (null != mClientUser) {
-					new SenderGreetTask().request(mClientUser.userId);
-					new AddLoveTask().request(mClientUser.userId);
+				if (AppManager.getClientUser().isShowAppointment && !TextUtils.isEmpty(curUserId)) {
+					if (mClientUser != null) {
+						intent.setClass(this, AppointmentActivity.class);
+						intent.putExtra(ValueKey.USER_ID, curUserId);
+						intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
+						intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
+						startActivity(intent);
+					}
+				} else {
+					if (null != mClientUser) {
+						new SenderGreetTask().request(mClientUser.userId);
+						new AddLoveTask().request(mClientUser.userId);
+					}
 				}
-//				intent.setClass(this, AppointmentActivity.class);
-//				startActivity(intent);
 				break;
 			case R.id.message:
 				if (null != mClientUser) {

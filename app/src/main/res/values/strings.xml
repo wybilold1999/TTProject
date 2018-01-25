@@ -34,6 +34,7 @@
     <string name="my_attention">我的关注</string>
     <string name="my_visitor">我的访客</string>
     <string name="my_gifts">我的礼物</string>
+    <string name="my_appointment">我的约会</string>
     <string name="send_red_packet">发红包</string>
     <string name="who_attention_me">谁关注我</string>
     <string name="who_good_for_me">谁赞了我</string>
@@ -309,6 +310,7 @@
     <string name="create_order_ing">正在生成订单，请稍后...</string>
     <string name="dialog_get_balance">正在提现，请稍后...</string>
     <string name="wait">请稍后...</string>
+    <string name="dialog_apply_for">正在申请中，请稍后...</string>
 
     <!-- 高德地图分享位置 -->
     <string name="no_result">对不起，没有搜索到相关数据！</string>
@@ -357,6 +359,7 @@
     <string name="pay_ali_failure">支付失败,请重试</string>
     <string name="pay_wechat_failure">支付失败,请使用支付宝支付</string>
 
+    <string name="tv_appointment">约会</string>
     <string name="tv_appointment_content">约会内容</string>
     <string name="tv_project">约会项目</string>
     <string name="tv_appointment_info">约会信息</string>
@@ -369,5 +372,18 @@
     <string name="right_now_sure">马上约TA</string>
     <string name="appointment_apply_for_success">约会申请成功，等待对方回应</string>
     <string name="appointment_apply_for_faiure">约会申请失败</string>
+    <string name="appointment_time">约会时间必须大于当前时间</string>
+    <string name="appointment_info">约会详情</string>
+    <string name="select_appointment_location_tips">请选择要约会的位置</string>
+    <string name="appointment_status"><Data><![CDATA[申请状态：<font color="#ff0000"><b>%1$s</b></font>]]></Data></string>
+    <string name="appointment_invite">约会邀请</string>
+    <string name="appointment_invite_info"><Data><![CDATA[<font color="#ff0000"><b>%1$s</b></font> 向您发出了约会邀请]]></Data></string>
+    <string name="check_appointment_invite_info">查看约会详情</string>
+    <string name="no_my_appointment_list">您还未发出过约会申请哦！</string>
+    <string name="no_appointment_me_list">您还未收到过约会申请哦！</string>
+
+    <string name="official_qq">如有任何疑问，可联系官方客服QQ：2350635875</string>
+    <string name="tv_fare">充值送话费！让您尽情谈情，尽情约爱！</string>
+    <string name="tv_fare_info">1.限时抢购单次充值满100即有机会获赠话费\n2.绑定手机充值话费将会自动充值到您的手机中</string>
 
 </resources>

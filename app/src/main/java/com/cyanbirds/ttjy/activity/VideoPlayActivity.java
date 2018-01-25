@@ -18,7 +18,6 @@ import android.widget.VideoView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
 public class VideoPlayActivity extends Activity implements OnClickListener, OnPreparedListener, OnCompletionListener {

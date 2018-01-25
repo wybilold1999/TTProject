@@ -294,17 +294,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 				/**
 				 * 用户收到的礼物
 				 */
-				if (AppManager.getClientUser().isShowLovers) {
-					mGiftText.setVisibility(View.VISIBLE);
-					mGiftCard.setVisibility(View.VISIBLE);
-					mCardFriend.setVisibility(View.VISIBLE);
-					mTvFriend.setVisibility(View.VISIBLE);
-				} else {
-					mGiftText.setVisibility(View.GONE);
-					mGiftCard.setVisibility(View.GONE);
-					mCardFriend.setVisibility(View.GONE);
-					mTvFriend.setVisibility(View.GONE);
-				}
 				if (!TextUtils.isEmpty(clientUser.gifts)) {
 					mGiftText.setVisibility(View.VISIBLE);
 					mGiftCard.setVisibility(View.VISIBLE);
@@ -481,18 +470,22 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		switch (view.getId()) {
 			case R.id.check_view_wechat:
 				if (AppManager.getClientUser().is_vip) {
-					if (AppManager.getClientUser().gold_num < 1) {
+					if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 1) {
 						String tips = String.format(getResources().getString(R.string.social_id_need_gold), "微信");
 						showBuyGoldDialog(tips);
-					} else if (AppManager.getClientUser().gold_num < 101){
+					} else if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 101){
 						String tips = String.format(getResources().getString(R.string.social_id_need_more_gold), "微信");
 						showBuyGoldDialog(tips);
 					} else {
 						mWechatId.setText(clientUser.weixin_no);
-						if (!AppManager.getClientUser().is_download_vip) {
-							//更新服务器上的金币数量
-							AppManager.getClientUser().gold_num -= 101;
-							new UpdateGoldTask().request(AppManager.getClientUser().gold_num, "");
+						if (AppManager.getClientUser().isShowDownloadVip) {
+							if (!AppManager.getClientUser().is_download_vip) {
+								if (AppManager.getClientUser().isShowGold) {
+									//更新服务器上的金币数量
+									AppManager.getClientUser().gold_num -= 101;
+									new UpdateGoldTask().request(AppManager.getClientUser().gold_num, "");
+								}
+							}
 						}
 					}
 				} else {
@@ -501,18 +494,22 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 				break;
 			case R.id.check_view_qq:
 				if (AppManager.getClientUser().is_vip) {
-					if (AppManager.getClientUser().gold_num < 1) {
+					if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 1) {
 						String tips = String.format(getResources().getString(R.string.social_id_need_gold), "QQ");
 						showBuyGoldDialog(tips);
-					} else if (AppManager.getClientUser().gold_num < 101){
+					} else if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 101){
 						String tips = String.format(getResources().getString(R.string.social_id_need_more_gold), "QQ");
 						showBuyGoldDialog(tips);
 					} else {
 						mQqId.setText(clientUser.qq_no);
-						if (!AppManager.getClientUser().is_download_vip) {
-							//更新服务器上的金币数量
-							AppManager.getClientUser().gold_num -= 101;
-							new UpdateGoldTask().request(AppManager.getClientUser().gold_num, "");
+						if (AppManager.getClientUser().isShowDownloadVip) {
+							if (!AppManager.getClientUser().is_download_vip) {
+								if (AppManager.getClientUser().isShowGold) {
+									//更新服务器上的金币数量
+									AppManager.getClientUser().gold_num -= 101;
+									new UpdateGoldTask().request(AppManager.getClientUser().gold_num, "");
+								}
+							}
 						}
 					}
 				} else {

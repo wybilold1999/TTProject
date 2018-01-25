@@ -152,8 +152,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="10dp"
-                        android:layout_toLeftOf="@id/personal_enter"
-                        android:text="2018-01-10 10:00"/>
+                        android:layout_toLeftOf="@id/personal_enter"/>
 
                 </RelativeLayout>
 
@@ -255,8 +254,7 @@
                         android:layout_toLeftOf="@id/personal_enter"
                         android:layout_toRightOf="@id/tv_address"
                         android:ellipsize="end"
-                        android:singleLine="true"
-                        android:text=""/>
+                        android:singleLine="true"/>
 
                 </RelativeLayout>
 
@@ -300,6 +298,7 @@
                     android:id="@+id/appointment_remark"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:maxLength="500"
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
                     android:gravity="top"
