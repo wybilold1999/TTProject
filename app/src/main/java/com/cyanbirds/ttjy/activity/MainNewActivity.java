@@ -47,7 +47,6 @@ import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
-import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -328,16 +327,21 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
-            new UploadCityInfoTask().request(aMapLocation.getCity(),
-                    String.valueOf(aMapLocation.getLatitude()), String.valueOf(aMapLocation.getLongitude()));
             PreferencesUtils.setCurrentCity(this, aMapLocation.getCity());
             ClientUser clientUser = AppManager.getClientUser();
             clientUser.latitude = String.valueOf(aMapLocation.getLatitude());
             clientUser.longitude = String.valueOf(aMapLocation.getLongitude());
             AppManager.setClientUser(clientUser);
-        } else {
-            new UploadCityInfoTask().request(currentCity, curLat, curLon);
+            curLat = clientUser.latitude;
+            curLon = clientUser.longitude;
+
+            if (TextUtils.isEmpty(PreferencesUtils.getCurrentProvince(this))) {
+                PreferencesUtils.setCurrentProvince(this, aMapLocation.getProvince());
+            }
         }
+
+        PreferencesUtils.setLatitude(this, curLat);
+        PreferencesUtils.setLongitude(this, curLon);
     }
 
     /**
@@ -364,26 +368,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                 } catch (Exception e) {
 
                 }
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
-    }
-
-    class UploadCityInfoTask extends UploadCityInfoRequest {
-
-        @Override
-        public void onPostExecute(String isShow) {
-            if ("0".equals(isShow)) {
-                AppManager.getClientUser().isShowDownloadVip = false;
-                AppManager.getClientUser().isShowGold = false;
-                AppManager.getClientUser().isShowLovers = false;
-                AppManager.getClientUser().isShowMap = false;
-                AppManager.getClientUser().isShowVideo = false;
-                AppManager.getClientUser().isShowVip = false;
-                AppManager.getClientUser().isShowRpt = false;
             }
         }
 

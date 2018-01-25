@@ -267,8 +267,8 @@
 
                         <ImageView
                             android:id="@+id/video_show_img"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
+                            android:layout_width="31dp"
+                            android:layout_height="31dp"
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="20dp"
@@ -505,8 +505,8 @@
 
                         <ImageView
                             android:id="@+id/my_appointment_img"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
+                            android:layout_width="31dp"
+                            android:layout_height="31dp"
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="20dp"

@@ -29,8 +29,8 @@ android {
 
     // 在MobSDK的扩展中注册SMSSDK的相关信息
     MobSDK {
-        appKey "1705ac31c7ae6"
-        appSecret "334da8403952168a0bb65d8870ea35af"
+        appKey "1b6b963e439a6"
+        appSecret "f3a053ac5f1b4f592823ce53a0585920"
 
         SMSSDK {
             gui false

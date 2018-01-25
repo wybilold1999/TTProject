@@ -112,6 +112,10 @@ public class PreferencesUtils {
 	public static final String SETTINGS_I_APPOINT_USER_ID = "com.cyanbird.tanlove_i_appoint_user_id";
 	/** (约我的)改变约会状态的userid*/
 	public static final String SETTINGS_APPOINT_ME_USER_ID = "com.cyanbird.tanlove_appoint_me_user_id";
+	/** 经度*/
+	public static final String SETTINGS_LATITUDE = "com.cyanbird.tanlove_latitude";
+	/** 纬度*/
+	public static final String SETTINGS_LONGITUDE = "com.cyanbird.tanlove_longitude";
 
 	/**
 	 * 获取RL账号
@@ -1215,5 +1219,30 @@ public class PreferencesUtils {
 				.getDefaultSharedPreferences(context);
 		return sp.getString(SETTINGS_I_APPOINT_USER_ID, "");
 	}
+
+	public static void setLatitude(final Context context, final String lat) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putString(SETTINGS_LATITUDE, lat).commit();
+	}
+
+	public static String getLatitude(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getString(SETTINGS_LATITUDE, "");
+	}
+
+	public static void setLongitude(final Context context, final String longitude) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putString(SETTINGS_LONGITUDE, longitude).commit();
+	}
+
+	public static String getLongitude(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getString(SETTINGS_LONGITUDE, "");
+	}
+
 
 }

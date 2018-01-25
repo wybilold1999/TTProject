@@ -22,7 +22,6 @@ import com.cyanbirds.ttjy.entity.CityInfo;
 import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
-import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.umeng.analytics.MobclickAgent;
 
@@ -118,29 +117,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         }
     }
 
-    class UploadCityInfoTask extends UploadCityInfoRequest {
-
-        @Override
-        public void onPostExecute(String isShow) {
-            if ("0".equals(isShow)) {
-                AppManager.getClientUser().isShowDownloadVip = false;
-                AppManager.getClientUser().isShowGold = false;
-                AppManager.getClientUser().isShowLovers = false;
-                AppManager.getClientUser().isShowMap = false;
-                AppManager.getClientUser().isShowVideo = false;
-                AppManager.getClientUser().isShowVip = false;
-                AppManager.getClientUser().isShowRpt = false;
-                AppManager.getClientUser().isShowNormal = false;
-            } else {
-                AppManager.getClientUser().isShowNormal = true;
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
-    }
-
     /**
      * 初始化定位
      */
@@ -169,11 +145,10 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             PreferencesUtils.setCurrentProvince(EntranceActivity.this, aMapLocation.getProvince());
             EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
-
-            new UploadCityInfoTask().request(aMapLocation.getCity(), curLat, curLon);
-        } else {
-            new UploadCityInfoTask().request(mCurrrentCity, curLat, curLon);
         }
+
+        PreferencesUtils.setLatitude(this, curLat);
+        PreferencesUtils.setLongitude(this, curLon);
     }
 
     @OnClick({R.id.login, R.id.register})

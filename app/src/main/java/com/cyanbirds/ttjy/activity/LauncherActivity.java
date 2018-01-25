@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 
 import com.cyanbirds.ttjy.config.AppConstants;
@@ -15,7 +16,6 @@ import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
 import com.cyanbirds.ttjy.net.request.GetIdKeysRequest;
-import com.cyanbirds.ttjy.net.request.UploadCityInfoRequest;
 import com.cyanbirds.ttjy.net.request.UserLoginRequest;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.Md5Util;
@@ -107,9 +107,9 @@ public class LauncherActivity extends Activity {
 
     private void init() {
         new GetIdKeysTask().request();
-        if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
+        /*if (!TextUtils.isEmpty(PreferencesUtils.getCurrentCity(this))) {
             new UploadCityInfoTask().request(PreferencesUtils.getCurrentCity(this), "", "");
-        }
+        }*/
         if (AppManager.isLogin()) {//是否已经登录
             login();
         } else {
@@ -147,10 +147,11 @@ public class LauncherActivity extends Activity {
         AppManager.getIWXAPI().registerApp(AppConstants.WEIXIN_ID);
     }
 
-    class UploadCityInfoTask extends UploadCityInfoRequest {
+    /*class UploadCityInfoTask extends UploadCityInfoRequest {
 
         @Override
         public void onPostExecute(String isShow) {
+            Log.e("testt", "test1");
             if ("0".equals(isShow)) {
                 AppManager.getClientUser().isShowDownloadVip = false;
                 AppManager.getClientUser().isShowGold = false;
@@ -160,15 +161,17 @@ public class LauncherActivity extends Activity {
                 AppManager.getClientUser().isShowVip = false;
                 AppManager.getClientUser().isShowRpt = false;
                 AppManager.getClientUser().isShowNormal = false;
+                isShowNormal = false;
             } else {
                 AppManager.getClientUser().isShowNormal = true;
+                isShowNormal = true;
             }
         }
 
         @Override
         public void onErrorExecute(String error) {
         }
-    }
+    }*/
 
 	/**
      * 点击通知栏的消息，将消息入库
@@ -231,7 +234,7 @@ public class LauncherActivity extends Activity {
         @Override
         public void onPostExecute(ClientUser clientUser) {
             if (clientUser != null) {
-                mHandler.sendEmptyMessage(LONG_SCUESS);
+                Log.e("testt", "test2");
                 File faceLocalFile = new File(FileAccessorUtils.FACE_IMAGE,
                         Md5Util.md5(clientUser.face_url) + ".jpg");
                 if(!faceLocalFile.exists()
@@ -247,6 +250,7 @@ public class LauncherActivity extends Activity {
                 AppManager.getClientUser().loginTime = System.currentTimeMillis();
                 PreferencesUtils.setLoginTime(LauncherActivity.this, System.currentTimeMillis());
                 IMChattingHelper.getInstance().sendInitLoginMsg();
+                mHandler.sendEmptyMessage(LONG_SCUESS);
             }
         }
 
