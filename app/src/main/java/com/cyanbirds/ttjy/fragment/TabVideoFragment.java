@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.cyanbirds.tanlove.R;
-import com.cyanbirds.tanlove.adapter.TabVideoAdapter;
-import com.cyanbirds.tanlove.config.ValueKey;
-import com.cyanbirds.tanlove.entity.UserVideoPhotoModel;
+import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.adapter.TabVideoAdapter;
+import com.cyanbirds.ttjy.config.ValueKey;
+import com.cyanbirds.ttjy.entity.UserVideoPhotoModel;
 import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
@@ -84,11 +84,6 @@ public class TabVideoFragment extends Fragment {
 	public void onPause() {
 		super.onPause();
 		MobclickAgent.onPageEnd(this.getClass().getName());
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
 	}
 
 }

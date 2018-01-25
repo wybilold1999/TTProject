@@ -8,6 +8,60 @@
 	<include
 		layout="@layout/toolbar_actionbar_with_headerbar"/>
 
+	<RelativeLayout
+		android:id="@+id/personal_lay"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="5dp"
+		android:layout_marginBottom="5dp"
+		android:visibility="gone">
+
+		<com.facebook.drawee.view.SimpleDraweeView
+			android:id="@+id/portrait"
+			android:layout_width="60dp"
+			android:layout_height="60dp"
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:layout_marginLeft="20dp"
+			android:contentDescription="@null"
+			app:actualImageScaleType="fitCenter"
+			app:failureImage="@mipmap/default_head"
+			app:placeholderImage="@mipmap/default_head"
+			app:placeholderImageScaleType="fitCenter"
+			app:roundAsCircle="true"/>
+
+		<TextView
+			android:id="@+id/user_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="10dp"
+			android:layout_toRightOf="@id/portrait"
+			android:textSize="16sp"/>
+
+		<TextView
+			android:id="@+id/age"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="5dp"
+			android:layout_marginLeft="10dp"
+			android:layout_below="@id/user_name"
+			android:layout_toRightOf="@id/portrait"
+			android:text="23岁"
+			android:textColor="@color/gray_text"/>
+
+		<TextView
+			android:id="@+id/occupation"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_toRightOf="@id/age"
+			android:layout_below="@id/user_name"
+			android:text="演员"
+			android:textColor="@color/gray_text"/>
+	</RelativeLayout>
+
 	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
@@ -30,7 +84,8 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center|center_horizontal"
-			android:gravity="center"/>
+			android:gravity="center"
+			android:src="@mipmap/video_icon_play"/>
 
 		<RelativeLayout
 			android:layout_width="match_parent"
@@ -71,7 +126,8 @@
 		android:background="@color/colorPrimary"
 		android:text="TA的视频集"
 		android:textColor="@android:color/white"
-		android:gravity="center_horizontal|center_vertical"/>
+		android:gravity="center_horizontal|center_vertical"
+		android:visibility="gone"/>
 
 
 </LinearLayout>

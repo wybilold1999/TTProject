@@ -97,4 +97,6 @@ public class ValueKey {
 	public static final String USER_TYPE = "user_type";
 	/** LOCATION  **/
 	public static final String LOCATION = "location";
+	/**视频类型**/
+	public static final String VIDEO_TYPE = "video_type";
 }

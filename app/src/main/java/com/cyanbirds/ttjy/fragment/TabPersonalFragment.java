@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amap.api.location.CoordinateConverter;
+import com.amap.api.location.DPoint;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
@@ -193,12 +195,14 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 
 	private ClientUser clientUser;
 	private List<String> mVals = null;
-	private List<String> mPhotoList;
 	private DecimalFormat mFormat = new DecimalFormat("#.00");
 
 	private TabPersonalPhotosAdapter mAdapter;
 	private LinearLayoutManager layoutManager;
 	private LinearLayoutManager mGiftLayoutManager;
+
+	private DPoint mStartPoint;
+	private DPoint mEndPoint;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -335,6 +339,9 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 			RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 1000,
 					GeocodeSearch.AMAP);// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
 			geocoderSearch.getFromLocationAsyn(query);// 设置同步逆地理编码请求
+
+			mStartPoint = new DPoint(Double.parseDouble(myLatitude), Double.parseDouble(myLongitude));
+			mEndPoint = new DPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude());
 		}
 	}
 
@@ -364,7 +371,11 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		mAge.setText(String.valueOf(clientUser.age) + "岁");
 		if (!TextUtils.isEmpty(clientUser.distance) && Double.parseDouble(clientUser.distance) != 0) {
 			mCityText.setText("距离");
-			mCity.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + "km");
+			if (mStartPoint != null && mEndPoint != null) {
+				mCity.setText(mFormat.format((CoordinateConverter.calculateLineDistance(mStartPoint, mEndPoint) / 1000)) + "km");
+			} else {
+				mCity.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + "km");
+			}
 		} else if (!TextUtils.isEmpty(clientUser.city)) {
 			mCityText.setText("城市");
 			mCity.setText(clientUser.city);

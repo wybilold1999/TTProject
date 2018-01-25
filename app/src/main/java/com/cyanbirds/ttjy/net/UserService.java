@@ -241,4 +241,13 @@ public interface UserService {
     @POST("memberOrders/outputMoney")
     Call<ResponseBody> outputMoney(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 
+    /**
+     * 获取用户信息、视频信息、相册信息
+     * @param token
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("video/getUserVideoPhotoList")
+    Call<ResponseBody> getUserVideoPhotoList(@Field("userId") String userId, @Header("token") String token);
+
 }
