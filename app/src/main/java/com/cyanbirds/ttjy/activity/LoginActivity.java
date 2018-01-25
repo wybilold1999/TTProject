@@ -206,8 +206,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         @Override
         public void onErrorExecute(String error) {
-            ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
-            ToastUtil.showMessage(error);
+            if (!LoginActivity.this.isFinishing()) {
+                ProgressDialogUtils.getInstance(LoginActivity.this).dismiss();
+                ToastUtil.showMessage(error);
+            }
         }
     }
 
