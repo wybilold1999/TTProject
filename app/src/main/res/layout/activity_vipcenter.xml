@@ -92,6 +92,7 @@
                 android:id="@+id/pref_tel_fare_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
                 android:background="#fff"
                 android:orientation="vertical"
                 android:visibility="gone">
@@ -99,7 +100,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="10dp"
                     android:paddingLeft="@dimen/divider_margin_left"
                     android:paddingRight="@dimen/divider_margin_left"
                     android:textColor="@color/body_text_1"
@@ -109,7 +110,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
+                    android:layout_marginBottom="10dp"
                     android:paddingLeft="@dimen/divider_margin_left"
                     android:paddingRight="@dimen/divider_margin_left"
                     android:layout_marginTop="2dp"
@@ -132,6 +133,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_height"
+                android:layout_marginLeft="@dimen/divider_margin_left"
+                android:layout_marginRight="@dimen/divider_margin_left"
                 android:background="@color/divider_color"
                 android:contentDescription="@null"/>
 
@@ -149,6 +152,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_height"
+                android:layout_marginLeft="@dimen/divider_margin_left"
+                android:layout_marginRight="@dimen/divider_margin_left"
                 android:background="@color/divider_color"
                 android:contentDescription="@null"/>
 
