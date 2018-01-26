@@ -107,15 +107,15 @@ public class PreferencesUtils {
 	/** 聊天次数限制*/
 	public static final String SETTINGS_CHAT_LIMIT = "com.cyanbird.ttjy_chat_limit";
 	/** 省份*/
-	public static final String SETTINGS_CURRENT_PROVINCE = "com.cyanbird.tanlove_current_province";
+	public static final String SETTINGS_CURRENT_PROVINCE = "com.cyanbird.ttjy_current_province";
 	/** (我约会的)改变约会状态的userid*/
-	public static final String SETTINGS_I_APPOINT_USER_ID = "com.cyanbird.tanlove_i_appoint_user_id";
+	public static final String SETTINGS_I_APPOINT_USER_ID = "com.cyanbird.ttjy_i_appoint_user_id";
 	/** (约我的)改变约会状态的userid*/
-	public static final String SETTINGS_APPOINT_ME_USER_ID = "com.cyanbird.tanlove_appoint_me_user_id";
+	public static final String SETTINGS_APPOINT_ME_USER_ID = "com.cyanbird.ttjy_appoint_me_user_id";
 	/** 经度*/
-	public static final String SETTINGS_LATITUDE = "com.cyanbird.tanlove_latitude";
+	public static final String SETTINGS_LATITUDE = "com.cyanbird.ttjy_latitude";
 	/** 纬度*/
-	public static final String SETTINGS_LONGITUDE = "com.cyanbird.tanlove_longitude";
+	public static final String SETTINGS_LONGITUDE = "com.cyanbird.ttjy_longitude";
 
 	/**
 	 * 获取RL账号
