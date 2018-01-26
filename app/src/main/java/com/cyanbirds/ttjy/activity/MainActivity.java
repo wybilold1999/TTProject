@@ -185,14 +185,14 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				public void run() {
 					new MyGiftListTask().request(1, 1);
 				}
-			}, 1500 * 10);
+			}, 5000 * 10);
 
 			mHandler.postDelayed(new Runnable() {
 				@Override
 				public void run() {
 					new FollowListTask().request("followFormeList", 1, 1);
 				}
-			}, 5000 * 10);
+			}, 1500 * 10);
 		}
 
 		if (AppManager.getClientUser().isShowVip && AppManager.getClientUser().isShowAppointment) {
