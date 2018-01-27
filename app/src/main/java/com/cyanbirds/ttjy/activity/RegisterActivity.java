@@ -208,8 +208,10 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         
         @Override
         public void onErrorExecute(String error) {
-            ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
-            ToastUtil.showMessage(error);
+            if (!RegisterActivity.this.isFinishing()) {
+                ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
+                ToastUtil.showMessage(error);
+            }
         }
     }
 
