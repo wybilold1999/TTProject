@@ -181,8 +181,8 @@
                     android:layout_marginLeft="20dp"
                     android:contentDescription="@null"
                     app:actualImageScaleType="centerCrop"
-                    app:failureImage="@mipmap/icon_video_show"
-                    app:placeholderImage="@mipmap/icon_video_show"
+                    app:failureImage="@mipmap/ic_video_show"
+                    app:placeholderImage="@mipmap/ic_video_show"
                     app:placeholderImageScaleType="centerCrop"
                     app:roundAsCircle="true"/>
                 <LinearLayout

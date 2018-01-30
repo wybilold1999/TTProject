@@ -117,7 +117,7 @@
                     android:contentDescription="@null"/>
 
                 <RelativeLayout
-                    android:id="@+id/appointment_info_lay"
+                    android:id="@+id/appointment_time_lay"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="?android:selectableItemBackground"

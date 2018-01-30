@@ -72,18 +72,6 @@ public class ClientUser implements Serializable{
     public boolean isFollow;
     /**用户上传的图片**/
     public String imgUrls; //用json字符串保存上传的图片
-    /**
-     * 最新的版本号
-     */
-    public int versionCode;
-    /**
-     * 最新的apk的url
-     */
-    public String apkUrl;
-    /**
-     * 版本更新的信息
-     */
-    public String versionUpdateInfo;
 	/**
      * 用户获得的礼物
      */
