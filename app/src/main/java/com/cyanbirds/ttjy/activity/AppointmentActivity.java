@@ -54,7 +54,7 @@ public class AppointmentActivity extends BaseActivity {
     RelativeLayout mAppointmentInfoLay;
     @BindView(R.id.appointment_long)
     TextView mAppointmentLong;
-    @BindView(R.id.appointment_time_lay)
+    @BindView(R.id.appointment_long_lay)
     RelativeLayout mAppointmentLongLay;
     @BindView(R.id.appointment_address)
     TextView mAppointmentAddress;
