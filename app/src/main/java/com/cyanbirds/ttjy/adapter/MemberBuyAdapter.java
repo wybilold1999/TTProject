@@ -1,7 +1,9 @@
 package com.cyanbirds.ttjy.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,7 @@ public class MemberBuyAdapter extends
 		return vh;
 	}
 
+	@SuppressLint("StringFormatMatches")
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		MemberBuy memberBuy = mMemberBuyList.get(position);
@@ -52,7 +55,11 @@ public class MemberBuyAdapter extends
 		}
 		holder.mDateLimit.setText(memberBuy.months);
 		holder.mLimit.setText(String.format(mContext.getResources().getString(R.string.vip_limit), memberBuy.months));
-		holder.mPreferential.setText(memberBuy.descreption);
+		if (!TextUtils.isEmpty(memberBuy.preferential.trim())) {
+			holder.mPreferential.setText(String.format(mContext.getResources().getString(R.string.send_telephone_fare),
+					Integer.parseInt(memberBuy.preferential)));
+		}
+		holder.mDescription.setText(memberBuy.descreption);
 		holder.mBuy.setText("￥" + memberBuy.price);
 	}
 
@@ -66,6 +73,7 @@ public class MemberBuyAdapter extends
 		TextView mDateLimit;
 		TextView mLimit;
 		TextView mPreferential;
+		TextView mDescription;
 		Button mBuy;
 		ImageView mHot;
 		public ViewHolder(View itemView) {
@@ -73,6 +81,7 @@ public class MemberBuyAdapter extends
 			mDateLimit = (TextView) itemView.findViewById(R.id.date);
 			mLimit = (TextView) itemView.findViewById(R.id.limit);
 			mPreferential = (TextView) itemView.findViewById(R.id.preferential);
+			mDescription = (TextView) itemView.findViewById(R.id.description);
 			mBuy = (Button) itemView.findViewById(R.id.buy);
 			mHot = (ImageView) itemView.findViewById(R.id.iv_hot);
 			mBuy.setOnClickListener(this);
