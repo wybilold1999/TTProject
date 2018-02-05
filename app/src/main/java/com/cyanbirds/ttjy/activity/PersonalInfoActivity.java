@@ -352,6 +352,12 @@ public class PersonalInfoActivity extends BaseActivity {
 			mPortrait.setImageURI(Uri.parse(imagePath));
 		}
 
+		if (AppManager.getClientUser().isShowVip && clientUser.is_vip) {
+			mIdentifyState.setVisibility(View.VISIBLE);
+		} else {
+			mIdentifyState.setVisibility(View.GONE);
+		}
+
 		if (mClientUser.isFollow) {
 			mAttention.setText("已关注");
 		} else {
