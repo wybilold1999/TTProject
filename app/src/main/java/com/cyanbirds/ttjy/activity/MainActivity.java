@@ -48,6 +48,7 @@ import com.cyanbirds.ttjy.entity.LoveModel;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.FindLoveFragment;
 import com.cyanbirds.ttjy.fragment.FoundFragment;
+import com.cyanbirds.ttjy.fragment.HomeLoveFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
 import com.cyanbirds.ttjy.fragment.PersonalFragment;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
@@ -129,7 +130,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 	public final static String CURRENT_TAB = "current_tab";
 	private static final TableConfig[] tableConfig = new TableConfig[] {
-			new TableConfig(R.string.tab_find_love, FindLoveFragment.class,
+			new TableConfig(R.string.tab_find_love, HomeLoveFragment.class,
 					R.drawable.tab_tao_love_selector),
 			new TableConfig(R.string.tab_found, FoundFragment.class,
 					R.drawable.tab_found_selector),

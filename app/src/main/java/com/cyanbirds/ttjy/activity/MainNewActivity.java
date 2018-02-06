@@ -183,10 +183,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                     currentFragment = new FoundGridFragment();
                     switchContent(currentFragment);
                     break;
-                /*case 2:
-                    currentFragment = new FindNewFragment();
-                    switchContent(currentFragment);
-                    break;*/
                 case 3:
                     currentFragment = new MessageNewFragment();
                     switchContent(currentFragment);
@@ -228,12 +224,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
                     currentFragment = new FoundGridFragment();
                     switchContent(currentFragment);
                     return true;
-                /*case R.id.navigation_item_3:
-                    currentIndex = 2;
-                    menuItem.setChecked(true);
-                    currentFragment = new FindNewFragment();
-                    switchContent(currentFragment);
-                    return true;*/
                 case R.id.navigation_item_4:
                     currentIndex = 3;
                     menuItem.setChecked(true);

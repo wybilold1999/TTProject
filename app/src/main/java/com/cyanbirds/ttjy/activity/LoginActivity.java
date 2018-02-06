@@ -430,6 +430,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        ProgressDialogUtils.getInstance(this).dismiss();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
