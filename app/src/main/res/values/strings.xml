@@ -174,10 +174,10 @@
     <string name="un_see_attention_and_love">查看更多,立即开通会员？</string>
     <string name="turn_vip">该视频只能是会员才可以观看,请先开通会员</string>
     <string name="buy_gold">查看该视频需要消耗%1$d枚金币,你的金币数量不足,请先购买</string>
-    <string name="no_gold">你的金币数量不足,请先购买</string>
-    <string name="social_id_need_vip">您还不是会员,不能查看%1$s号,立即开通会员？</string>
-    <string name="social_id_need_gold">查看%1$s号需账户中有金币，您账户中暂时无金币，请先购买</string>
-    <string name="social_id_need_more_gold">查看%1$s号需账户中金币数量大于100，您账户中金币数量暂时不足，请先购买</string>
+    <string name="no_gold">您的金币数量不足,购买金币即可无限赠送礼物</string>
+    <string name="social_id_need_vip">您还不是会员,不能查看%1$s号,开通会员即可无限查看</string>
+    <string name="social_id_need_gold">您账户中无金币,无法查看%1$s号,购买金币即可无限查看</string>
+    <string name="social_id_need_more_gold">查看%1$s号需账户中金币数量大于100,您账户中金币数量不足,购买即可无限查看</string>
     <string name="buy_gift">亲,升级VIP即可无限制赠送礼物,立即开通会员？</string>
     <string name="un_call">亲,升级VIP即可给所有人打电话,立即开通会员？</string>
     <string name="un_see_video">亲,升级VIP即可观看所有人的视频,立即开通会员？</string>
