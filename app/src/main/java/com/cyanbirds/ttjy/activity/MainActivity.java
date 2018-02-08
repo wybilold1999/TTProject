@@ -770,4 +770,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		}
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+	}
 }
