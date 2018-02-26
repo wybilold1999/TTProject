@@ -133,6 +133,9 @@ public class WXLoginRequest extends ResultPostExecute<ClientUser> {
 			clientUser.sessionId = data.get("sessionId").getAsString();
 			clientUser.imgUrls = data.get("pictures") == null ? "" : data.get("pictures").getAsString();
 			clientUser.gifts = data.get("gifts").getAsString();
+			clientUser.versionCode = data.get("versionCode").getAsInt();
+			clientUser.apkUrl = data.get("apkUrl").getAsString();
+			clientUser.versionUpdateInfo = data.get("versionUpdateInfo").getAsString();
 			onPostExecute(clientUser);
 		} catch (Exception e) {
 			onErrorExecute(CSApplication.getInstance().getResources()

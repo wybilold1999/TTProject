@@ -337,10 +337,12 @@ public class VipCenterActivity extends BaseActivity {
 					mPrefTelFareLay.setVisibility(View.VISIBLE);
 					mTvNameList.setVisibility(View.GONE);
 					mVerticalText.setVisibility(View.GONE);
+					PreferencesUtils.setIsHasGetFareActivity(VipCenterActivity.this, false);
 				} else {
 					mPrefTelFareLay.setVisibility(View.GONE);
 					mTvNameList.setVisibility(View.VISIBLE);
 					mVerticalText.setVisibility(View.VISIBLE);
+					PreferencesUtils.setIsHasGetFareActivity(VipCenterActivity.this, true);
 				}
 			}
 			new GetUserNameTask().request(1, 100);

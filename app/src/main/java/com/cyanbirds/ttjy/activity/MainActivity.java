@@ -63,6 +63,7 @@ import com.cyanbirds.ttjy.net.request.GetOSSTokenRequest;
 import com.cyanbirds.ttjy.net.request.GiftsListRequest;
 import com.cyanbirds.ttjy.service.MyIntentService;
 import com.cyanbirds.ttjy.service.MyPushService;
+import com.cyanbirds.ttjy.utils.DateUtil;
 import com.cyanbirds.ttjy.utils.MsgUtil;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
@@ -73,6 +74,7 @@ import com.umeng.analytics.MobclickAgent;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.yuntongxun.ecsdk.ECInitParams;
 
+import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,6 +85,7 @@ import cn.jpush.android.api.TagAliasCallback;
 import static com.cyanbirds.ttjy.entity.AppointmentModel.AppointStatus.ACCEPT;
 import static com.cyanbirds.ttjy.entity.AppointmentModel.AppointStatus.DECLINE;
 import static com.cyanbirds.ttjy.entity.AppointmentModel.AppointStatus.MY_WAIT_CALL_BACK;
+import static com.cyanbirds.ttjy.utils.DateUtil.TIMESTAMP_PATTERN;
 
 public class MainActivity extends BaseActivity implements MessageUnReadListener.OnMessageUnReadListener, AMapLocationListener {
 
@@ -167,6 +170,8 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 				initLocationClient();
 
+				initFareGetTime();
+
 			}
 		});
 
@@ -196,7 +201,8 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			}, 1500 * 10);
 		}
 
-		if (AppManager.getClientUser().isShowVip && AppManager.getClientUser().isShowAppointment) {
+		if (AppManager.getClientUser().versionCode <= AppManager.getVersionCode() &&
+				AppManager.getClientUser().isShowVip && AppManager.getClientUser().isShowAppointment) {
 			//我约的
 			new GetIAppointmentListTask().request(1, 1, AppManager.getClientUser().userId, 0);
 			//约我的
@@ -210,6 +216,25 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		// 通过WXAPIFactory工厂，获取IWXAPI的实例
 		AppManager.setIWX_PAY_API(WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_PAY_ID, true));
 		AppManager.getIWX_PAY_API().registerApp(AppConstants.WEIXIN_PAY_ID);
+	}
+
+	/**
+	 * 初始化当月是否可以领取话费
+	 */
+	private void initFareGetTime() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 59);
+		calendar.set(Calendar.SECOND, 59);
+		String lastDay = DateUtil.formatDateByFormat(calendar.getTime(), TIMESTAMP_PATTERN);
+		try {
+			if (System.currentTimeMillis() > Long.parseLong(lastDay)) {
+				PreferencesUtils.setIsCanGetFare(this, true);
+			}
+		} catch (Exception e) {
+
+		}
 	}
 
 	/**

@@ -116,6 +116,14 @@ public class PreferencesUtils {
 	public static final String SETTINGS_LATITUDE = "com.cyanbird.ttjy_latitude";
 	/** 纬度*/
 	public static final String SETTINGS_LONGITUDE = "com.cyanbird.ttjy_longitude";
+	/** 是否有领取话费的活动*/
+	public static final String SETTINGS_IS_HAS_GET_FARE_ACTIVITY = "com.cyanbirds.ttjy_is_has_get_fare_activity";
+	/** 购买的是多少钱的vip*/
+	public static final String SETTINGS_WHICH_VIP = "com.cyanbirds.ttjy_which_vip";
+	/** 登录的次数*/
+	public static final String SETTINGS_LOGIN_COUNT = "com.cyanbirds.ttjy_login_count";
+	/** 该月是否可以领取话费*/
+	public static final String SETTINGS_IS_CAN_GET_FARE = "com.cyanbirds.ttjy_is_can_get_fare";
 
 	/**
 	 * 获取RL账号
@@ -1242,6 +1250,71 @@ public class PreferencesUtils {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		return sp.getString(SETTINGS_LONGITUDE, "");
+	}
+
+	public static boolean getIsHasGetFareActivity(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getBoolean(SETTINGS_IS_HAS_GET_FARE_ACTIVITY, false);
+	}
+
+	public static void setIsHasGetFareActivity(final Context context,
+											   final Boolean isHasActivity) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putBoolean(SETTINGS_IS_HAS_GET_FARE_ACTIVITY, isHasActivity)
+				.commit();
+	}
+
+	/**
+	 * 0:返话费的vip
+	 * 1:不能返话费的vip
+	 * @param context
+	 * @return
+	 */
+	public static int getWhichVip(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getInt(SETTINGS_WHICH_VIP, 1);
+	}
+
+	public static void setWhichVip(final Context context,
+								   final int whichVip) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putInt(SETTINGS_WHICH_VIP, whichVip).commit();
+	}
+
+	public static int getLoginCount(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getInt(SETTINGS_LOGIN_COUNT, 0);
+	}
+
+	public static void setLoginCount(final Context context,
+									 final int loginCount) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putInt(SETTINGS_LOGIN_COUNT, loginCount).commit();
+	}
+
+	/**
+	 * 当月是否可领取话费
+	 * @param context
+	 * @return
+	 */
+	public static boolean getIsCanGetFare(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getBoolean(SETTINGS_IS_CAN_GET_FARE, true);
+	}
+
+	public static void setIsCanGetFare(final Context context,
+									   final Boolean isCanGetFare) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putBoolean(SETTINGS_IS_CAN_GET_FARE, isCanGetFare)
+				.commit();
 	}
 
 

@@ -250,4 +250,12 @@ public interface UserService {
     @POST("video/getUserVideoPhotoList")
     Call<ResponseBody> getUserVideoPhotoList(@Field("userId") String userId, @Header("token") String token);
 
+    /**
+     * 获取返话费活动条件
+     * @param token
+     * @return
+     */
+    @GET("buy/getFareActivityInfo")
+    Call<ResponseBody> getFareActivityInfo(@Header("token") String token);
+
 }

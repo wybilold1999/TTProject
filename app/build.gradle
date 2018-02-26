@@ -10,8 +10,8 @@ android {
         applicationId "com.cyanbirds.ttjy"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 19
-        versionName "1.5.9"
+        versionCode 20
+        versionName "1.6.0"
         multiDexEnabled true
     }
     buildTypes {
