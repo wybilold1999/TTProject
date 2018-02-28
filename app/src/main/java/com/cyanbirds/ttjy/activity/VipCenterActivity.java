@@ -438,6 +438,11 @@ public class VipCenterActivity extends BaseActivity {
 				if (mMemberBuy.price > 200) {
 					PreferencesUtils.setRewardCount(VipCenterActivity.this, 3);
 				}
+				if (mMemberBuy.price > 150) {
+					PreferencesUtils.setWhichVip(VipCenterActivity.this, 0);
+				} else {
+					PreferencesUtils.setWhichVip(VipCenterActivity.this, 1);
+				}
 			}
 		}
 
