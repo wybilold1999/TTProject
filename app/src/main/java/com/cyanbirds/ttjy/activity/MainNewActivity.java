@@ -482,6 +482,5 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(AppConstants.CURRENT_INDEX, currentIndex);
-        super.onSaveInstanceState(outState);
     }
 }
