@@ -210,21 +210,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	}
 
 	/**
-	 * 请求读写文件夹的权限
-	 */
-	private void requestPermission() {
-		PackageManager pkgManager = getPackageManager();
-		// 读写 sd card 权限非常重要, android6.0默认禁止的, 建议初始化之前就弹窗让用户赋予该权限
-		boolean sdCardWritePermission =
-				pkgManager.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
-		if (Build.VERSION.SDK_INT >= 23 && !sdCardWritePermission) {
-			//请求权限
-			ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-					REQUEST_PERMISSION);
-		}
-	}
-
-	/**
 	 * 点击通知栏的消息，将消息入库
 	 */
 	private void loadData() {
@@ -602,7 +587,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 	private void setupViewPager(ViewPager viewPager) {
 		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-
 		adapter.addFragment(new HomeLoveFragment());
 		adapter.addFragment(new FoundFragment());
 		adapter.addFragment(new MessageFragment());
