@@ -124,6 +124,10 @@ public class PreferencesUtils {
 	public static final String SETTINGS_LOGIN_COUNT = "com.cyanbirds.ttjy_login_count";
 	/** 该月是否可以领取话费*/
 	public static final String SETTINGS_IS_CAN_GET_FARE = "com.cyanbirds.ttjy_is_can_get_fare";
+	/** 个推token*/
+	public static final String SETTINGS_GT_TOKEN = "com.cyanbirds.tanlove_gt_token";
+	/** 信鸽token*/
+	public static final String SETTINGS_XG_TOKEN = "com.cyanbirds.tanlove_xg_token";
 
 	/**
 	 * 获取RL账号
@@ -1315,6 +1319,30 @@ public class PreferencesUtils {
 				.getDefaultSharedPreferences(context);
 		sp.edit().putBoolean(SETTINGS_IS_CAN_GET_FARE, isCanGetFare)
 				.commit();
+	}
+
+	public static void setSettingsGtToken(final Context context, final String gtToken) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putString(SETTINGS_GT_TOKEN, gtToken).commit();
+	}
+
+	public static String getSettingsGtToken(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getString(SETTINGS_GT_TOKEN, "");
+	}
+
+	public static void setSettingsXgToken(final Context context, final String xgToken) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putString(SETTINGS_XG_TOKEN, xgToken).commit();
+	}
+
+	public static String getSettingsXgToken(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getString(SETTINGS_XG_TOKEN, "");
 	}
 
 

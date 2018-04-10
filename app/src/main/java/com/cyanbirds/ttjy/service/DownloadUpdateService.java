@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.config.ValueKey;

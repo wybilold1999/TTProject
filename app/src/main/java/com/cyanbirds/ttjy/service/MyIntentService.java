@@ -6,8 +6,10 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.UploadTokenRequest;
+import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
 import com.igexin.sdk.GTIntentService;
 import com.igexin.sdk.PushConsts;
@@ -62,7 +64,9 @@ public class MyIntentService extends GTIntentService {
 		if (!TextUtils.isEmpty(clientid) && !isAlreadyUpload) {
 			isAlreadyUpload = true;
 			PushManager.getInstance().bindAlias(context, AppManager.getClientUser().userId);
-			new UploadTokenRequest().request(clientid);
+			if (TextUtils.isEmpty(PreferencesUtils.getSettingsGtToken(CSApplication.getInstance()))) {
+				new UploadTokenRequest().request(clientid, "");
+			}
 		}
 	}
 

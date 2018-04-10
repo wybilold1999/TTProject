@@ -478,9 +478,4 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
             initLocationClient();
         }
     }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(AppConstants.CURRENT_INDEX, currentIndex);
-    }
 }
