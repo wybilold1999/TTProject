@@ -137,20 +137,18 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 				initLocationClient();
 
-				if (AppManager.getClientUser().isShowVip) {
-					/**
-					 * 注册小米推送
-					 */
-					MiPushClient.registerPush(MainActivity.this, AppConstants.MI_PUSH_APP_ID, AppConstants.MI_PUSH_APP_KEY);
-					//个推
-					initGeTuiPush();
+				/**
+				 * 注册小米推送
+				 */
+				MiPushClient.registerPush(MainActivity.this, AppConstants.MI_PUSH_APP_ID, AppConstants.MI_PUSH_APP_KEY);
+				//个推
+				initGeTuiPush();
 
-					XGPushManager.registerPush(getApplicationContext());
+				XGPushManager.registerPush(getApplicationContext());
 
-					loadData();
+				loadData();
 
-					initFareGetTime();
-				}
+				initFareGetTime();
 
 			}
 		});
