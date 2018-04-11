@@ -54,11 +54,6 @@ public class LauncherActivity extends Activity {
                                     - loadingTime);
                         }
                     } else {
-                        /*if (AppManager.getClientUser().isShowNormal) {
-                            mHandler.postDelayed(mainActivity, 0);
-                        } else {
-                            mHandler.postDelayed(mainNewActivity, 0);
-                        }*/
                         if (AppManager.getClientUser().isShowNormal) {
                             mHandler.postDelayed(mainActivity, 0);
                         } else {

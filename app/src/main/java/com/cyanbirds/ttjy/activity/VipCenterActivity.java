@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alipay.sdk.app.PayTask;
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.adapter.MemberBuyAdapter;
@@ -37,6 +38,7 @@ import com.cyanbirds.ttjy.entity.PayResult;
 import com.cyanbirds.ttjy.entity.UserVipModel;
 import com.cyanbirds.ttjy.entity.WeChatPay;
 import com.cyanbirds.ttjy.eventtype.PayEvent;
+import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.CreateOrderRequest;
 import com.cyanbirds.ttjy.net.request.GetAliPayOrderInfoRequest;
@@ -52,6 +54,7 @@ import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.sunfusheng.marqueeview.MarqueeView;
 import com.tencent.mm.sdk.modelpay.PayReq;
 import com.umeng.analytics.MobclickAgent;
+import com.yuntongxun.ecsdk.ECInitParams;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -428,6 +431,7 @@ public class VipCenterActivity extends BaseActivity {
 	class GetPayResultTask extends GetPayResultRequest {
 		@Override
 		public void onPostExecute(UserVipModel userVipModel) {
+			SDKCoreHelper.init(CSApplication.getInstance(), ECInitParams.LoginMode.FORCE_LOGIN);
 			AppManager.getClientUser().is_vip = userVipModel.isVip;
 			AppManager.getClientUser().is_download_vip = userVipModel.isDownloadVip;
 			AppManager.getClientUser().gold_num = userVipModel.goldNum;

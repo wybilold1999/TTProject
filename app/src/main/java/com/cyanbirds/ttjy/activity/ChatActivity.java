@@ -467,20 +467,21 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 			case R.id.tool_view_input_text:
 				if (AppManager.getClientUser().isShowVip) {
 					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
-						if (null != IMChattingHelper.getInstance().getChatManager()) {
-							if (AppManager.getClientUser().is_vip) {
-								if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num  < 101) {
-									showGoldDialog();
-								} else {
+						if (AppManager.getClientUser().is_vip) {
+							if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num  < 101) {
+								showGoldDialog();
+							} else {
+								if (null != IMChattingHelper.getInstance().getChatManager()) {
 									sendTextMsg();
 								}
-							} else {
-								showBeyondChatLimitDialog();
 							}
+						} else {
+							showBeyondChatLimitDialog();
 						}
 					}
 				} else {
-					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
+					if (!TextUtils.isEmpty(mContentInput.getText().toString()) &&
+							null != IMChattingHelper.getInstance().getChatManager()) {
 						sendTextMsg();
 					}
 				}

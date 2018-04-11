@@ -33,6 +33,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.adapter.ViewPagerAdapter;
@@ -125,7 +126,9 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		setupViews();
 		setupEvent();
 		initOSS();
-		SDKCoreHelper.init(this, ECInitParams.LoginMode.FORCE_LOGIN);
+		if (AppManager.getClientUser().is_vip) {
+			SDKCoreHelper.init(CSApplication.getInstance(), ECInitParams.LoginMode.FORCE_LOGIN);
+		}
 		updateConversationUnRead();
 
 		AppManager.getExecutorService().execute(new Runnable() {
@@ -152,31 +155,29 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			}
 		});
 
-		if (AppManager.getClientUser().isShowNormal) {
-			mHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					new GetLoveFormeListTask().request(1, 1);
-				}
-			}, 9000 * 10);
+		mHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				new GetLoveFormeListTask().request(1, 1);
+			}
+		}, 9000 * 10);
 
-			mHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					new MyGiftListTask().request(1, 1);
-				}
-			}, 5000 * 10);
+		mHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				new MyGiftListTask().request(1, 1);
+			}
+		}, 5000 * 10);
 
-			mHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					new FollowListTask().request("followFormeList", 1, 1);
-				}
-			}, 1500 * 10);
-		}
+		mHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				new FollowListTask().request("followFormeList", 1, 1);
+			}
+		}, 1500 * 10);
 
 		if (AppManager.getClientUser().versionCode <= AppManager.getVersionCode() &&
-				AppManager.getClientUser().isShowVip && AppManager.getClientUser().isShowAppointment) {
+				AppManager.getClientUser().isShowAppointment) {
 			//我约的
 			new GetIAppointmentListTask().request(1, 1, AppManager.getClientUser().userId, 0);
 			//约我的
