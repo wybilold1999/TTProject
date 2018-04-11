@@ -94,9 +94,6 @@ public class MainNewActivity extends BaseActivity implements View.OnClickListene
 
         loadData();
         initLocationClient();
-
-        AppManager.requestLocationPermission(this);
-        requestPermission();
     }
 
     private void initNavigationViewHeader() {
