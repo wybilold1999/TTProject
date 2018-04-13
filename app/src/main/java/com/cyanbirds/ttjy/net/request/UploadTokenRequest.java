@@ -31,18 +31,8 @@ public class UploadTokenRequest extends ResultPostExecute<String> {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
-                if(response.isSuccessful()){
-                    try {
-                        parseJson(response.body().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        response.body().close();
-                    }
-                } else {
-                    onErrorExecute(CSApplication.getInstance()
-                            .getResources()
-                            .getString(R.string.network_requests_error));
+                if (response.body() != null) {
+                    response.body().close();
                 }
             }
 
@@ -55,20 +45,4 @@ public class UploadTokenRequest extends ResultPostExecute<String> {
         });
     }
 
-    private void parseJson(String json){
-        try {
-            JsonObject obj = new JsonParser().parse(json).getAsJsonObject();
-            String gtToken = obj.get("gt").getAsString();
-            if (!TextUtils.isEmpty(gtToken)) {
-                PreferencesUtils.setSettingsGtToken(CSApplication.getInstance(), gtToken);
-            }
-            String xgToken = obj.get("xg").getAsString();
-            if (!TextUtils.isEmpty(xgToken)) {
-                PreferencesUtils.setSettingsXgToken(CSApplication.getInstance(), xgToken);
-            }
-        } catch (Exception e) {
-            onErrorExecute(CSApplication.getInstance().getResources()
-                    .getString(R.string.attention_faiure));
-        }
-    }
 }

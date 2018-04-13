@@ -1,12 +1,9 @@
 package com.cyanbirds.ttjy.receiver;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.net.request.UploadTokenRequest;
-import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
 import com.tencent.android.tpush.XGPushBaseReceiver;
 import com.tencent.android.tpush.XGPushClickedResult;
@@ -124,9 +121,7 @@ public class MessageReceiver extends XGPushBaseReceiver {
         if (errorCode == XGPushBaseReceiver.SUCCESS) {
             // 在这里拿token
             String token = message.getToken();
-            if (TextUtils.isEmpty(PreferencesUtils.getSettingsXgToken(CSApplication.getInstance()))) {
-                new UploadTokenRequest().request("", token);
-            }
+            new UploadTokenRequest().request("", token);
         }
     }
 
