@@ -183,6 +183,10 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		}
 
 		registerWeiXin();
+
+		if (!AppManager.getClientUser().isShowVip) {//后台关闭vip之后，也要初始化，为了能发送消息
+			SDKCoreHelper.init(CSApplication.getInstance(), ECInitParams.LoginMode.FORCE_LOGIN);
+		}
 	}
 
 	private void registerWeiXin() {
