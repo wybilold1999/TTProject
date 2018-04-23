@@ -73,4 +73,6 @@ public class AppConstants {
 
 	public static int CHAT_LIMIT = 0;
 
+	public static String BUGLY_ID = "28d110c523";
+
 }

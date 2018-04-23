@@ -32,7 +32,10 @@ import com.cyanbirds.ttjy.net.VideoService;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.util.List;
@@ -465,6 +468,29 @@ public class AppManager {
 
 	public static void setIWXAPI(IWXAPI IWXAPI) {
 		sIWXAPI = IWXAPI;
+	}
+
+	public static String getProcessName(int pid) {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader("/proc/" + pid + "/cmdline"));
+			String processName = reader.readLine();
+			if (!TextUtils.isEmpty(processName)) {
+				processName = processName.trim();
+			}
+			return processName;
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException exception) {
+				exception.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	public static void goToMarket(Context context, String channel) {
