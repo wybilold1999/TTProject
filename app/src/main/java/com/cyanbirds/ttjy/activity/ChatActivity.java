@@ -72,7 +72,6 @@ import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.FileUtils;
 import com.cyanbirds.ttjy.utils.ImageUtil;
-import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
@@ -94,7 +93,7 @@ import java.util.List;
  */
 public class ChatActivity extends BaseActivity implements OnMessageReportCallback, OnClickListener,
 		OnEmojiItemClickListener, OnFileProgressChangedListener,
-		OnRefreshListener, OnMessageStatusReport {
+        OnRefreshListener, OnMessageStatusReport {
 	private RecyclerView mMessageRecyclerView;
 	private ChatMessageAdapter mMessageAdapter;
 	private ImageView openCamera;
@@ -111,7 +110,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	private LinearLayout mEmoticonPageIndicator;
 	private RecyclerView mEmoticonRecyclerview;
 	private SwipeRefreshLayout mSwipeRefresh;
-	private LinearLayout mInputToolWork;
 
 	private String mPhotoPath;
 	private File mPhotoFile;
@@ -217,7 +215,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		mMorePageIndicator = (LinearLayout) findViewById(R.id.more_page_indicator);
 		mEmoticonPager = (ViewPager) findViewById(R.id.emoticon_pager);
 		mEmoticonPageIndicator = (LinearLayout) findViewById(R.id.emoticon_page_indicator);
-		mInputToolWork = (LinearLayout) findViewById(R.id.input_tool_work);
 
 		mEmoticonRecyclerview = (RecyclerView) findViewById(R.id.emoticon_recyclerview);
 		LinearLayoutManager layoutManager = new WrapperLinearLayoutManager(this);
@@ -225,11 +222,18 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		mEmoticonRecyclerview.setLayoutManager(layoutManager);
 
 		if (!AppManager.getClientUser().isShowVip) {
-			mInputToolWork.setVisibility(View.GONE);
+			openCamera.setVisibility(View.GONE);
+			openAlbums.setVisibility(View.GONE);
+			openLocation.setVisibility(View.GONE);
+			redPacket.setVisibility(View.GONE);
+			openEmotion.setVisibility(View.GONE);
 		} else {
-			mInputToolWork.setVisibility(View.VISIBLE);
+			openCamera.setVisibility(View.VISIBLE);
+			openAlbums.setVisibility(View.VISIBLE);
+			openLocation.setVisibility(View.VISIBLE);
+			redPacket.setVisibility(View.VISIBLE);
+			openEmotion.setVisibility(View.VISIBLE);
 		}
-
 	}
 
 	private void setupEvent() {
@@ -651,7 +655,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		} else if (resultCode == RESULT_OK && requestCode == ALBUMS_RESULT) {
 			if (AppManager.getClientUser().isShowVip) {
 				if (AppManager.getClientUser().is_vip) {
-					if (AppManager.getClientUser().gold_num  < 101) {
+					if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num  < 101) {
 						showGoldDialog();
 					} else {
 						Uri uri = data.getData();
