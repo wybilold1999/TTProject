@@ -44,24 +44,24 @@ public class NotificationReceiver extends BroadcastReceiver {
                     MessageUnReadListener.getInstance().notifyDataSetChanged(0);
                     MessageChangedListener.getInstance().notifyMessageChanged("");
                 }
-            }
-            if (clientUser.isLocalMsg) {
-                Intent chatIntent = new Intent();
-                if (AppManager.getClientUser().isShowNormal) {
-                    chatIntent.setClass(context, PersonalInfoActivity.class);
+                if (clientUser.isLocalMsg) {
+                    Intent chatIntent = new Intent();
+                    if (AppManager.getClientUser().isShowNormal) {
+                        chatIntent.setClass(context, PersonalInfoActivity.class);
+                    } else {
+                        chatIntent.setClass(context, PersonalInfoNewActivity.class);
+                    }
+                    chatIntent.putExtra(ValueKey.USER_ID, clientUser.userId);
+                    chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(chatIntent);
                 } else {
-                    chatIntent.setClass(context, PersonalInfoNewActivity.class);
+                    Intent chatIntent = new Intent(context, ChatActivity.class);
+                    chatIntent.putExtra(ValueKey.USER, clientUser);
+                    chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(chatIntent);
                 }
-                chatIntent.putExtra(ValueKey.USER_ID, clientUser.userId);
-                chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(chatIntent);
-            } else {
-                Intent chatIntent = new Intent(context, ChatActivity.class);
-                chatIntent.putExtra(ValueKey.USER, clientUser);
-                chatIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(chatIntent);
             }
         } else {
             Intent launcherIntent = new Intent(context, LauncherActivity.class);

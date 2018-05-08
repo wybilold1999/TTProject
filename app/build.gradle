@@ -10,8 +10,8 @@ android {
         applicationId "com.cyanbirds.ttjy"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 20
-        versionName "1.6.0"
+        versionCode 21
+        versionName "1.6.1"
         multiDexEnabled true
 
         manifestPlaceholders = [
