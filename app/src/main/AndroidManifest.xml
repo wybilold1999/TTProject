@@ -544,6 +544,14 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".activity.GiveVipActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:label="@string/free_give_vip"
+            android:screenOrientation="portrait">
+        </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cyanbirds.ttjy.fileProvider"

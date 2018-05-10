@@ -125,9 +125,11 @@ public class PreferencesUtils {
 	/** 该月是否可以领取话费*/
 	public static final String SETTINGS_IS_CAN_GET_FARE = "com.cyanbirds.ttjy_is_can_get_fare";
 	/** 个推token*/
-	public static final String SETTINGS_GT_TOKEN = "com.cyanbirds.tanlove_gt_token";
+	public static final String SETTINGS_GT_TOKEN = "com.cyanbirds.ttjy_gt_token";
 	/** 信鸽token*/
-	public static final String SETTINGS_XG_TOKEN = "com.cyanbirds.tanlove_xg_token";
+	public static final String SETTINGS_XG_TOKEN = "com.cyanbirds.ttjy_xg_token";
+	/** 是否上传好评截图*/
+	public static final String SETTINGS_APP_COMMENT = "com.cyanbirds.ttjy_app_comment";
 
 	/**
 	 * 获取RL账号
@@ -1343,6 +1345,20 @@ public class PreferencesUtils {
 		SharedPreferences sp = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		return sp.getString(SETTINGS_XG_TOKEN, "");
+	}
+
+	public static boolean getIsUploadCommentImg(final Context context) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return sp.getBoolean(SETTINGS_APP_COMMENT, false);
+	}
+
+	public static void setIsUploadCommentImg(final Context context,
+											 final Boolean isUpload) {
+		SharedPreferences sp = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		sp.edit().putBoolean(SETTINGS_APP_COMMENT, isUpload)
+				.commit();
 	}
 
 
