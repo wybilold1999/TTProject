@@ -35,6 +35,8 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.activity.ChatActivity;
+import com.cyanbirds.ttjy.activity.GiveVipActivity;
 import com.cyanbirds.ttjy.activity.MakeMoneyActivity;
 import com.cyanbirds.ttjy.activity.MyGoldActivity;
 import com.cyanbirds.ttjy.activity.VipCenterActivity;
@@ -572,10 +574,12 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 				startActivity(intent);
 			}
 		});
-		builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+		builder.setNegativeButton(R.string.give_vip_free, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
+				Intent intent = new Intent(getActivity(), GiveVipActivity.class);
+				startActivity(intent);
 			}
 		});
 		builder.show();

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TT交友</string>
+    <string name="app_name">同城陌爱交友</string>
     <string name="setting">设置</string>
     <string name="about">关于</string>
 
@@ -411,5 +411,6 @@
     <string name="upload_market_img">上传好评截图</string>
     <string name="free_give_vip">免费赠送会员</string>
     <string name="upload_faiure">上传失败</string>
+    <string name="give_vip_free">免费赠送会员</string>
 
 </resources>
