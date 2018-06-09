@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#fd1655</color>
-    <color name="colorPrimaryDark">#fd1655</color>
-    <color name="colorAccent">#fd1655</color>
+    <color name="colorPrimary">#fd578b</color>
+    <color name="colorPrimaryDark">#fd578b</color>
+    <color name="colorAccent">#fd578b</color>
 
     <color name="tab_checked">@color/colorPrimary</color>
     <color name="tab_unchecked">#757575</color>
