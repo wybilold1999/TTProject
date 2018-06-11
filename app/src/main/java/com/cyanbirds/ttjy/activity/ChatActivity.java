@@ -651,22 +651,18 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		} else if (resultCode == RESULT_OK && requestCode == ALBUMS_RESULT) {
 			if (AppManager.getClientUser().isShowVip) {
 				if (AppManager.getClientUser().is_vip) {
-					if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num  < 101) {
-						showGoldDialog();
-					} else {
-						Uri uri = data.getData();
-						String url = FileUtils.getPath(this, uri);
-						if (!TextUtils.isEmpty(url)) {
-							String fileUrl = "";
-							if (url.startsWith("/storage")) {
-								fileUrl = url;
-							} else {
-								String extSdCardPath = FileUtils.getPath();
-								fileUrl = extSdCardPath + File.separator + FileUtils.getPath(this, uri);
-							}
-							if (null != IMChattingHelper.getInstance().getChatManager()) {
-								IMChattingHelper.getInstance().sendImgMsg(mClientUser, fileUrl);
-							}
+					Uri uri = data.getData();
+					String url = FileUtils.getPath(this, uri);
+					if (!TextUtils.isEmpty(url)) {
+						String fileUrl = "";
+						if (url.startsWith("/storage")) {
+							fileUrl = url;
+						} else {
+							String extSdCardPath = FileUtils.getPath();
+							fileUrl = extSdCardPath + File.separator + FileUtils.getPath(this, uri);
+						}
+						if (null != IMChattingHelper.getInstance().getChatManager()) {
+							IMChattingHelper.getInstance().sendImgMsg(mClientUser, fileUrl);
 						}
 					}
 				} else {
