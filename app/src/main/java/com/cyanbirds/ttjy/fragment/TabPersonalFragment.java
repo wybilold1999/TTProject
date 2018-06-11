@@ -574,12 +574,12 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 				startActivity(intent);
 			}
 		});
-		builder.setNegativeButton(R.string.give_vip_free, new DialogInterface.OnClickListener() {
+		builder.setNegativeButton(R.string.until_single, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				Intent intent = new Intent(getActivity(), GiveVipActivity.class);
-				startActivity(intent);
+//				Intent intent = new Intent(getActivity(), GiveVipActivity.class);
+//				startActivity(intent);
 			}
 		});
 		builder.show();

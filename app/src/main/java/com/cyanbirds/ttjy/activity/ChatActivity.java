@@ -476,7 +476,8 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 								sendTextMsg();
 							}
 						} else {
-							showBeyondChatLimitDialog();
+//							showBeyondChatLimitDialog();
+							showVipDialog();
 						}
 					}
 				} else {
