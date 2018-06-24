@@ -66,7 +66,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 				EventBus.getDefault().post(new PayEvent());
 				ToastUtil.showMessage(R.string.pay_success);
 			} else if (baseResp.errCode == -1){
-				ToastUtil.showMessage(R.string.pay_wechat_failure);
+				ToastUtil.showMessage(R.string.pay_failure);
 			} else {
 				ToastUtil.showMessage("已取消");
 			}

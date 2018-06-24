@@ -95,7 +95,7 @@ public class BetweenLoversActivity extends BaseActivity {
 						new GetPayResultTask().request();
 					} else {
 						// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-						ToastUtil.showMessage(R.string.pay_ali_failure);
+						ToastUtil.showMessage(R.string.pay_failure);
 					}
 					break;
 				}

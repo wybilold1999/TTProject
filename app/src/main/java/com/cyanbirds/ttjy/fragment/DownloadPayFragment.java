@@ -136,7 +136,7 @@ public class DownloadPayFragment extends Fragment{
 						}
 					} else {
 						// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-						ToastUtil.showMessage(R.string.pay_ali_failure);
+						ToastUtil.showMessage(R.string.pay_failure);
 					}
 					break;
 				}
@@ -195,13 +195,6 @@ public class DownloadPayFragment extends Fragment{
 		new GetMemberBuyListTask().request(DOWNLOAD_VIP);
 		//获取用户名称
 		new GetUserNameTask().request(1, 100);
-
-		/**
-		 * 默认支付宝支付
-		 */
-		mPayType = AppConstants.ALI_PAY_PLATFORM;
-		mSelectAlipay.setChecked(true);
-		mSelectWechatpay.setChecked(false);
 	}
 
 	@OnClick({R.id.btn_pay, R.id.select_alipay, R.id.alipay_lay, R.id.select_wechatpay, R.id.wechat_lay})
@@ -263,11 +256,32 @@ public class DownloadPayFragment extends Fragment{
 				} else {
 					mAliPayInfo.setVisibility(View.GONE);
 				}
+
+				defaultPayWay();
 			}
 		}
 
 		@Override
 		public void onErrorExecute(String error) {
+		}
+	}
+
+	private void defaultPayWay() {
+		if (memberBuy.isShowAliPay && memberBuy.isShowWePay) {
+			mPayLay.setVisibility(View.VISIBLE);
+			mPayType = AppConstants.ALI_PAY_PLATFORM;
+			mSelectAlipay.setChecked(true);
+			mSelectWechatpay.setChecked(false);
+		} else if (memberBuy.isShowWePay) {
+			mPayLay.setVisibility(View.GONE);
+			mPayType = AppConstants.WX_PAY_PLATFORM;
+			mSelectWechatpay.setChecked(true);
+			mSelectAlipay.setChecked(false);
+		} else if (memberBuy.isShowAliPay) {
+			mPayLay.setVisibility(View.GONE);
+			mPayType = AppConstants.ALI_PAY_PLATFORM;
+			mSelectAlipay.setChecked(true);
+			mSelectWechatpay.setChecked(false);
 		}
 	}
 

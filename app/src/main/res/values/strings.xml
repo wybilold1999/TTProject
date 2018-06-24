@@ -357,8 +357,7 @@
     <string name="going_find">继续寻觅</string>
 
     <string name="pay_success">支付成功</string>
-    <string name="pay_ali_failure">支付失败,请重试</string>
-    <string name="pay_wechat_failure">支付失败,请使用支付宝支付</string>
+    <string name="pay_failure">支付失败,请重试</string>
 
     <string name="tv_appointment">约会</string>
     <string name="tv_appointment_content">约会内容</string>

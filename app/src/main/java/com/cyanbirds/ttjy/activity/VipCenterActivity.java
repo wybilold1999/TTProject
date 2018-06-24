@@ -48,6 +48,7 @@ import com.cyanbirds.ttjy.net.request.GetUserNameRequest;
 import com.cyanbirds.ttjy.ui.widget.CustomURLSpan;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
 import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
+import com.cyanbirds.ttjy.utils.CheckUtil;
 import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
@@ -118,6 +119,7 @@ public class VipCenterActivity extends BaseActivity {
 	private String mPref;//优惠信息
 	private ArrayList<String> mNameList;
 	private MemberBuy mMemberBuy;
+	private String channel = "";
 
 	@SuppressLint("HandlerLeak")
 	private Handler mHandler = new Handler() {
@@ -139,7 +141,7 @@ public class VipCenterActivity extends BaseActivity {
 						new GetPayResultTask().request();
 					} else {
 						// 该笔订单真实的支付结果，需要依赖服务端的异步通知。
-						ToastUtil.showMessage(R.string.pay_ali_failure);
+						ToastUtil.showMessage(R.string.pay_failure);
 					}
 					break;
 				}
@@ -186,7 +188,8 @@ public class VipCenterActivity extends BaseActivity {
 	}
 
 	private void setupData() {
-		if (!AppManager.getClientUser().is_vip) {
+		channel = CheckUtil.getAppMetaData(this, "UMENG_CHANNEL");
+		if (!AppManager.getClientUser().is_vip && !"oppo".equals(channel)) {//oppo渠道，不显示这两个权限
 			mVip7Lay.setVisibility(View.VISIBLE);
 			mVip8Lay.setVisibility(View.VISIBLE);
 		} else {
@@ -336,7 +339,7 @@ public class VipCenterActivity extends BaseActivity {
 						array.add(Integer.parseInt(memberBuys.get(i).preferential));
 					}
 				}
-				if (array.size() == 0) {
+				if (array.size() == 0 || "oppo".equals(channel)) {//oppo渠道，不显示有什么人赠送话费
 					mPrefTelFareLay.setVisibility(View.VISIBLE);
 					mTvNameList.setVisibility(View.GONE);
 					mVerticalText.setVisibility(View.GONE);
@@ -388,9 +391,19 @@ public class VipCenterActivity extends BaseActivity {
 		@Override
 		public void onItemClick(View view, int position) {
 			MemberBuy memberBuy = mAdapter.getItem(position);
-			showPayDialog(memberBuy);
+			choicePayWay(memberBuy);
 		}
 	};
+
+	private void choicePayWay(MemberBuy memberBuy) {
+		if (memberBuy.isShowAliPay && memberBuy.isShowWePay) {
+			showPayDialog(memberBuy);
+		} else if (memberBuy.isShowAliPay) {
+			new GetAliPayOrderInfoTask().request(memberBuy.id, AppConstants.ALI_PAY_PLATFORM);
+		} else if (memberBuy.isShowWePay) {
+			new CreateOrderTask().request(memberBuy.id, AppConstants.WX_PAY_PLATFORM);
+		}
+	}
 
 	private void showPayDialog(final MemberBuy memberBuy) {
 		mMemberBuy = memberBuy;

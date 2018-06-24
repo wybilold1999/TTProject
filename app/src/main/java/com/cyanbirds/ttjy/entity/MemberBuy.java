@@ -13,6 +13,8 @@ public class MemberBuy implements java.io.Serializable {
 	public double price;  //价格
 	public String preferential;//优惠
 	public String descreption;  //描述 低至1元/天
+	public boolean isShowAliPay;
+	public boolean isShowWePay;
 
 	public boolean isShowAli;
 	public boolean isSelected = false;
