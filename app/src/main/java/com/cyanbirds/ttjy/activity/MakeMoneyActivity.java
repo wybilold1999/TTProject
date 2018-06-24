@@ -19,7 +19,6 @@ import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.eventtype.MakeMoneyEvent;
 import com.cyanbirds.ttjy.eventtype.SnackBarEvent;
 import com.cyanbirds.ttjy.fragment.ClickBusinessFragment;
-import com.cyanbirds.ttjy.fragment.DownloadAppFragment;
 import com.cyanbirds.ttjy.fragment.DownloadBanlanceFragment;
 import com.cyanbirds.ttjy.fragment.DownloadPayFragment;
 import com.umeng.analytics.MobclickAgent;
