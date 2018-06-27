@@ -476,7 +476,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 								sendTextMsg();
 							}
 						} else {
-//							showBeyondChatLimitDialog();
 							showVipDialog();
 						}
 					}
@@ -972,34 +971,6 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 				intent.setData(uri);
 				startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
 
-			}
-		});
-		builder.show();
-	}
-
-	private void showBeyondChatLimitDialog() {
-		String message = "";
-		if (AppConstants.CHAT_LIMIT == 0) {
-			message = getResources().getString(R.string.un_send_msg);
-		} else {
-			message = getResources().getString(R.string.chat_count_zero_bak);
-		}
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(message);
-		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				Intent intent = new Intent(ChatActivity.this, VipCenterActivity.class);
-				startActivity(intent);
-			}
-		});
-		builder.setNegativeButton(R.string.give_vip_free, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-				Intent intent = new Intent(ChatActivity.this, GiveVipActivity.class);
-				startActivity(intent);
 			}
 		});
 		builder.show();

@@ -411,9 +411,15 @@ public class VipCenterActivity extends BaseActivity {
 		builder.setTitle(getResources().getString(R.string.pay_type));
 		builder.setNegativeButton(getResources().getString(R.string.cancel),
 				null);
+		String aliPay = getResources().getString(R.string.ali_pay);
+		String weChatPay = getResources().getString(R.string.weixin_pay);
+		if (memberBuy.isShowAli) {
+			aliPay = aliPay + "(推荐)";
+		} else {
+			weChatPay = weChatPay + "(推荐)";
+		}
 		builder.setItems(
-				new String[]{getResources().getString(R.string.ali_pay),
-						getResources().getString(R.string.weixin_pay)},
+				new String[]{aliPay, weChatPay},
 				new DialogInterface.OnClickListener() {
 
 					@Override
