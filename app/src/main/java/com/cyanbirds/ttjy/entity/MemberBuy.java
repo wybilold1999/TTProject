@@ -17,6 +17,7 @@ public class MemberBuy implements java.io.Serializable {
 	public boolean isShowWePay;
 
 	public boolean isShowAli;
+	public boolean isShowWe;
 	public boolean isSelected = false;
 
 }

@@ -415,7 +415,7 @@ public class VipCenterActivity extends BaseActivity {
 		String weChatPay = getResources().getString(R.string.weixin_pay);
 		if (memberBuy.isShowAli) {
 			aliPay = aliPay + "(推荐)";
-		} else {
+		} else if (memberBuy.isShowWe) {
 			weChatPay = weChatPay + "(推荐)";
 		}
 		builder.setItems(

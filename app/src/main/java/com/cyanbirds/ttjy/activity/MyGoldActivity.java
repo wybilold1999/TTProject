@@ -220,7 +220,7 @@ public class MyGoldActivity extends BaseActivity {
                         mMemberBuy.descreption));
                 mAliPayInfo.setVisibility(View.VISIBLE);
                 mIvAliRecommend.setVisibility(View.VISIBLE);
-            } else {
+            } else if (mMemberBuy.isShowWe) {
                 mWechatPayInfo.setText(String.format(
                         getResources().getString(R.string.pay_info_ali),
                         mMemberBuy.descreption));
