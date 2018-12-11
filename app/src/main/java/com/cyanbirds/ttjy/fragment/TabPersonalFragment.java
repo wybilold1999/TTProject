@@ -279,25 +279,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 			if (clientUser != null) {
 				setUserInfo(clientUser);
 				/**
-				 * 用户的图片
-				 */
-				/*if (!TextUtils.isEmpty(clientUser.imgUrls)) {
-					Type listType = new TypeToken<ArrayList<String>>() {
-					}.getType();
-					List<String> urls = gson.fromJson(clientUser.imgUrls, listType);
-					if (urls != null && urls.size() > 0) {
-						mPhotoCard.setVisibility(View.VISIBLE);
-						mPhotoList = new ArrayList<>();
-						mPhotoList.addAll(urls);
-						mAdapter = new TabPersonalPhotosAdapter(getActivity(), mPhotoList);
-						mRecyclerview.setAdapter(mAdapter);
-					} else {
-						mPhotoCard.setVisibility(View.GONE);
-					}
-				} else {
-					mPhotoCard.setVisibility(View.GONE);
-				}*/
-				/**
 				 * 用户收到的礼物
 				 */
 				if (!TextUtils.isEmpty(clientUser.gifts)) {
@@ -359,7 +340,7 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	}
 
 	private void setUserInfo(ClientUser clientUser) {
-		if (AppManager.getClientUser().isShowVip) {
+		if (AppManager.getClientUser().isShowGold) {
 			mSocialCard.setVisibility(View.VISIBLE);
 			mSocialText.setVisibility(View.VISIBLE);
 		} else {

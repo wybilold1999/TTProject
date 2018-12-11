@@ -73,16 +73,16 @@ public class VipCenterActivity extends BaseActivity {
 	MarqueeView mMarqueeView;
 	@BindView(R.id.recyclerview)
 	RecyclerView mRecyclerView;
-	@BindView(R.id.preferential)
-	TextView mPreferential;//优惠的说明文字，可以控制什么时候显示
-	@BindView(R.id.vip_7_lay)
-	RelativeLayout mVip7Lay;
 	@BindView(R.id.scrollView)
 	NestedScrollView mScrollView;
 	@BindView(R.id.pref_tel_fare_lay)
 	LinearLayout mPrefTelFareLay;
+	@BindView(R.id.speaker_lay)
+	RelativeLayout mSpeakerLay;
 	@BindView(R.id.cum_qq)
 	TextView mCumQQ;
+	@BindView(R.id.vip_social_lay)
+	RelativeLayout mSocialLay;
 
 	private MemberBuyAdapter mAdapter;
 
@@ -99,8 +99,6 @@ public class VipCenterActivity extends BaseActivity {
 	private final int NORMAL_VIP = 0;
 
 	private List<Integer> array;
-
-	private String mPref;//优惠信息
 
 	private Observable<?> observable;
 
@@ -175,10 +173,10 @@ public class VipCenterActivity extends BaseActivity {
 	}
 
 	private void setupData() {
-		if (!AppManager.getClientUser().is_vip) {
-			mVip7Lay.setVisibility(View.VISIBLE);
+		if (AppManager.getClientUser().isShowGold) {
+			mSocialLay.setVisibility(View.VISIBLE);
 		} else {
-			mVip7Lay.setVisibility(View.GONE);
+			mSocialLay.setVisibility(View.GONE);
 		}
 		if (!AppManager.getClientUser().isShowGiveVip || AppManager.getClientUser().isShowDownloadVip) {
 			mCumQQ.setVisibility(View.VISIBLE);
@@ -205,7 +203,6 @@ public class VipCenterActivity extends BaseActivity {
 							turnOnVipNameList.add(name + " 开通了会员，赶快去和TA聊天吧！");
 						}
 						mMarqueeView.startWithList(turnOnVipNameList);
-						mPreferential.setText(mPref);
 					} else {
 						setTurnOnVipUserName();
 					}
@@ -227,20 +224,16 @@ public class VipCenterActivity extends BaseActivity {
 					if (null != memberBuys && memberBuys.size() > 0) {
 						array = new ArrayList<>(memberBuys.size());
 						for (int i = 0; i < memberBuys.size(); i++) {
-							if (!TextUtils.isEmpty(memberBuys.get(i).preferential) &&
-									memberBuys.get(i).preferential.length() > 10) {
-								mPreferential.setVisibility(View.VISIBLE);
-								mPref = memberBuys.get(i).preferential;
-								continue;
-							}
 							if (!TextUtils.isEmpty(memberBuys.get(i).preferential)) {
 								array.add(Integer.parseInt(memberBuys.get(i).preferential));
 							}
 						}
 						if (array.size() == 0) {
 							mPrefTelFareLay.setVisibility(View.VISIBLE);
+							mSpeakerLay.setVisibility(View.VISIBLE);
 						} else {
 							mPrefTelFareLay.setVisibility(View.GONE);
+							mSpeakerLay.setVisibility(View.GONE);
 						}
 					}
 					getUserName(1, 100);

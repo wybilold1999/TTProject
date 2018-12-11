@@ -12,6 +12,7 @@
         layout="@layout/toolbar_actionbar_with_headerbar"/>
 
     <RelativeLayout
+        android:id="@+id/speaker_lay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#fff">
@@ -62,11 +63,21 @@
             <TextView
                 android:id="@+id/cum_qq"
                 android:layout_width="match_parent"
-                android:layout_height="22dp"
+                android:layout_height="wrap_content"
+                android:background="#fff"
                 android:gravity="center_vertical"
                 android:textSize="10sp"
-                android:paddingLeft="20dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="@string/official_qq"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/divider_height"
+                android:background="@color/divider_color"
+                android:contentDescription="@null"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview"
@@ -76,18 +87,7 @@
                 android:fastScrollAlwaysVisible="true"
                 android:fastScrollEnabled="true"
                 android:scrollbarStyle="insideOverlay"
-                android:scrollbars="none"/>
-
-            <TextView
-                android:id="@+id/preferential"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#fff"
-                android:paddingLeft="@dimen/divider_margin_left"
-                android:paddingRight="@dimen/divider_margin_left"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:visibility="gone"/>
+                android:scrollbars="none" />
 
             <LinearLayout
                 android:id="@+id/pref_tel_fare_lay"
@@ -126,14 +126,6 @@
                     android:text="@string/tv_fare_info"/>
 
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/divider_height"
-                android:layout_marginLeft="@dimen/divider_margin_left"
-                android:layout_marginRight="@dimen/divider_margin_left"
-                android:background="@color/divider_color"
-                android:contentDescription="@null"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -231,6 +223,7 @@
                 android:contentDescription="@null"/>
 
             <RelativeLayout
+                android:id="@+id/vip_social_lay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#fff">
@@ -405,52 +398,6 @@
                 android:layout_marginRight="@dimen/divider_margin_left"
                 android:background="@color/divider_color"
                 android:contentDescription="@null"/>
-
-            <RelativeLayout
-                android:id="@+id/vip_7_lay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#fff">
-                <ImageView
-                    android:id="@+id/vip_7"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:src="@mipmap/call_decline_normal"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginLeft="20dp"/>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_toRightOf="@id/vip_7"
-                    android:layout_margin="10dp"
-                    android:layout_centerVertical="true">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="电话零距离沟通"
-                        android:textColor="@color/body_text_1"
-                        android:textSize="16sp"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="无限制拨打电话，沟通无处不在"
-                        android:textColor="@color/gray_text"
-                        android:textSize="12sp"
-                        android:layout_marginTop="5dp"/>
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/divider_height"
-                    android:layout_marginLeft="@dimen/divider_margin_left"
-                    android:layout_marginRight="@dimen/divider_margin_left"
-                    android:background="@color/divider_color"
-                    android:contentDescription="@null"/>
-            </RelativeLayout>
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
