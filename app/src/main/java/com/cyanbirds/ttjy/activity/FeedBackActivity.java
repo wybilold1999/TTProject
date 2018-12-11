@@ -62,7 +62,7 @@ public class FeedBackActivity extends BaseActivity {
         mContent.setHorizontallyScrolling(false);
         mContent.setFocusable(true);
         mTextNum.setText(String.valueOf(limit));
-        if (AppManager.getClientUser().isShowDownloadVip || !AppManager.getClientUser().isShowGiveVip) {
+        if (AppManager.getClientUser().isShowDownloadVip) {
             mOfficalQQ.setVisibility(View.VISIBLE);
         } else {
             mOfficalQQ.setVisibility(View.GONE);
