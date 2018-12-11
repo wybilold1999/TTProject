@@ -2,7 +2,6 @@ package com.cyanbirds.ttjy.utils;
 
 import android.os.Environment;
 
-
 import com.cyanbirds.ttjy.R;
 
 import java.io.File;
@@ -18,32 +17,29 @@ public class FileAccessorUtils {
 	
 	/** 默认路径 */
 	public static final String DEFAULT_PATH = getExternalStorePath()
-			+ "/ttjy";
+			+ "/momo";
 	/** 文件存储路径 */
 	public static final String FILE_PATH = getExternalStorePath()
-			+ "/ttjy/.file";
+			+ "/momo/file";
 	/** 图像的存储路径 */
 	public static final String IMESSAGE_IMAGE = getExternalStorePath()
-			+ "/ttjy/.image";
+			+ "/momo/image";
 	/** 头像存储路径 */
 	public static final String FACE_IMAGE = getExternalStorePath()
-			+ "/ttjy/.face";
+			+ "/momo/face";
 	/** 语音存储路径 */
 	public static final String VOICE_PATH = getExternalStorePath()
-			+ "/ttjy/.voice";
+			+ "/momo/voice";
 	/** 视频存储路径 */
 	public static final String VIDEO_PATH = getExternalStorePath()
-			+ "/ttjy/.video";
-	/** 缓存路径 */
-	public static final String CACHE_PATH = getExternalStorePath()
-			+ "/ttjy/.cache";
+			+ "/momo/video";
 	/** crash路径 */
 	public static final String CRASH_PATH = getExternalStorePath()
-			+ "/ttjy/.crash";
+			+ "/momo/crash";
 
 	/** APK文件暂时存放的路径 */
 	public static final String APK_PATH = getExternalStorePath()
-			+ "/ttjy/.apk";
+			+ "/momo/apk";
 
 	/**
 	 * 外置存储卡的路径
@@ -183,24 +179,6 @@ public class FileAccessorUtils {
 		if (!directory.exists() && !directory.mkdirs()) {
 			ToastUtil.showMessage("Path to file could not be created");
 			return null;
-		}
-		return directory;
-	}
-
-	/**
-	 * 返回缓存目录
-	 *
-	 * @return
-	 */
-	public static File getCachePathName() {
-		if (!isExistExternalStore()) {
-			ToastUtil.showMessage(R.string.media_ejected);
-			return null;
-		}
-
-		File directory = new File(CACHE_PATH);
-		if (!directory.exists() && !directory.mkdirs()) {
-			directory.mkdir();
 		}
 		return directory;
 	}

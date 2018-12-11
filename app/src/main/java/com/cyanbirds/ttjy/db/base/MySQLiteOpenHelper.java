@@ -8,7 +8,6 @@ import com.cyanbirds.ttjy.greendao.DaoMaster;
 import com.cyanbirds.ttjy.greendao.DynamicDao;
 import com.cyanbirds.ttjy.greendao.GoldDao;
 import com.cyanbirds.ttjy.greendao.IMessageDao;
-import com.cyanbirds.ttjy.greendao.LocationModelDao;
 import com.cyanbirds.ttjy.greendao.NameListDao;
 import com.github.yuweiguocn.library.greendao.MigrationHelper;
 
@@ -30,7 +29,6 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
 				ConversationDao.class,
 				DynamicDao.class,
 				GoldDao.class,
-				LocationModelDao.class,
 				IMessageDao.class,
 				NameListDao.class);
 	}

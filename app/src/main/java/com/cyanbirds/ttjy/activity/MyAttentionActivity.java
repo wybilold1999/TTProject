@@ -1,7 +1,9 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,15 +17,20 @@ import com.cyanbirds.ttjy.adapter.MyAttentionAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.FollowModel;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.FollowListRequest;
+import com.cyanbirds.ttjy.net.IUserFollowApi;
+import com.cyanbirds.ttjy.net.base.RetrofitFactory;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
 import com.cyanbirds.ttjy.ui.widget.DividerItemDecoration;
 import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
 import com.cyanbirds.ttjy.utils.DensityUtil;
+import com.cyanbirds.ttjy.utils.JsonUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.analytics.MobclickAgent;
 
-import java.util.List;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author Cloudsoar(wangyb)
@@ -37,7 +44,7 @@ public class MyAttentionActivity extends BaseActivity {
     private MyAttentionAdapter mAdapter;
 
     private int pageNo = 1;
-    private int pageSize = 200;
+    private int pageSize = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,41 +80,42 @@ public class MyAttentionActivity extends BaseActivity {
         mAdapter.setOnItemClickListener(mOnItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
         mCircularProgress.setVisibility(View.VISIBLE);
-        new FollowListTask().request("followList", pageNo, pageSize);
+        requestFollowList("followList", pageNo, pageSize);
     }
 
     private MyAttentionAdapter.OnItemClickListener mOnItemClickListener = new MyAttentionAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(View view, int position) {
             FollowModel followModel = mAdapter.getItem(position);
-            Intent intent = new Intent();
-            if (AppManager.getClientUser().isShowNormal) {
-                intent.setClass(MyAttentionActivity.this, PersonalInfoActivity.class);
-            } else {
-                intent.setClass(MyAttentionActivity.this, PersonalInfoNewActivity.class);
-            }
+            Intent intent = new Intent(MyAttentionActivity.this, PersonalInfoActivity.class);
             intent.putExtra(ValueKey.USER_ID, String.valueOf(followModel.userId));
             startActivity(intent);
         }
     };
 
-    class FollowListTask extends FollowListRequest {
-        @Override
-        public void onPostExecute(List<FollowModel> followModels) {
-            mCircularProgress.setVisibility(View.GONE);
-            if(null != followModels && followModels.size() > 0){
-                mNoUserInfo.setVisibility(View.GONE);
-                mAdapter.setFollowModels(followModels);
-            } else {
-                mNoUserInfo.setVisibility(View.VISIBLE);
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            ToastUtil.showMessage(error);
-            mCircularProgress.setVisibility(View.GONE);
-        }
+    private void requestFollowList(String url, int pageNo, int pageSize) {
+        ArrayMap<String, String> params = new ArrayMap<>();
+        params.put("uid", AppManager.getClientUser().userId);
+        params.put("pageNo", String.valueOf(pageNo));
+        params.put("pageSize", String.valueOf(pageSize));
+        RetrofitFactory.getRetrofit().create(IUserFollowApi.class)
+                .getFollowList(url, AppManager.getClientUser().sessionId, params)
+                .subscribeOn(Schedulers.io())
+                .map(responseBody -> JsonUtils.parseJsonFollows(responseBody.string()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .subscribe(followModels -> {
+                    mCircularProgress.setVisibility(View.GONE);
+                    if(null != followModels && followModels.size() > 0){
+                        mNoUserInfo.setVisibility(View.GONE);
+                        mAdapter.setFollowModels(followModels);
+                    } else {
+                        mNoUserInfo.setVisibility(View.VISIBLE);
+                    }
+                }, throwable -> {
+                    mCircularProgress.setVisibility(View.GONE);
+                    ToastUtil.showMessage(R.string.network_requests_error);
+                });
     }
 
     @Override

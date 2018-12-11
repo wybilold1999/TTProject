@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.db.base.DBManager;
+import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.greendao.ConversationDao;
 import com.cyanbirds.ttjy.listener.MessageChangedListener;

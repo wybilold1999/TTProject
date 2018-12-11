@@ -1,49 +1,48 @@
 package com.cyanbirds.ttjy.manager;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.KeyguardManager;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.alibaba.sdk.android.oss.OSS;
-import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.IMessage;
-import com.cyanbirds.ttjy.net.DynamicService;
-import com.cyanbirds.ttjy.net.FollowService;
-import com.cyanbirds.ttjy.net.LoveService;
-import com.cyanbirds.ttjy.net.PictureService;
-import com.cyanbirds.ttjy.net.UserService;
-import com.cyanbirds.ttjy.net.VideoService;
-import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mmkv.MMKV;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static android.content.Context.ACTIVITY_SERVICE;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_CURRENT_CITY;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_LATITUDE;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_LONGITUDE;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_ACCOUNT;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_FACE_LOCAL;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_IS_LOGIN;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_PASSWORD;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_SESSIONID;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_USER_MOBILE;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_USER_USER_NAME;
+import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_SEX;
+
 /**
- * 
+ *
  * @ClassName:AppManager
  * @Description:APP管理类
  * @Author:wangyb
@@ -73,17 +72,11 @@ public class AppManager {
 	 * 进入聊天界面当前聊天联系人id
 	 */
 	public static String currentChatTalker = null;
-	private static final int REQUEST_LOCATION_PERMISSION = 1000;
-
-	private static UserService mUserService;
-	private static PictureService mPictureService;
-	private static FollowService mFollowService;
-	private static LoveService mLoveService;
-	private static VideoService mVideoService;
-	private static DynamicService mDynamicService;
 
 	private static IWXAPI sIWX_PAY_API;
 	private static IWXAPI sIWXAPI;
+
+	private static MMKV sMMKV;
 
 	private static ExecutorService mExecutorService;
 
@@ -119,7 +112,7 @@ public class AppManager {
 
 	/**
 	 * 设置用户信息
-	 * 
+	 *
 	 * @param user
 	 */
 	public static void setClientUser(ClientUser user) {
@@ -128,7 +121,7 @@ public class AppManager {
 
 	/**
 	 * 获取用户信息
-	 * 
+	 *
 	 * @return
 	 */
 	public static ClientUser getClientUser() {
@@ -137,7 +130,7 @@ public class AppManager {
 
 	/**
 	 * 获取包名
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getPackageName() {
@@ -146,7 +139,7 @@ public class AppManager {
 
 	/**
 	 * 返回上下文对象
-	 * 
+	 *
 	 * @return
 	 */
 	public static Context getContext() {
@@ -155,7 +148,7 @@ public class AppManager {
 
 	/**
 	 * 设置上下文对象
-	 * 
+	 *
 	 * @param context
 	 */
 	public static void setContext(Context context) {
@@ -165,7 +158,7 @@ public class AppManager {
 
 	/**
 	 * 获取应用程序版本名称
-	 * 
+	 *
 	 * @return 版本名称
 	 */
 	public static String getVersion() {
@@ -186,7 +179,7 @@ public class AppManager {
 
 	/**
 	 * 获取应用版本号
-	 * 
+	 *
 	 * @return 版本号
 	 */
 	public static int getVersionCode() {
@@ -207,35 +200,35 @@ public class AppManager {
 
 	/**
 	 * 获取设备ID
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getDeviceId() {
-		String deviceId = "";
+		String serial = null;
+		String m_szDevIDShort = "35" +
+				Build.BOARD.length()%10+ Build.BRAND.length()%10 +
+
+				Build.CPU_ABI.length()%10 + Build.DEVICE.length()%10 +
+
+				Build.DISPLAY.length()%10 + Build.HOST.length()%10 +
+
+				Build.ID.length()%10 + Build.MANUFACTURER.length()%10 +
+
+				Build.MODEL.length()%10 + Build.PRODUCT.length()%10 +
+
+				Build.TAGS.length()%10 + Build.TYPE.length()%10 +
+
+				Build.USER.length()%10 ; //13 位
 		try {
-			// 获取ID
-			TelephonyManager tm = (TelephonyManager) mContext
-					.getSystemService(Context.TELEPHONY_SERVICE);
-			String id = tm.getDeviceId();
-			// 获取mac地址
-			String macSerial = null;
-			String str = "";
-			Process pp = Runtime.getRuntime().exec(
-					"cat /sys/class/net/wlan0/address ");
-			InputStreamReader ir = new InputStreamReader(pp.getInputStream());
-			LineNumberReader input = new LineNumberReader(ir);
-			for (; null != str;) {
-				str = input.readLine();
-				if (str != null) {
-					macSerial = str.trim();
-					break;
-				}
-			}
-			deviceId = "Android_" + id + "_" + macSerial;
-		} catch (Exception e) {
-			e.printStackTrace();
+			serial = android.os.Build.class.getField("SERIAL").get(null).toString();
+			//API>=9 使用serial号
+			return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+		} catch (Exception exception) {
+			//serial需要一个初始化
+			serial = "serial"; // 随便一个初始化
 		}
-		return deviceId;
+		//使用硬件信息拼凑出来的15位号码
+		return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
 	}
 
 	/**
@@ -277,7 +270,7 @@ public class AppManager {
 	 */
 	public static boolean isAppIsInBackground(Context context) {
 		boolean isInBackground = true;
-		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
 			List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
 			for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
@@ -311,7 +304,7 @@ public class AppManager {
 		boolean isTop = false;
 		if (null == mActivityManager) {
 			mActivityManager = ((ActivityManager) context
-					.getSystemService(Context.ACTIVITY_SERVICE));
+					.getSystemService(ACTIVITY_SERVICE));
 		}
 		if (null != mActivityManager) {
 			tasksInfo = mActivityManager.getRunningTasks(1);
@@ -333,33 +326,26 @@ public class AppManager {
 	 * @return boolean
 	 */
 	public static boolean isAppAlive(Context context, String packageName) {
-		ActivityManager activityManager = (ActivityManager) context
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningAppProcessInfo> processInfos = activityManager
-				.getRunningAppProcesses();
-		for (int i = 0; i < processInfos.size(); i++) {
-			if (processInfos.get(i).processName.equals(packageName)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 方法描述：判断某一Service是否正在运行
-	 *
-	 * @param context     上下文
-	 * @param serviceName Service的全路径： 包名 + service的类名
-	 * @return true 表示正在运行，false 表示没有运行
-	 */
-	public static boolean isServiceRunning(Context context, String serviceName) {
-		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningServiceInfo> runningServiceInfos = am.getRunningServices(50);
-		if (runningServiceInfos.size() <= 0) {
+		ActivityManager am = (ActivityManager)context.getSystemService(ACTIVITY_SERVICE);
+		List<RunningTaskInfo> list = am.getRunningTasks(100);
+		if (list.size() <= 0) {
 			return false;
 		}
-		for (ActivityManager.RunningServiceInfo serviceInfo : runningServiceInfos) {
-			if (serviceInfo.service.getClassName().equals(serviceName)) {
+		boolean isAppRunning = false;
+		//100表示取的最大的任务数，info.topActivity表示当前正在运行的Activity，info.baseActivity表系统后台有此进程在运行
+		for (RunningTaskInfo info : list) {
+			if (info.topActivity.getPackageName().equals(packageName) || info.baseActivity.getPackageName().equals(packageName)) {
+				isAppRunning = true;
+				break;
+			}
+		}
+		return isAppRunning;
+	}
+
+	public static boolean isServiceRunning(Context context, String ServicePackageName) {
+		ActivityManager manager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (ServicePackageName.equals(service.service.getClassName())) {
 				return true;
 			}
 		}
@@ -376,7 +362,7 @@ public class AppManager {
 	public static String getTopActivity(Context context) {
 		if (null == mActivityManager) {
 			mActivityManager = ((ActivityManager) context
-					.getSystemService(Context.ACTIVITY_SERVICE));
+					.getSystemService(ACTIVITY_SERVICE));
 		}
 		if (null != mActivityManager) {
 			tasksInfo = mActivityManager.getRunningTasks(1);
@@ -398,7 +384,7 @@ public class AppManager {
 	 */
 	public static void showNotification(IMessage message) {
 		if (checkNeedMsgNotify(message)) {
-			NotificationManager.getInstance().showMessageNotification(
+			NotificationManagerUtils.getInstance().showMessageNotification(
 					message);
 		}
 	}
@@ -409,17 +395,6 @@ public class AppManager {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * 获取手机IMEI
-	 * 
-	 * @return
-	 */
-	public static String getImei() {
-		String imei = ((TelephonyManager) mContext
-				.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-		return imei;
 	}
 
 	public static void installApk(File file) {
@@ -446,12 +421,37 @@ public class AppManager {
 	 * @return
 	 */
 	public static boolean isLogin() {
-		if (getClientUser() == null || TextUtils.isEmpty(getClientUser().userId) // &&Integer.parseInt(getClientUser().userId) <= 0)
+		/*if (getClientUser() == null || TextUtils.isEmpty(getClientUser().userId)
 				|| !PreferencesUtils.getIsLogin(mContext)) {
 			return false;
 		}
 
+		return true;*/
+		if (getClientUser() == null || TextUtils.isEmpty(getClientUser().userId)
+				|| !sMMKV.decodeBool(SETTINGS_RL_IS_LOGIN, false)) {
+			return false;
+		}
+
 		return true;
+	}
+
+	/**
+	 * 获取需要上传到oss路径
+	 *
+	 * @param
+	 * @return
+	 */
+	public static String getOSSFacePath() {
+		String path = "tan_love/img/tl_" + getUUID() + ".jpg";
+		return path;
+	}
+
+	public static IWXAPI getIWXAPI() {
+		return sIWXAPI;
+	}
+
+	public static void setIWXAPI(IWXAPI IWXAPI) {
+		sIWXAPI = IWXAPI;
 	}
 
 	public static IWXAPI getIWX_PAY_API() {
@@ -462,12 +462,12 @@ public class AppManager {
 		sIWX_PAY_API = IWX_PAY_API;
 	}
 
-	public static IWXAPI getIWXAPI() {
-		return sIWXAPI;
+	public static MMKV getMMKV() {
+		return sMMKV;
 	}
 
-	public static void setIWXAPI(IWXAPI IWXAPI) {
-		sIWXAPI = IWXAPI;
+	public static void setMMKV(MMKV MMKV) {
+		sMMKV = MMKV;
 	}
 
 	public static String getProcessName(int pid) {
@@ -493,126 +493,28 @@ public class AppManager {
 		return null;
 	}
 
-	public static void goToMarket(Context context, String channel) {
-		/**
-		 * 根据渠道跳转到不同的应用市场更新APP
-		 */
-		if ("sanxing".equals(channel)) {
-			Uri uri = Uri.parse("http://www.samsungapps.com/appquery/appDetail.as?appId=" + pkgName);
-			Intent goToMarket = new Intent();
-			goToMarket.setClassName("com.sec.android.app.samsungapps", "com.sec.android.app.samsungapps.Main");
-			goToMarket.setData(uri);
-			try {
-				context.startActivity(goToMarket);
-			} catch (ActivityNotFoundException e) {
-				e.printStackTrace();
-			}
-		} else if ("leshi".equals(channel)) {
-			Intent intent = new Intent();
-			intent.setClassName("com.letv.app.appstore", "com.letv.app.appstore.appmodule.details.DetailsActivity");
-			intent.setAction("com.letv.app.appstore.appdetailactivity");
-			intent.putExtra("packageName", pkgName);
-			context.startActivity(intent);
-		} else {
-			Uri uri = Uri.parse("market://details?id=" + pkgName);
-			Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-			try {
-				context.startActivity(goToMarket);
-			} catch (ActivityNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static void requestLocationPermission(Activity activity) {
-		PackageManager pkgManager = CSApplication.getInstance().getPackageManager();
-		boolean ACCESS_COARSE_LOCATION =
-				pkgManager.checkPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION, getPackageName()) == PackageManager.PERMISSION_GRANTED;
-		boolean ACCESS_FINE_LOCATION =
-				pkgManager.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, getPackageName()) == PackageManager.PERMISSION_GRANTED;
-		if (Build.VERSION.SDK_INT >= 23 && !ACCESS_COARSE_LOCATION || !ACCESS_FINE_LOCATION) {
-			//请求权限
-			ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-					REQUEST_LOCATION_PERMISSION);
-		}
-	}
-
-	public static boolean checkPermission(Activity activity, String permission, int flag) {
-		boolean isHasPermission = false;
-		if (Build.VERSION.SDK_INT >= 23) {
-			PackageManager pkgManager = CSApplication.getInstance().getPackageManager();
-			isHasPermission = pkgManager.checkPermission(permission, getPackageName()) == PackageManager.PERMISSION_GRANTED;
-			if (!isHasPermission) {
-				//请求权限
-				ActivityCompat.requestPermissions(activity, new String[] {permission}, flag);
-			}
-		} else {
-			isHasPermission = true;
-		}
-		return isHasPermission;
-	}
-
-	/**
-	 * 获取需要上传到oss路径
-	 *
-	 * @param
-	 * @return
-	 */
-	public static String getOSSFacePath() {
-		String path = "tan_love/img/tl_" + getUUID() + ".jpg";
-		return path;
-	}
-
 	/**
 	 * 设置用户信息
 	 */
 	public static void setUserInfo() {
 		try {
-			String userId = PreferencesUtils.getAccount(mContext);
-			String mobile = PreferencesUtils.getUserMobile(mContext);
-			String pwd = PreferencesUtils.getPassword(mContext);
-			String sex = PreferencesUtils.getUserSex(mContext);
-			String userName = PreferencesUtils.getUserName(mContext);
-			String face_url = PreferencesUtils.getFaceUrl(mContext);
-			String face_local = PreferencesUtils.getFaceLocal(mContext);
-			String signature = PreferencesUtils.getSignature(mContext);
-			String qq_no = PreferencesUtils.getQq(mContext);
-			String weixin_no = PreferencesUtils.getWeiXin(mContext);
-			String weight = PreferencesUtils.getWeight(mContext);
-			String tall = PreferencesUtils.getTall(mContext);
-			String distance = PreferencesUtils.getDistance(mContext);
-			String constellation = PreferencesUtils.getConstellation(mContext);
-			String state_marry = PreferencesUtils.getEmotionStatus(mContext);
-			String sessionId = PreferencesUtils.getSessionid(mContext);
-			boolean isCheckPhone = PreferencesUtils.getIsCheckPhone(mContext);
-			boolean publicSocialNumber = PreferencesUtils.getPublicSocialnumber(mContext);
-			boolean is_vip = PreferencesUtils.getIsVip(mContext);
+			String userId = sMMKV.decodeString(SETTINGS_RL_ACCOUNT, "");
+			String mobile = sMMKV.decodeString(SETTINGS_RL_USER_MOBILE, "");
+			String pwd = sMMKV.decodeString(SETTINGS_RL_PASSWORD, "");
+			String userName = sMMKV.decodeString(SETTINGS_RL_USER_USER_NAME, "");
+			String face_local = sMMKV.decodeString(SETTINGS_RL_FACE_LOCAL, "");
+			String sessionId = sMMKV.decodeString(SETTINGS_RL_SESSIONID, "");
 			ClientUser clientUser = new ClientUser();
 			clientUser.userId = userId;
 			clientUser.mobile = mobile;
 			clientUser.userPwd = pwd;
-			clientUser.sex = sex;
 			clientUser.user_name = userName;
-			clientUser.face_url = face_url;
 			clientUser.face_local = face_local;
-			clientUser.signature = signature;
-			clientUser.qq_no = qq_no;
-			clientUser.weixin_no = weixin_no;
-			clientUser.weight = weight;
-			clientUser.tall = tall;
-			clientUser.distance = distance;
-			clientUser.constellation = constellation;
-			clientUser.isCheckPhone = isCheckPhone;
-			clientUser.state_marry = state_marry;
-			clientUser.publicSocialNumber = publicSocialNumber;
-			clientUser.is_vip = is_vip;
 			clientUser.sessionId = sessionId;
-			clientUser.isShowVip = PreferencesUtils.getIsShow(mContext);
-			clientUser.isShowDownloadVip = clientUser.isShowVip;
-			clientUser.isShowGold = clientUser.isShowVip;
-			clientUser.isShowLovers = clientUser.isShowVip;
-			clientUser.isShowVideo  = clientUser.isShowVip;
-			clientUser.currentCity = PreferencesUtils.getCurrentCity(mContext);
+			clientUser.currentCity = sMMKV.decodeString(SETTINGS_CURRENT_CITY, "");
+			clientUser.sex = sMMKV.decodeString(SETTINGS_SEX, "");
+			clientUser.latitude = sMMKV.decodeString(SETTINGS_LATITUDE, "");
+			clientUser.longitude = sMMKV.decodeString(SETTINGS_LONGITUDE, "");
 			setClientUser(clientUser);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -624,36 +526,15 @@ public class AppManager {
 	 */
 	public static void saveUserInfo() {
 		try {
-			PreferencesUtils.setAccount(mContext, getClientUser().userId);
-			PreferencesUtils.setPassword(mContext, getClientUser().userPwd);
-			PreferencesUtils.setFaceLocal(mContext, getClientUser().face_local);
-			PreferencesUtils.setFaceUrl(mContext, getClientUser().face_url);
-			PreferencesUtils.setUserMobile(mContext, getClientUser().mobile);
-			PreferencesUtils.setUserName(mContext, getClientUser().user_name);
-			PreferencesUtils.setOccupation(mContext, getClientUser().occupation);
-			PreferencesUtils.setEducation(mContext, getClientUser().education);
-			PreferencesUtils.setUserSex(mContext, getClientUser().sex);
-			PreferencesUtils.setAge(mContext, getClientUser().age);
-			PreferencesUtils.setSignature(mContext, getClientUser().signature);
-			PreferencesUtils.setCity(mContext, getClientUser().city);
-			PreferencesUtils.setPurpose(mContext, getClientUser().purpose);
-			PreferencesUtils.setDoWhatFirst(mContext, getClientUser().do_what_first);
-			PreferencesUtils.setLoveWhere(mContext, getClientUser().love_where);
-			PreferencesUtils.setConception(mContext, getClientUser().conception);
-			PreferencesUtils.setQq(mContext, getClientUser().qq_no);
-			PreferencesUtils.setWeiXin(mContext, getClientUser().weixin_no);
-			PreferencesUtils.setWeight(mContext, getClientUser().weight);
-			PreferencesUtils.setTall(mContext, getClientUser().tall);
-			PreferencesUtils.setDistance(mContext, getClientUser().distance);
-			PreferencesUtils.setConstellation(mContext, getClientUser().constellation);
-			PreferencesUtils.setIsCheckPhone(mContext, getClientUser().isCheckPhone);
-			PreferencesUtils.setEmotionStatus(mContext, getClientUser().state_marry);
-			PreferencesUtils.setPublicSocialnumber(mContext, getClientUser().publicSocialNumber);
-			PreferencesUtils.setIsVip(mContext, getClientUser().is_vip);
-			PreferencesUtils.setSessionId(mContext, getClientUser().sessionId);
-			PreferencesUtils.setIsShow(mContext, getClientUser().isShowVip);
-			PreferencesUtils.setIsLogin(mContext, true);
-			PreferencesUtils.setCurrentCity(mContext, getClientUser().currentCity);
+			sMMKV.encode(SETTINGS_RL_ACCOUNT, getClientUser().userId);
+			sMMKV.encode(SETTINGS_RL_PASSWORD, getClientUser().userPwd);
+			sMMKV.encode(SETTINGS_RL_FACE_LOCAL, getClientUser().face_local);
+			sMMKV.encode(SETTINGS_RL_USER_MOBILE, getClientUser().mobile);
+			sMMKV.encode(SETTINGS_RL_USER_USER_NAME, getClientUser().user_name);
+			sMMKV.encode(SETTINGS_RL_SESSIONID, getClientUser().sessionId);
+			sMMKV.encode(SETTINGS_RL_IS_LOGIN, true);
+			sMMKV.encode(SETTINGS_CURRENT_CITY, getClientUser().currentCity);
+			sMMKV.encode(SETTINGS_SEX, getClientUser().sex);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -665,57 +546,4 @@ public class AppManager {
 	public static void release() {
 	}
 
-	/************设置和获取网络用户接口**********************/
-	public static void setUserService(UserService userService){
-		mUserService = userService;
-	}
-
-	public static UserService getUserService(){
-		return mUserService;
-	}
-
-	/************设置和获取网络图片接口**********************/
-	public static void setPictureService(PictureService pictureService){
-		mPictureService = pictureService;
-	}
-
-	public static PictureService getPictureService(){
-		return mPictureService;
-	}
-
-	/************设置和获取网络关注操作接口**********************/
-	public static void setFollowService(FollowService followService){
-		mFollowService = followService;
-	}
-
-	public static FollowService getFollowService(){
-		return mFollowService;
-	}
-
-	/************设置和获取网络喜欢操作接口**********************/
-	public static void setLoveService(LoveService loveService){
-		mLoveService = loveService;
-	}
-
-	public static LoveService getLoveService(){
-		return mLoveService;
-	}
-
-	/************设置和获取网络视频操作接口**********************/
-	public static void setVideoService(VideoService videoService){
-		mVideoService = videoService;
-	}
-
-	public static VideoService getVideoService(){
-		return mVideoService;
-	}
-
-	/************设置和获取动态操作接口**********************/
-	public static DynamicService getDynamicService() {
-		return mDynamicService;
-	}
-
-	public static void setDynamicService(DynamicService mDynamicService) {
-		AppManager.mDynamicService = mDynamicService;
-	}
 }

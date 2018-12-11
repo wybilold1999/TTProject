@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 /**
  * @author Cloudsoar(wangyb)
  * @datetime 2015-12-26 18:34 GMT+8
@@ -93,7 +94,7 @@ public class FindLoveAdapter extends
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.userName.setText(clientUser.user_name);
             itemViewHolder.age.setText(String.valueOf(clientUser.age));
-            if ("男".equals(clientUser.sex)) {
+            if ("1".equals(clientUser.sex)) {
                 itemViewHolder.mSexImg.setImageResource(R.mipmap.list_male);
             } else {
                 itemViewHolder.mSexImg.setImageResource(R.mipmap.list_female);
@@ -150,7 +151,7 @@ public class FindLoveAdapter extends
     }
 
     public ClientUser getItem(int position){
-        if (mClientUsers == null || mClientUsers.size() < 1) {
+        if (mClientUsers == null || mClientUsers.size() < 1 || position < 0) {
             return null;
         }
         return mClientUsers == null ? null : mClientUsers.get(position);

@@ -1,8 +1,11 @@
 package com.cyanbirds.ttjy.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 
 import java.util.regex.Matcher;
@@ -32,8 +35,9 @@ public class CheckUtil {
 	 * @return
 	 */
 	public static boolean isMobileNO(String mobiles) {
+		String regex = "^0?(13[0-9]|17[0-9]|15[012356789]|18[0123456789]|14[57])[0-9]{8}$";
 		Pattern p = Pattern
-				.compile("^0?(13[0-9]|17[0-9]|15[012356789]|18[0123456789]|14[57])[0-9]{8}$");
+				.compile(regex);
 		Matcher m = p.matcher(mobiles);
 		return m.matches();
 	}
@@ -95,5 +99,14 @@ public class CheckUtil {
 		}
 
 		return resultData;
+	}
+
+	public static boolean isGetPermission(Context context, String permissionName) {
+		if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			if (ContextCompat.checkSelfPermission(context, permissionName) != PackageManager.PERMISSION_GRANTED) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -24,7 +24,7 @@ import com.cyanbirds.ttjy.db.IMessageDaoManager;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
-import com.cyanbirds.ttjy.manager.NotificationManager;
+import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
 import com.cyanbirds.ttjy.utils.DateUtil;
 import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -63,6 +63,8 @@ public class MessageAdapter extends
             } else {
                 holder.mPortrait.setImageURI(Uri.parse("file://" + conversation.localPortrait));
             }
+        } else {
+            holder.mPortrait.setImageURI(Uri.parse(conversation.faceUrl));
         }
         holder.mTitle.setText(conversation.talkerName);
         holder.mContent.setText(Html.fromHtml(
@@ -143,7 +145,7 @@ public class MessageAdapter extends
                                     mContext.getResources().getString(
                                             R.string.delete_conversation),
                                     mContext.getResources().getString(
-                                            R.string.delete_all_conversation) },
+                                            R.string.delete_all_conversation)},
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -161,7 +163,7 @@ public class MessageAdapter extends
                                             mConversations.clear();
                                             notifyDataSetChanged();
                                             MessageUnReadListener.getInstance().notifyDataSetChanged(0);
-                                            NotificationManager.getInstance().cancelNotification();
+                                            NotificationManagerUtils.getInstance().cancelNotification();
                                             break;
                                     }
                                     dialog.dismiss();

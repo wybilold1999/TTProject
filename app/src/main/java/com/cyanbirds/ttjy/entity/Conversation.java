@@ -54,12 +54,9 @@ public class Conversation implements Serializable{
 	/** 本地头像地址 */
 	@Property
 	public String localPortrait;
-
 	/** 头像地址 */
 	@Property
 	public String faceUrl;
-
-	
 	@Generated(hash = 1491216450)
 	public Conversation(Long id, @NotNull String talker,
 			@NotNull String talkerName, @NotNull String content, int unreadCount,
@@ -78,52 +75,52 @@ public class Conversation implements Serializable{
 	public Conversation() {
 	}
 	public Long getId() {
-					return this.id;
+		return this.id;
 	}
 	public void setId(Long id) {
-					this.id = id;
+		this.id = id;
 	}
 	public String getTalker() {
-					return this.talker;
+		return this.talker;
 	}
 	public void setTalker(String talker) {
-					this.talker = talker;
+		this.talker = talker;
 	}
 	public String getTalkerName() {
-					return this.talkerName;
+		return this.talkerName;
 	}
 	public void setTalkerName(String talkerName) {
-					this.talkerName = talkerName;
+		this.talkerName = talkerName;
 	}
 	public String getContent() {
-					return this.content;
+		return this.content;
 	}
 	public void setContent(String content) {
-					this.content = content;
+		this.content = content;
 	}
 	public int getUnreadCount() {
-					return this.unreadCount;
+		return this.unreadCount;
 	}
 	public void setUnreadCount(int unreadCount) {
-					this.unreadCount = unreadCount;
+		this.unreadCount = unreadCount;
 	}
 	public long getCreateTime() {
-					return this.createTime;
+		return this.createTime;
 	}
 	public void setCreateTime(long createTime) {
-					this.createTime = createTime;
+		this.createTime = createTime;
 	}
 	public int getType() {
-					return this.type;
+		return this.type;
 	}
 	public void setType(int type) {
-					this.type = type;
+		this.type = type;
 	}
 	public String getLocalPortrait() {
-					return this.localPortrait;
+		return this.localPortrait;
 	}
 	public void setLocalPortrait(String localPortrait) {
-					this.localPortrait = localPortrait;
+		this.localPortrait = localPortrait;
 	}
 	public String getFaceUrl() {
 		return this.faceUrl;
@@ -131,6 +128,5 @@ public class Conversation implements Serializable{
 	public void setFaceUrl(String faceUrl) {
 		this.faceUrl = faceUrl;
 	}
-
 
 }

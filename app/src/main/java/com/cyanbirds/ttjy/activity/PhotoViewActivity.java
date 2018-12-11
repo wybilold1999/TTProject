@@ -18,8 +18,9 @@ import uk.co.senab.photoview.PhotoViewAttacher;
  * @Description:图片浏览
  * @Date:2015年7月8日上午11:09:50
  */
-public class PhotoViewActivity extends BaseActivity implements PhotoViewAttacher.OnViewTapListener {
+public class PhotoViewActivity extends BaseActivity implements View.OnClickListener, PhotoViewAttacher.OnViewTapListener {
     private PhotoDraweeView mPhotoView;
+    private PhotoViewAttacher mAttacher;
 
     private String mCurImgUrl; //当前显示图片的url
 
@@ -29,11 +30,19 @@ public class PhotoViewActivity extends BaseActivity implements PhotoViewAttacher
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photoview);
         setupView();
+        setupEvent();
         setupData();
     }
 
     private void setupView(){
         mPhotoView = (PhotoDraweeView) findViewById(R.id.photo_drawee_view);
+        mAttacher = new PhotoViewAttacher(mPhotoView);
+
+    }
+
+    private void setupEvent() {
+        mPhotoView.setOnClickListener(this);
+        mAttacher.setOnViewTapListener(this);
     }
 
     /**
@@ -43,6 +52,15 @@ public class PhotoViewActivity extends BaseActivity implements PhotoViewAttacher
         mCurImgUrl = getIntent().getStringExtra(ValueKey.IMAGE_URL);
         if(!TextUtils.isEmpty(mCurImgUrl)){
             mPhotoView.setImageURI(Uri.parse(mCurImgUrl));
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.photo_drawee_view :
+                finish();
+                break;
         }
     }
 

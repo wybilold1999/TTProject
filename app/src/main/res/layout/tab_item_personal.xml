@@ -249,8 +249,7 @@
 			</android.support.v7.widget.CardView>
 
 			<TextView
-				android:id="@+id/textView"
-				android:layout_width="match_parent"
+                android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:paddingLeft="20dp"
 				android:paddingTop="8dp"
@@ -273,16 +272,14 @@
 					android:orientation="vertical">
 
 					<RelativeLayout
-						android:id="@+id/nickname_lay"
-						android:layout_width="match_parent"
+                        android:layout_width="match_parent"
 						android:layout_height="50dp"
 						android:background="?android:selectableItemBackground"
 						android:clickable="true"
 						android:descendantFocusability="blocksDescendants">
 
 						<TextView
-							android:id="@+id/nickname_text"
-							android:layout_width="wrap_content"
+                            android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_alignParentLeft="true"
 							android:layout_alignParentStart="true"
@@ -298,7 +295,7 @@
 							android:layout_height="wrap_content"
 							android:layout_centerInParent="true"
 							android:layout_centerVertical="true"
-							android:layout_marginRight="20dp"
+							android:layout_marginRight="10dp"
 							android:textColor="@color/body_text_1"/>
 
 						<ImageView
@@ -330,8 +327,7 @@
 						android:descendantFocusability="blocksDescendants">
 
 						<TextView
-							android:id="@+id/age_text"
-							android:layout_width="wrap_content"
+                            android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_alignParentLeft="true"
 							android:layout_alignParentStart="true"
@@ -406,8 +402,7 @@
 						android:descendantFocusability="blocksDescendants">
 
 						<TextView
-							android:id="@+id/occupation_text"
-							android:layout_width="wrap_content"
+                            android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_alignParentLeft="true"
 							android:layout_alignParentStart="true"
@@ -853,7 +848,7 @@
 						android:layout_height="0dp"
 						android:layout_weight="1"
 						android:paddingLeft="8dp"
-						android:paddingBottom="8dp"
+						android:paddingBottom="2dp"
 						android:textSize="12sp"/>
 
 				</LinearLayout>

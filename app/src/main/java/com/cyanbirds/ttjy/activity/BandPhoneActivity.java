@@ -1,5 +1,6 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -7,16 +8,15 @@ import android.widget.EditText;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
-import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.UpdateUserInfoRequest;
+import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.utils.CheckUtil;
-import com.cyanbirds.ttjy.utils.ProgressDialogUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.smssdk.SMSSDK;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -30,6 +30,8 @@ public class BandPhoneActivity extends BaseActivity {
     EditText mPhoneNum;
     @BindView(R.id.next)
     FancyButton mNext;
+
+    private final int START_INTENT = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +62,20 @@ public class BandPhoneActivity extends BaseActivity {
     @OnClick(R.id.next)
     public void onViewClicked() {
         if (checkInput()) {
-            ProgressDialogUtils.getInstance(this).show(R.string.wait);
-            AppManager.getClientUser().isCheckPhone = true;
-            AppManager.getClientUser().mobile = mPhoneNum.getText().toString();
-            AppManager.setClientUser(AppManager.getClientUser());
-            AppManager.saveUserInfo();
-            new UpdateUserInfoTask().request(AppManager.getClientUser());
+            String phone_num = mPhoneNum.getText().toString();
+            SMSSDK.getVerificationCode("86", phone_num);
+            Intent intent = new Intent(BandPhoneActivity.this, RegisterCaptchaActivity.class);
+            intent.putExtra(ValueKey.PHONE_NUMBER, phone_num);
+            intent.putExtra(ValueKey.INPUT_PHONE_TYPE, 2);
+            startActivityForResult(intent, START_INTENT);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == START_INTENT && resultCode ==RESULT_OK) {
+            finish();
         }
     }
 
@@ -86,21 +96,5 @@ public class BandPhoneActivity extends BaseActivity {
         if (!bool)
             ToastUtil.showMessage(message);
         return bool;
-    }
-
-    class UpdateUserInfoTask extends UpdateUserInfoRequest {
-        @Override
-        public void onPostExecute(String s) {
-            ToastUtil.showMessage(R.string.bangding_success);
-            ProgressDialogUtils.getInstance(BandPhoneActivity.this).dismiss();
-            finish();
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-            ToastUtil.showMessage(R.string.bangding_faile);
-            ProgressDialogUtils.getInstance(BandPhoneActivity.this).dismiss();
-            finish();
-        }
     }
 }

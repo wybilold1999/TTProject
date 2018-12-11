@@ -15,8 +15,8 @@
 			android:id="@+id/tabs"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:tabIndicatorColor="@color/color_theme"
-			app:tabSelectedTextColor="@color/color_theme"/>
+			app:tabIndicatorColor="@color/colorPrimary"
+			app:tabSelectedTextColor="@color/colorPrimary"/>
 		<View
 			android:layout_width="match_parent"
 			android:layout_height="1px"
@@ -27,17 +27,5 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"/>
 	</LinearLayout>
-
-	<android.support.design.widget.FloatingActionButton
-		android:id="@+id/fab"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom|end"
-		android:layout_marginLeft="@dimen/fab_margin"
-		android:layout_marginRight="@dimen/fab_margin"
-		android:layout_marginTop="@dimen/fab_margin"
-		android:layout_marginBottom="60dp"
-		android:src="@mipmap/ic_launcher"
-		android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -100,7 +100,6 @@ public class IMessage implements Serializable{
     // 图片接收状态
     @Property
     public int imageStatus;
-
     @Transient
     public int imageProgress;
 

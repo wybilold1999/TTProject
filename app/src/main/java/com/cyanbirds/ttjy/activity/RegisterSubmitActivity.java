@@ -13,14 +13,12 @@ import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
-import com.cyanbirds.ttjy.helper.IMChattingHelper;
-import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.RegisterRequest;
+import com.cyanbirds.ttjy.presenter.UserLoginPresenterImpl;
 import com.cyanbirds.ttjy.utils.AESEncryptorUtil;
 import com.cyanbirds.ttjy.utils.CheckUtil;
-import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.ProgressDialogUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.cyanbirds.ttjy.view.IUserLoginLogOut;
 import com.umeng.analytics.MobclickAgent;
 
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -32,8 +30,8 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * @Date:2015年5月12日上午11:43:42
  *
  */
-public class RegisterSubmitActivity extends BaseActivity implements
-		OnClickListener {
+public class RegisterSubmitActivity extends BaseActivity<IUserLoginLogOut.Presenter> implements
+		OnClickListener,IUserLoginLogOut.View {
 
 	private EditText mNickname;
 	private EditText mPassword;
@@ -61,10 +59,10 @@ public class RegisterSubmitActivity extends BaseActivity implements
 	 * 设置视图
 	 */
 	private void setupViews() {
-		mNickname = (EditText) findViewById(R.id.nickname);
-		mPassword = (EditText) findViewById(R.id.password);
-		mConfirmPassword = (EditText) findViewById(R.id.confirm_password);
-		mRegister = (FancyButton) findViewById(R.id.register);
+		mNickname = findViewById(R.id.nickname);
+		mPassword = findViewById(R.id.password);
+		mConfirmPassword = findViewById(R.id.confirm_password);
+		mRegister = findViewById(R.id.register);
 	}
 
 	/**
@@ -91,41 +89,30 @@ public class RegisterSubmitActivity extends BaseActivity implements
 				String securityPwd = AESEncryptorUtil.crypt(mPassword.getText().toString().trim(),
 						AppConstants.SECURITY_KEY);
 				mClientUser.userPwd = securityPwd;
-				new RegisterTask().request(mClientUser, channelId);
 				ProgressDialogUtils.getInstance(this).show(R.string.dialog_request_register_login);
+				presenter.onRegist(mClientUser, channelId);
 			}
 			break;
 		}
 	}
 
-	class RegisterTask extends RegisterRequest {
-		@Override
-		public void onPostExecute(ClientUser clientUser) {
-			ProgressDialogUtils.getInstance(RegisterSubmitActivity.this).dismiss();
+	@Override
+	public void loginLogOutSuccess(ClientUser clientUser) {
+		ProgressDialogUtils.getInstance(RegisterSubmitActivity.this).dismiss();
+		if (clientUser != null) {
 			hideSoftKeyboard();
-			MobclickAgent.onProfileSignIn(String.valueOf(AppManager
-					.getClientUser().userId));
-			clientUser.userPwd = mClientUser.userPwd;
-			clientUser.currentCity = mClientUser.currentCity;
-			AppManager.setClientUser(clientUser);
-			AppManager.saveUserInfo();
-			AppManager.getClientUser().loginTime = System.currentTimeMillis();
-			PreferencesUtils.setLoginTime(RegisterSubmitActivity.this, System.currentTimeMillis());
-			IMChattingHelper.getInstance().sendInitLoginMsg();
-			Intent intent = null;
-			if (AppManager.getClientUser().isShowNormal) {
-				intent = new Intent(RegisterSubmitActivity.this, MainActivity.class);
-			} else {
-				intent = new Intent(RegisterSubmitActivity.this, MainNewActivity.class);
-			}
+			Intent intent = new Intent(RegisterSubmitActivity.this, MainActivity.class);
 			startActivity(intent);
 			finishAll();
+		} else {
+			ToastUtil.showMessage(R.string.register_error);
 		}
+	}
 
-		@Override
-		public void onErrorExecute(String error) {
-			ProgressDialogUtils.getInstance(RegisterSubmitActivity.this).dismiss();
-			ToastUtil.showMessage(error);
+	@Override
+	public void setPresenter(IUserLoginLogOut.Presenter presenter) {
+		if (presenter == null) {
+			this.presenter = new UserLoginPresenterImpl(this);
 		}
 	}
 

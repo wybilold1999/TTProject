@@ -1,8 +1,9 @@
 package com.cyanbirds.ttjy.fragment;
 
+import android.arch.lifecycle.Lifecycle;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -13,14 +14,20 @@ import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.adapter.FoundAdapter;
 import com.cyanbirds.ttjy.entity.PictureModel;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.GetDiscoverInfoRequest;
-import com.cyanbirds.ttjy.net.request.GetRealUsersDiscoverInfoRequest;
+import com.cyanbirds.ttjy.net.IUserPictureApi;
+import com.cyanbirds.ttjy.net.base.RetrofitFactory;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
+import com.cyanbirds.ttjy.utils.JsonUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author: wangyb
@@ -52,9 +59,6 @@ public class FoundFragment extends Fragment {
         if (parent != null) {
             parent.removeView(rootView);
         }
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                R.string.tab_found);
         return rootView;
     }
 
@@ -75,13 +79,7 @@ public class FoundFragment extends Fragment {
         mAdapter = new FoundAdapter(null, getActivity());
         mRecyclerView.setAdapter(mAdapter);
         mProgressBar.setVisibility(View.VISIBLE);
-        if("-1".equals(AppManager.getClientUser().userId) ||
-                "-2".equals(AppManager.getClientUser().userId) ||
-                "-3".equals(AppManager.getClientUser().userId)){
-            new GetRealUsersDiscoverInfoTask().request(pageIndex,pageSize);
-        } else {
-            new GetDiscoverInfoTask().request(pageIndex,pageSize);
-        }
+        getDiscoverInfo(pageIndex, pageSize);
     }
 
     private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
@@ -103,11 +101,7 @@ public class FoundFragment extends Fragment {
                 int totalItemCount = manager.getItemCount();
                 if (lastVisiblePos == (totalItemCount -1)) {
                     //加载更多
-                    if("-1".equals(AppManager.getClientUser().userId)){
-                        new GetRealUsersDiscoverInfoTask().request(++pageIndex,pageSize);
-                    } else {
-                        new GetDiscoverInfoTask().request(++pageIndex,pageSize);
-                    }
+                    getDiscoverInfo(++pageIndex,pageSize);
                 }
             }
         }
@@ -126,47 +120,31 @@ public class FoundFragment extends Fragment {
     /**
      * 获取发现信息
      */
-    class GetDiscoverInfoTask extends GetDiscoverInfoRequest {
-        @Override
-        public void onPostExecute(List<PictureModel> pictureModels) {
-            mProgressBar.setVisibility(View.GONE);
-            if(pictureModels == null || pictureModels.size() == 0){
-                mAdapter.setIsShowFooter(false);
-                mAdapter.notifyDataSetChanged();
-                ToastUtil.showMessage(R.string.no_more_data);
-            } else {
-                mPictureModels.addAll(pictureModels);
-                mAdapter.setIsShowFooter(true);
-                mAdapter.setPictureModels(mPictureModels);
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
-    }
-
-    /**
-     * 获取真实用户的图片
-     */
-    class GetRealUsersDiscoverInfoTask extends GetRealUsersDiscoverInfoRequest {
-        @Override
-        public void onPostExecute(List<PictureModel> pictureModels) {
-            mProgressBar.setVisibility(View.GONE);
-            if(pictureModels == null || pictureModels.size() == 0){
-                mAdapter.setIsShowFooter(false);
-                mAdapter.notifyDataSetChanged();
-                ToastUtil.showMessage(R.string.no_more_data);
-            } else {
-                mPictureModels.addAll(pictureModels);
-                mAdapter.setIsShowFooter(true);
-                mAdapter.setPictureModels(mPictureModels);
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
+    private void getDiscoverInfo(int pageIndex, int pageSize) {
+        ArrayMap<String, String> params = new ArrayMap<>();
+        params.put("pageNo", String.valueOf(pageIndex));
+        params.put("pageSize", String.valueOf(pageSize));
+        RetrofitFactory.getRetrofit().create(IUserPictureApi.class)
+                .getDiscoverPictures(AppManager.getClientUser().sessionId, params)
+                .subscribeOn(Schedulers.io())
+                .map(responseBody -> JsonUtils.parseDiscoverInfo(responseBody.string()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .subscribe(pictureModels -> {
+                    mProgressBar.setVisibility(View.GONE);
+                    if(pictureModels == null || pictureModels.size() == 0){
+                        mAdapter.setIsShowFooter(false);
+                        mAdapter.notifyDataSetChanged();
+                        ToastUtil.showMessage(R.string.no_more_data);
+                    } else {
+                        mPictureModels.addAll(pictureModels);
+                        mAdapter.setIsShowFooter(true);
+                        mAdapter.setPictureModels(mPictureModels);
+                    }
+                }, throwable -> {
+                    mProgressBar.setVisibility(View.GONE);
+                    ToastUtil.showMessage(R.string.network_requests_error);
+                });
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.cyanbirds.ttjy.config;
 
+
 /**
  * 
  * @ClassName:Constants
@@ -11,7 +12,7 @@ package com.cyanbirds.ttjy.config;
 public class AppConstants {
 	
 	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-//	public static final String BASE_URL = "http://192.168.1.103/TTLoveServer/";
+//	public static final String BASE_URL = "http://192.168.1.100:8080/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙
@@ -19,20 +20,15 @@ public class AppConstants {
 	public static final String SECURITY_KEY = "ABCD1234abcd5678";
 
 	/**
-	 * 请求位置的高德web api的key
-	 */
-	public static final String WEB_KEY = "d64c0240c9790d4c56498b152a4ca193";
-
-	/**
 	 *容联云IM
 	 */
-	public static String YUNTONGXUN_ID = "8aaf07085a3c0ea1015a50eaef9408e5";
-	public static String YUNTONGXUN_TOKEN = "7010bb5f320ae628102e25518f5b45f2";
+	public static String YUNTONGXUN_ID = "8a216da862a4b4880162a4e0affe0024";
+	public static String YUNTONGXUN_TOKEN = "d72a6d87c6133d3809fc3d90219639e2";
 
 	/**
 	 * QQ登录的appid和appkey
 	 */
-	public static String mAppid = "1105980496";
+	public static final String mAppid = "1105980496";
 
 	/**
 	 * 微信登录
@@ -40,15 +36,9 @@ public class AppConstants {
 	public static String WEIXIN_ID = "wx86ced05dbee0ad6b";
 
 	/**
-	 * 微信支付
+	 * 微信登录
 	 */
 	public static String WEIXIN_PAY_ID = "wx86ced05dbee0ad6b";
-
-	/**
-	 * 短信
-	 */
-	public static final String SMS_INIT_KEY = "1b6b963e439a6";
-	public static final String SMS_INIT_SECRET = "f3a053ac5f1b4f592823ce53a0585920";
 
 	/**
 	 * 小米推送appid
@@ -64,14 +54,24 @@ public class AppConstants {
 	 */
 	public static final String OSS_IMG_ENDPOINT = "http://real-love-server.img-cn-shenzhen.aliyuncs.com/";
 
+	/**
+	 * 百度api定位
+	 */
+	public static final String BAIDU_LOCATION_API = "http://api.map.baidu.com/location/ip?ak=icuYvoz6ZrKLTKC6m53hquZUzZlHUypg&coor=bd09ll&ip=";
+
 	public static final String WX_PAY_PLATFORM = "wxpay";
 
 	public static final String ALI_PAY_PLATFORM = "alipay";
-
-	public static final String CURRENT_INDEX = "currentIndex";
 
 	public static int CHAT_LIMIT = 0;
 
 	public static String BUGLY_ID = "28d110c523";
 
+	public static String CITY_WE_CHAT_RESP_CODE = "city_we_chat_resp_code";
+
+	public static String PAY_SUCCESS = "pay_success";
+
+	public static String PUB_DYNAMIC = "pub_dynamic";
+
+	public static String UPDATE_USER_INFO = "update_user_info";
 }

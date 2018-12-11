@@ -64,11 +64,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
-        app:fb_defaultColor="@color/circle"
-        app:fb_focusColor="@color/circle"
+        app:fb_defaultColor="@color/colorPrimary"
+        app:fb_focusColor="@color/colorAccent"
         app:fb_radius="5dp"
         app:fb_text="@string/send_msg"
         app:fb_textColor="#ffffffff"/>
+
 
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/going_find"
@@ -76,8 +77,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        app:fb_defaultColor="@color/colorPrimary"
-        app:fb_focusColor="@color/colorAccent"
+        app:fb_defaultColor="#55acee"
+        app:fb_focusColor="#8cc9f8"
         app:fb_radius="5dp"
         app:fb_text="@string/going_find"
         app:fb_textColor="#ffffffff"/>

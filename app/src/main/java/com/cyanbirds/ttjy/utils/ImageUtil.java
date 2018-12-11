@@ -76,7 +76,7 @@ public class ImageUtil {
 			} finally {
 				try {
 					fileOutputStream.close();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

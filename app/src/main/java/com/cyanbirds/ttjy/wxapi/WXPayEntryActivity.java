@@ -3,20 +3,18 @@ package com.cyanbirds.ttjy.wxapi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.base.BaseActivity;
+import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.eventtype.PayEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
+import com.cyanbirds.ttjy.utils.RxBus;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.tencent.mm.sdk.constants.ConstantsAPI;
 import com.tencent.mm.sdk.modelbase.BaseReq;
 import com.tencent.mm.sdk.modelbase.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-
-import org.greenrobot.eventbus.EventBus;
 
 /**
  * 作者：wangyb
@@ -33,9 +31,9 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 	}
 
 	private void handleIntent(Intent paramIntent) {
-		if (null != AppManager.getIWXAPI()) {
+		if (null != AppManager.getIWX_PAY_API()) {
 			AppManager.getIWX_PAY_API().handleIntent(paramIntent, this);
-		} else {
+		} else if (CSApplication.api != null) {
 			CSApplication.api.handleIntent(paramIntent, this);
 		}
 	}
@@ -63,7 +61,7 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 	public void onResp(BaseResp baseResp) {
 		if (baseResp.getType() == ConstantsAPI.COMMAND_PAY_BY_WX) {
 			if (baseResp.errCode == 0) {
-				EventBus.getDefault().post(new PayEvent());
+				RxBus.getInstance().post(AppConstants.PAY_SUCCESS, new PayEvent());
 				ToastUtil.showMessage(R.string.pay_success);
 			} else if (baseResp.errCode == -1){
 				ToastUtil.showMessage(R.string.pay_failure);

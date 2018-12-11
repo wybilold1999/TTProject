@@ -26,5 +26,4 @@ public class AllKeys implements Serializable {
 	public String ytxKey;
 	/**聊天次数限制**/
 	public int chatLimit;
-	
 }

@@ -1,5 +1,6 @@
 package com.cyanbirds.ttjy.activity;
 
+import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,36 +17,43 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.adapter.TabFragmentAdapter;
+import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.UserEvent;
 import com.cyanbirds.ttjy.fragment.TabDynamicFragment;
 import com.cyanbirds.ttjy.fragment.TabPersonalFragment;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.AddFollowRequest;
-import com.cyanbirds.ttjy.net.request.AddLoveRequest;
-import com.cyanbirds.ttjy.net.request.GetUserInfoRequest;
-import com.cyanbirds.ttjy.net.request.SendGreetRequest;
+import com.cyanbirds.ttjy.net.IUserApi;
+import com.cyanbirds.ttjy.net.IUserFollowApi;
+import com.cyanbirds.ttjy.net.IUserLoveApi;
+import com.cyanbirds.ttjy.net.base.RetrofitFactory;
+import com.cyanbirds.ttjy.utils.CheckUtil;
+import com.cyanbirds.ttjy.utils.JsonUtils;
 import com.cyanbirds.ttjy.utils.ProgressDialogUtils;
+import com.cyanbirds.ttjy.utils.RxBus;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.analytics.MobclickAgent;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author: wangyb
@@ -59,6 +67,8 @@ public class PersonalInfoActivity extends BaseActivity {
 	SimpleDraweeView mPortrait;
 	@BindView(R.id.toolbar)
 	Toolbar mToolbar;
+	@BindView(R.id.collapsingToolbarLayout)
+	CollapsingToolbarLayout mCollapsingToolbarLayout;
 	@BindView(R.id.tabs)
 	TabLayout mTabLayout;
 	@BindView(R.id.viewpager)
@@ -85,21 +95,23 @@ public class PersonalInfoActivity extends BaseActivity {
 
 	private ClientUser mClientUser; //当前用户
 	private String curUserId; //当前用户id
+	private String channel = "";
+
+	private Observable<UserEvent> observable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_personal_info);
 		ButterKnife.bind(this);
-		EventBus.getDefault().register(this);
 		setupView();
-		setupEvent();
 		setupData();
 	}
 
 	private void setupView() {
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		mCollapsingToolbarLayout.setTitle(" ");
 
 		tabList = new ArrayList<>();
 		tabList.add("简介");
@@ -121,13 +133,21 @@ public class PersonalInfoActivity extends BaseActivity {
 			mLove.setText(R.string.like);
 		}
 
+		rxBusSub();
+
 	}
 
 
-	private void setupEvent() {
+	/**
+	 * rx订阅
+	 */
+	private void rxBusSub() {
+		observable = RxBus.getInstance().register(AppConstants.UPDATE_USER_INFO);
+		observable.subscribe(this::updateUserInfo);
 	}
 
 	private void setupData() {
+		channel = CheckUtil.getAppMetaData(this, "UMENG_CHANNEL");
 		curUserId = getIntent().getStringExtra(ValueKey.USER_ID);
 		if (!TextUtils.isEmpty(curUserId)) {
 			if (AppManager.getClientUser().userId.equals(curUserId)) {
@@ -139,7 +159,7 @@ public class PersonalInfoActivity extends BaseActivity {
 				mFab.setVisibility(View.GONE);
 				mBottomLayout.setVisibility(View.VISIBLE);
 				ProgressDialogUtils.getInstance(PersonalInfoActivity.this).show(R.string.dialog_request_data);
-				new GetUserInfoTask().request(curUserId);
+				getUserInfo(curUserId);
 			}
 		}
 	}
@@ -148,11 +168,9 @@ public class PersonalInfoActivity extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (AppManager.getClientUser().userId.equals(curUserId)) {
 			getMenuInflater().inflate(R.menu.personal_menu, menu);
-		} else {
-			if (AppManager.getClientUser().isShowVip) {
-				if (!AppManager.getClientUser().is_vip || AppManager.getClientUser().gold_num < 100) {
-					getMenuInflater().inflate(R.menu.call_menu, menu);
-				}
+		} else if (AppManager.getClientUser().isShowVip) {
+			if (!AppManager.getClientUser().is_vip) {
+				getMenuInflater().inflate(R.menu.call_menu, menu);
 			}
 		}
 		return super.onCreateOptionsMenu(menu);
@@ -164,13 +182,11 @@ public class PersonalInfoActivity extends BaseActivity {
 			Intent intent = new Intent(this, ModifyUserInfoActivity.class);
 			startActivity(intent);
 		} else if (item.getItemId() == R.id.call) {
-			if (null != mClientUser) {
-				Intent intent = new Intent(this, VoipCallActivity.class);
-				intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
-				intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
-				intent.putExtra(ValueKey.FROM_ACTIVITY, "PersonalInfoActivity");
-				startActivity(intent);
-			}
+			Intent intent = new Intent(this, VoipCallActivity.class);
+			intent.putExtra(ValueKey.IMAGE_URL, mClientUser == null ? "" : mClientUser.face_url);
+			intent.putExtra(ValueKey.USER_NAME, mClientUser == null ? "" : mClientUser.user_name);
+			intent.putExtra(ValueKey.FROM_ACTIVITY, "PersonalInfoActivity");
+			startActivity(intent);
 		} else {
 			finish();
 		}
@@ -200,9 +216,9 @@ public class PersonalInfoActivity extends BaseActivity {
 			case R.id.attention:
 				if (null != mClientUser) {
 					if (mAttention.getText().toString().equals("关注")) {
-						new AddFollowTask().request(mClientUser.userId);
+						addCancelFollow(mClientUser.userId, true);
 					} else {
-						new CancelFollowTask().request(mClientUser.userId);
+						addCancelFollow(mClientUser.userId, false);
 					}
 				}
 				break;
@@ -214,16 +230,16 @@ public class PersonalInfoActivity extends BaseActivity {
 			case R.id.love:
 				if (AppManager.getClientUser().isShowAppointment && !TextUtils.isEmpty(curUserId)) {
 					if (mClientUser != null) {
-						intent.setClass(this, AppointmentActivity.class);
+						/*intent.setClass(this, AppointmentActivity.class);
 						intent.putExtra(ValueKey.USER_ID, curUserId);
 						intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
 						intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
-						startActivity(intent);
+						startActivity(intent);*/
 					}
 				} else {
 					if (null != mClientUser) {
-						new SenderGreetTask().request(mClientUser.userId);
-						new AddLoveTask().request(mClientUser.userId);
+						sendGreet(mClientUser.userId);
+						addLove(mClientUser.userId);
 					}
 				}
 				break;
@@ -238,85 +254,112 @@ public class PersonalInfoActivity extends BaseActivity {
 	}
 
 	/**
-	 * 关注
+	 * 关注，取消关注
+	 * @param userId
+	 * @param isAdd true:关注 false:取消关注
 	 */
-	class AddFollowTask extends AddFollowRequest {
-		@Override
-		public void onPostExecute(String s) {
-			if (s.equals("已关注")) {
-				mAttention.setText("已关注");
-				mAttention.setTextColor(getResources().getColor(R.color.colorPrimary));
-				ToastUtil.showMessage(R.string.attention_success);
-			} else {
-				ToastUtil.showMessage(R.string.attention_faiure);
-			}
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-			super.onErrorExecute(error);
-		}
+	private void addCancelFollow(String userId, boolean isAdd) {
+		RetrofitFactory.getRetrofit().create(IUserFollowApi.class)
+				.addFollow(AppManager.getClientUser().sessionId, userId)
+				.subscribeOn(Schedulers.io())
+				.map(responseBody -> {
+					JsonObject obj = new JsonParser().parse(responseBody.string()).getAsJsonObject();
+					int code = obj.get("code").getAsInt();
+					if (code == 0) {//关注成功
+						return obj.get("data").getAsString();
+					} else {
+						return CSApplication.getInstance().getResources()
+								.getString(R.string.attention_faiure);
+					}
+				})
+				.observeOn(AndroidSchedulers.mainThread())
+				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+				.subscribe(s -> {
+					if (isAdd) {
+						if (s.equals("已关注")) {
+							mAttention.setText("已关注");
+							mAttention.setTextColor(getResources().getColor(R.color.colorPrimary));
+							ToastUtil.showMessage(R.string.attention_success);
+						} else {
+							ToastUtil.showMessage(R.string.attention_faiure);
+						}
+					} else {
+						mAttention.setText("关注");
+						ToastUtil.showMessage(R.string.cancle_attention);
+					}
+				}, throwable -> {
+					if (isAdd) {
+						ToastUtil.showMessage(R.string.attention_faiure);
+					} else {
+						ToastUtil.showMessage(R.string.cancel_follow_faiure);
+					}
+				});
 	}
 
-	class CancelFollowTask extends AddFollowRequest {
-		@Override
-		public void onPostExecute(String s) {
-			mAttention.setText("关注");
-			ToastUtil.showMessage(R.string.cancle_attention);
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-		}
+	private void sendGreet(String userId) {
+		RetrofitFactory.getRetrofit().create(IUserLoveApi.class)
+				.sendGreet(AppManager.getClientUser().sessionId, userId)
+				.subscribeOn(Schedulers.io())
+				.map(responseBody -> {
+					JsonObject obj = new JsonParser().parse(responseBody.string()).getAsJsonObject();
+					int code = obj.get("code").getAsInt();
+					if (code == 0) {//喜欢成功
+						return CSApplication.getInstance().getResources()
+								.getString(R.string.like_success);
+					} else {
+						return CSApplication.getInstance().getResources()
+								.getString(R.string.like_faiure);
+					}
+				})
+				.observeOn(AndroidSchedulers.mainThread())
+				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+				.subscribe(s -> ToastUtil.showMessage(s), throwable -> ToastUtil.showMessage(R.string.like_faiure));
 	}
 
-	class SenderGreetTask extends SendGreetRequest {
-		@Override
-		public void onPostExecute(String s) {
-			ToastUtil.showMessage(s);
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-			ToastUtil.showMessage(error);
-		}
+	private void addLove(String userId) {
+		RetrofitFactory.getRetrofit().create(IUserLoveApi.class)
+				.addLove(AppManager.getClientUser().sessionId, userId)
+				.subscribeOn(Schedulers.io())
+				.map(responseBody -> {
+					JsonObject obj = new JsonParser().parse(responseBody.string()).getAsJsonObject();
+					int code = obj.get("code").getAsInt();
+					if (code == 0) {//喜欢成功
+						return obj.get("data").getAsBoolean();
+					} else {
+						return false;
+					}
+				})
+				.observeOn(AndroidSchedulers.mainThread())
+				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+				.subscribe(aBoolean -> {
+					if (aBoolean) {
+						mLove.setText("已喜欢");
+					} else {
+						mLove.setText("喜欢");
+					}
+				}, throwable -> {});
 	}
-
-	class AddLoveTask extends AddLoveRequest {
-
-		@Override
-		public void onPostExecute(Boolean s) {
-			if (s) {
-				mLove.setText("已喜欢");
-			} else {
-				mLove.setText("喜欢");
-			}
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-		}
-	}
-
 
 	/**
 	 * 获取用户信息
 	 */
-	class GetUserInfoTask extends GetUserInfoRequest {
-		@Override
-		public void onPostExecute(ClientUser clientUser) {
-			ProgressDialogUtils.getInstance(PersonalInfoActivity.this).dismiss();
-			mClientUser = clientUser;
-			if (null != mClientUser) {
-				setUserInfoAndValue(clientUser);
-			}
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-			ToastUtil.showMessage(error);
-			ProgressDialogUtils.getInstance(PersonalInfoActivity.this).dismiss();
-		}
+	private void getUserInfo(String userId) {
+		RetrofitFactory.getRetrofit().create(IUserApi.class)
+				.getUserInfo(AppManager.getClientUser().sessionId, userId)
+				.subscribeOn(Schedulers.io())
+				.map(responseBody -> JsonUtils.parserUserInfo(responseBody.string()))
+				.observeOn(AndroidSchedulers.mainThread())
+				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+				.subscribe(clientUser -> {
+					ProgressDialogUtils.getInstance(PersonalInfoActivity.this).dismiss();
+					mClientUser = clientUser;
+					if (null != mClientUser) {
+						setUserInfoAndValue(clientUser);
+					}
+				}, throwable -> {
+					ToastUtil.showMessage(R.string.network_requests_error);
+					ProgressDialogUtils.getInstance(PersonalInfoActivity.this).dismiss();
+				});
 	}
 
 	/**
@@ -351,7 +394,7 @@ public class PersonalInfoActivity extends BaseActivity {
 		if (!TextUtils.isEmpty(imagePath)) {
 			mPortrait.setImageURI(Uri.parse(imagePath));
 		}
-
+		mCollapsingToolbarLayout.setTitle(clientUser.user_name);
 		if (AppManager.getClientUser().isShowVip && clientUser.is_vip) {
 			mIdentifyState.setVisibility(View.VISIBLE);
 		} else {
@@ -368,10 +411,24 @@ public class PersonalInfoActivity extends BaseActivity {
 				getSupportFragmentManager(), fragmentList, tabList);
 		mViewpager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
 		mTabLayout.setupWithViewPager(mViewpager);//将TabLayout和ViewPager关联起来。
-		mTabLayout.setTabsFromPagerAdapter(fragmentAdapter);
+		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+			@Override
+			public void onTabSelected(TabLayout.Tab tab) {
+				mViewpager.setCurrentItem(tab.getPosition());
+			}
+
+			@Override
+			public void onTabUnselected(TabLayout.Tab tab) {
+
+			}
+
+			@Override
+			public void onTabReselected(TabLayout.Tab tab) {
+
+			}
+		});
 	}
 
-	@Subscribe(threadMode = ThreadMode.MAIN)
 	public void updateUserInfo(UserEvent event) {
 		//如果是本人信息，先查找本地有没有头像，有就加载，没有就用face_url;如果是其他用户信息，直接使用face_url
 		ClientUser clientUser = AppManager.getClientUser();
@@ -384,6 +441,7 @@ public class PersonalInfoActivity extends BaseActivity {
 			imagePath = "res:///" + R.mipmap.default_head;
 		}
 		mPortrait.setImageURI(Uri.parse(imagePath));
+		mCollapsingToolbarLayout.setTitle(AppManager.getClientUser().user_name);
 	}
 
 	@Override
@@ -401,8 +459,8 @@ public class PersonalInfoActivity extends BaseActivity {
 	}
 
 	@Override
-	protected void onDestroy() {
+	public void onDestroy() {
 		super.onDestroy();
-		EventBus.getDefault().unregister(this);
+		RxBus.getInstance().unregister(AppConstants.UPDATE_USER_INFO, observable);
 	}
 }

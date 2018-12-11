@@ -3,9 +3,7 @@ package com.cyanbirds.ttjy.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
@@ -35,25 +33,19 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.ChatActivity;
 import com.cyanbirds.ttjy.activity.GiveVipActivity;
-import com.cyanbirds.ttjy.activity.MakeMoneyActivity;
-import com.cyanbirds.ttjy.activity.MyGoldActivity;
 import com.cyanbirds.ttjy.activity.VipCenterActivity;
 import com.cyanbirds.ttjy.adapter.TabPersonalPhotosAdapter;
+import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.UserEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.UpdateGoldRequest;
 import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
+import com.cyanbirds.ttjy.utils.RxBus;
 import com.cyanbirds.ttjy.utils.StringUtil;
 import com.dl7.tag.TagLayout;
 import com.umeng.analytics.MobclickAgent;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -62,6 +54,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
 
 /**
  * @author: wangyb
@@ -183,6 +176,8 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	TextView mTvFriend;
 	@BindView(R.id.card_friend)
 	CardView mCardFriend;
+	@BindView(R.id.city_lay)
+	RelativeLayout mCityLay;
 
 	private AMap aMap;
 	private UiSettings mUiSettings;
@@ -206,16 +201,17 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	private DPoint mStartPoint;
 	private DPoint mEndPoint;
 
+	private Observable<UserEvent> observable;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		if (rootView == null) {
 			rootView = inflater.inflate(R.layout.tab_item_personal, null);
 			ButterKnife.bind(this, rootView);
-			EventBus.getDefault().register(this);
 			initMap();
 			setupViews();
-			setupEvent();
+			rxBusSub();
 			setupData();
 			setHasOptionsMenu(true);
 			mapView.onCreate(savedInstanceState);// 此方法必须重写
@@ -224,7 +220,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		if (parent != null) {
 			parent.removeView(rootView);
 		}
-		ButterKnife.bind(this, rootView);
 		return rootView;
 	}
 
@@ -248,7 +243,12 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 
 	}
 
-	private void setupEvent() {
+	/**
+	 * rx订阅
+	 */
+	private void rxBusSub() {
+		observable = RxBus.getInstance().register(AppConstants.UPDATE_USER_INFO);
+		observable.subscribe(userEvent -> setUserInfo(AppManager.getClientUser()));
 	}
 
 	private void setupViews() {
@@ -310,6 +310,13 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 					mGiftText.setVisibility(View.GONE);
 					mGiftCard.setVisibility(View.GONE);
 				}
+				if (AppManager.getClientUser().isShowVip) {
+					mTvFriend.setVisibility(View.VISIBLE);
+					mCardFriend.setVisibility(View.VISIBLE);
+				} else {
+					mTvFriend.setVisibility(View.GONE);
+					mCardFriend.setVisibility(View.GONE);
+				}
 			}
 		}
 	}
@@ -318,32 +325,36 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	 * 展示用户地图
 	 */
 	private void getLocation() {
-		String myLatitude = AppManager.getClientUser().latitude;
-		String myLongitude = AppManager.getClientUser().longitude;
-		if (!TextUtils.isEmpty(myLatitude) &&
-				!TextUtils.isEmpty(myLongitude)) {
-			LatLonPoint latLonPoint = null;
-			if ("-1".equals(AppManager.getClientUser().userId)) {
-				latLonPoint = new LatLonPoint(latitude, longitude);
-			} else {
-				latLonPoint = new LatLonPoint(Double.parseDouble(myLatitude) + latitude,
-						Double.parseDouble(myLongitude) + longitude);
-			}
-			mLatLonPoint = latLonPoint;
-			LatLng latLng = null;
-			if ("-1".equals(AppManager.getClientUser().userId)) {
-				latLng = new LatLng(latitude, longitude);
-			} else {
-				latLng = new LatLng(Double.parseDouble(myLatitude) + latitude,
-						Double.parseDouble(myLongitude) + longitude);
-			}
-			aMap.animateCamera(CameraUpdateFactory.changeLatLng(latLng));
-			RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 1000,
-					GeocodeSearch.AMAP);// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
-			geocoderSearch.getFromLocationAsyn(query);// 设置同步逆地理编码请求
+		try {
+			String myLatitude = AppManager.getClientUser().latitude;
+			String myLongitude = AppManager.getClientUser().longitude;
+			if (!TextUtils.isEmpty(myLatitude) &&
+					!TextUtils.isEmpty(myLongitude)) {
+				LatLonPoint latLonPoint = null;
+				if ("-1".equals(AppManager.getClientUser().userId)) {
+					latLonPoint = new LatLonPoint(latitude, longitude);
+				} else {
+					latLonPoint = new LatLonPoint(Double.parseDouble(myLatitude) + latitude,
+							Double.parseDouble(myLongitude) + longitude);
+				}
+				mLatLonPoint = latLonPoint;
+				LatLng latLng = null;
+				if ("-1".equals(AppManager.getClientUser().userId)) {
+					latLng = new LatLng(latitude, longitude);
+				} else {
+					latLng = new LatLng(Double.parseDouble(myLatitude) + latitude,
+							Double.parseDouble(myLongitude) + longitude);
+				}
+				aMap.animateCamera(CameraUpdateFactory.changeLatLng(latLng));
+				RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 1000,
+						GeocodeSearch.AMAP);// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+				geocoderSearch.getFromLocationAsyn(query);// 设置同步逆地理编码请求
 
-			mStartPoint = new DPoint(Double.parseDouble(myLatitude), Double.parseDouble(myLongitude));
-			mEndPoint = new DPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude());
+				mStartPoint = new DPoint(Double.parseDouble(myLatitude), Double.parseDouble(myLongitude));
+				mEndPoint = new DPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude());
+			}
+		} catch (Exception e) {
+
 		}
 	}
 
@@ -371,16 +382,27 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 			mIsVip.setVisibility(View.VISIBLE);
 		}
 		mAge.setText(String.valueOf(clientUser.age) + "岁");
-		if (!TextUtils.isEmpty(clientUser.distance) && Double.parseDouble(clientUser.distance) != 0) {
-			mCityText.setText("距离");
-			if (mStartPoint != null && mEndPoint != null) {
-				mCity.setText(mFormat.format((CoordinateConverter.calculateLineDistance(mStartPoint, mEndPoint) / 1000)) + "km");
+		if (clientUser.userId.equals(AppManager.getClientUser().userId)) {
+			if (!TextUtils.isEmpty(clientUser.city)) {
+				mCityLay.setVisibility(View.VISIBLE);
+				mCityText.setText("城市");
+				mCity.setText(clientUser.city);
 			} else {
-				mCity.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + "km");
+				mCityLay.setVisibility(View.GONE);
 			}
-		} else if (!TextUtils.isEmpty(clientUser.city)) {
-			mCityText.setText("城市");
-			mCity.setText(clientUser.city);
+		} else {
+			mCityLay.setVisibility(View.VISIBLE);
+			if (!TextUtils.isEmpty(clientUser.distance) && Double.parseDouble(clientUser.distance) != 0) {
+				mCityText.setText("距离");
+				if (mStartPoint != null && mEndPoint != null) {
+					mCity.setText(mFormat.format((CoordinateConverter.calculateLineDistance(mStartPoint, mEndPoint) / 1000)) + "km");
+				} else {
+					mCity.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + "km");
+				}
+			} else if (!TextUtils.isEmpty(clientUser.city)) {
+				mCityText.setText("城市");
+				mCity.setText(clientUser.city);
+			}
 		}
 		if (!TextUtils.isEmpty(clientUser.conception)) {
 			mConception.setText(clientUser.conception);
@@ -473,60 +495,19 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		}
 	}
 
-	@Subscribe(threadMode = ThreadMode.MAIN)
-	public void updateUserInfo(UserEvent event) {
-		setUserInfo(AppManager.getClientUser());
-	}
-
 	@OnClick({R.id.check_view_wechat, R.id.check_view_qq})
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.check_view_wechat:
 				if (AppManager.getClientUser().is_vip) {
-					if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 1) {
-						String tips = String.format(getResources().getString(R.string.social_id_need_gold), "微信");
-						showBuyGoldDialog(tips);
-					} else if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 101){
-						String tips = String.format(getResources().getString(R.string.social_id_need_more_gold), "微信");
-						showBuyGoldDialog(tips);
-					} else {
-//						mWechatId.setText(clientUser.weixin_no);
-						showNoCheckDialog();
-						if (AppManager.getClientUser().isShowDownloadVip) {
-							if (!AppManager.getClientUser().is_download_vip) {
-								if (AppManager.getClientUser().isShowGold) {
-									//更新服务器上的金币数量
-									AppManager.getClientUser().gold_num -= 101;
-									new UpdateGoldTask().request(AppManager.getClientUser().gold_num, "");
-								}
-							}
-						}
-					}
+					showNoCheckDialog();
 				} else {
 					showTurnOnVipDialog("微信");
 				}
 				break;
 			case R.id.check_view_qq:
 				if (AppManager.getClientUser().is_vip) {
-					if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 1) {
-						String tips = String.format(getResources().getString(R.string.social_id_need_gold), "QQ");
-						showBuyGoldDialog(tips);
-					} else if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 101){
-						String tips = String.format(getResources().getString(R.string.social_id_need_more_gold), "QQ");
-						showBuyGoldDialog(tips);
-					} else {
-//						mQqId.setText(clientUser.qq_no);
-						showNoCheckDialog();
-						if (AppManager.getClientUser().isShowDownloadVip) {
-							if (!AppManager.getClientUser().is_download_vip) {
-								if (AppManager.getClientUser().isShowGold) {
-									//更新服务器上的金币数量
-									AppManager.getClientUser().gold_num -= 101;
-									new UpdateGoldTask().request(AppManager.getClientUser().gold_num, "");
-								}
-							}
-						}
-					}
+					showNoCheckDialog();
 				} else {
 					showTurnOnVipDialog("QQ");
 				}
@@ -534,75 +515,25 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		}
 	}
 
-	/**
-	 * 不是下载赚钱会员，查看微信、QQ号时，减少金币数量
-	 */
-	class UpdateGoldTask extends UpdateGoldRequest {
-		@Override
-		public void onPostExecute(final Integer integer) {
-			if (AppManager.getClientUser().isShowDownloadVip) {
-				Snackbar.make(getActivity().findViewById(R.id.content),
-						"您还不是赚钱会员，查看该号码已消耗101枚金币", Snackbar.LENGTH_SHORT)
-						.setActionTextColor(Color.RED)
-						.setAction("开通赚钱会员", new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								Intent intent = new Intent(getActivity(), MakeMoneyActivity.class);
-								intent.putExtra(ValueKey.FROM_ACTIVITY, getActivity().getClass().getSimpleName());
-								startActivity(intent);
-							}
-						}).show();
-			} else {
-				Snackbar.make(getActivity().findViewById(R.id.content), "查看该号码已消耗101枚金币",
-						Snackbar.LENGTH_SHORT).show();
-			}
-		}
-
-		@Override
-		public void onErrorExecute(String error) {
-		}
-	}
 
 	private void showTurnOnVipDialog(String socialTpe) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(String.format(getResources().getString(R.string.social_id_need_vip), socialTpe));
-		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
+		builder.setPositiveButton(R.string.ok, ((dialog, i) -> {
+			dialog.dismiss();
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), VipCenterActivity.class);
+			startActivity(intent);
+		}));
+		if (AppManager.getClientUser().isShowGiveVip) {
+			builder.setNegativeButton(R.string.free_give_vip, ((dialog, i) -> {
 				dialog.dismiss();
-				Intent intent = new Intent(getActivity(), VipCenterActivity.class);
+				Intent intent = new Intent(getActivity(), GiveVipActivity.class);
 				startActivity(intent);
-			}
-		});
-		builder.setNegativeButton(R.string.until_single, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-//				Intent intent = new Intent(getActivity(), GiveVipActivity.class);
-//				startActivity(intent);
-			}
-		});
-		builder.show();
-	}
-
-	private void showBuyGoldDialog(String tips) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(tips);
-		builder.setPositiveButton(getResources().getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.dismiss();
-						Intent intent = new Intent(getActivity(), MyGoldActivity.class);
-						startActivity(intent);
-					}
-				});
-		builder.setNegativeButton(getResources().getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
+			}));
+		} else {
+			builder.setNegativeButton(R.string.until_single, ((dialog, i) -> dialog.dismiss()));
+		}
 		builder.show();
 	}
 
@@ -625,21 +556,27 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mapView.onDestroy();
-		EventBus.getDefault().unregister(this);
+		if (mapView != null) {
+			mapView.onDestroy();
+		}
+		RxBus.getInstance().unregister(AppConstants.UPDATE_USER_INFO, observable);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		mapView.onResume();
+		if (mapView != null) {
+			mapView.onResume();
+		}
 		MobclickAgent.onPageStart(this.getClass().getName());
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		mapView.onPause();
+		if (mapView != null) {
+			mapView.onPause();
+		}
 		MobclickAgent.onPageEnd(this.getClass().getName());
 	}
 
@@ -680,20 +617,10 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 			} else {
 				mMyLocation.setVisibility(View.GONE);
 				mMapCard.setVisibility(View.GONE);
-//				ToastUtil.showMessage(R.string.no_result);
 			}
-		} else if (rCode == 27) {
-			mMyLocation.setVisibility(View.GONE);
-			mMapCard.setVisibility(View.GONE);
-//			ToastUtil.showMessage(R.string.error_network);
-		} else if (rCode == 32) {
-			mMyLocation.setVisibility(View.GONE);
-			mMapCard.setVisibility(View.GONE);
-//			ToastUtil.showMessage(R.string.error_key);
 		} else {
 			mMyLocation.setVisibility(View.GONE);
 			mMapCard.setVisibility(View.GONE);
-//			ToastUtil.showMessage(getString(R.string.error_other) + rCode);
 		}
 	}
 

@@ -38,13 +38,11 @@ public class MyIntentService extends GTIntentService {
 
 	@Override
 	public void onReceiveServicePid(Context context, int pid) {
-		Log.d(TAG, "onReceiveServicePid -> " + pid);
 	}
 
 	@Override
 	public void onReceiveMessageData(Context context, GTTransmitMessage msg) {
 		byte[] payload = msg.getPayload();
-
 		if (payload != null) {
 			final String data = new String(payload);
 			if (AppManager.getClientUser().isShowVip) {
@@ -63,7 +61,7 @@ public class MyIntentService extends GTIntentService {
 		if (!TextUtils.isEmpty(clientid) && !isAlreadyUpload) {
 			isAlreadyUpload = true;
 			PushManager.getInstance().bindAlias(context, AppManager.getClientUser().userId);
-			new UploadTokenRequest().request(clientid, "");
+			new UploadTokenRequest().request(clientid, "", "");
 		}
 	}
 
@@ -74,6 +72,7 @@ public class MyIntentService extends GTIntentService {
 	@Override
 	public void onReceiveCommandResult(Context context, GTCmdMessage cmdMessage) {
 		int action = cmdMessage.getAction();
+
 		if (action == PushConsts.SET_TAG_RESULT) {
 			setTagResult((SetTagCmdMessage) cmdMessage);
 		} else if ((action == PushConsts.THIRDPART_FEEDBACK)) {
@@ -82,12 +81,10 @@ public class MyIntentService extends GTIntentService {
 
 	@Override
 	public void onNotificationMessageArrived(Context context, GTNotificationMessage gtNotificationMessage) {
-
 	}
 
 	@Override
 	public void onNotificationMessageClicked(Context context, GTNotificationMessage gtNotificationMessage) {
-
 	}
 
 	private void setTagResult(SetTagCmdMessage setTagCmdMsg) {

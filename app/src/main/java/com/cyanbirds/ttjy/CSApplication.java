@@ -8,14 +8,8 @@ import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.helper.AppActivityLifecycleCallbacks;
 import com.cyanbirds.ttjy.helper.CrashHandler;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.DynamicService;
-import com.cyanbirds.ttjy.net.FollowService;
-import com.cyanbirds.ttjy.net.LoveService;
-import com.cyanbirds.ttjy.net.PictureService;
-import com.cyanbirds.ttjy.net.UserService;
-import com.cyanbirds.ttjy.net.VideoService;
+import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
 import com.cyanbirds.ttjy.net.base.RetrofitManager;
-import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -26,18 +20,14 @@ import com.facebook.imagepipeline.listener.RequestLoggingListener;
 import com.facebook.imagepipeline.memory.PoolConfig;
 import com.facebook.imagepipeline.memory.PoolFactory;
 import com.facebook.imagepipeline.memory.PoolParams;
-import com.liulishuo.filedownloader.FileDownloader;
-import com.liulishuo.filedownloader.util.FileDownloadHelper;
 import com.mob.MobSDK;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mmkv.MMKV;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import cn.smssdk.SMSSDK;
-import okhttp3.OkHttpClient;
 
 import static com.cyanbirds.ttjy.config.AppConstants.BUGLY_ID;
 
@@ -65,34 +55,29 @@ public class CSApplication extends MultiDexApplication {
 	public void onCreate() {
 		super.onCreate();
 		sApplication = this;
-		initNetInterface();
-		AppManager.getExecutorService().execute(new Runnable() {
-			@Override
-			public void run() {
-				AppManager.setContext(sApplication);
-				AppManager.setUserInfo();
+		AppManager.getExecutorService().execute(() -> {
+			MMKV.initialize(sApplication);
+			AppManager.setMMKV(MMKV.defaultMMKV());
+			AppManager.setContext(sApplication);
 
-				registerActivityLifecycleCallbacks(AppActivityLifecycleCallbacks.getInstance());
+			AppManager.setUserInfo();
 
-				initFresco();
+			registerActivityLifecycleCallbacks(AppActivityLifecycleCallbacks.getInstance());
 
-				registerWeiXin();
-			}
+			initFresco();
+
+			registerWeiXin();
+
+			NotificationManagerUtils.getInstance().createNotificationChannel();
 		});
 
 		//初始化短信sdk
 		MobSDK.init(this);
 
-		FileDownloader.init(sApplication, new FileDownloadHelper.OkHttpClientCustomMaker() {
-			@Override
-			public OkHttpClient customMake() {
-				return RetrofitManager.getInstance().getOkHttpClient();
-			}
-		});
-
 		CrashHandler.getInstance().init(sApplication);
 
 		initBugly();
+
 	}
 
 	private void initBugly() {
@@ -109,12 +94,15 @@ public class CSApplication extends MultiDexApplication {
 		// 通过WXAPIFactory工厂，获取IWXAPI的实例
 		api = WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_ID, true);
 		api.registerApp(AppConstants.WEIXIN_ID);
+
+		AppManager.setIWX_PAY_API(WXAPIFactory.createWXAPI(this, AppConstants.WEIXIN_PAY_ID, true));
+		AppManager.getIWX_PAY_API().registerApp(AppConstants.WEIXIN_PAY_ID);
 	}
 
 	private void initFresco() {
 		DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(this)
-				.setBaseDirectoryPath(FileAccessorUtils.getCachePathName())
-				.setBaseDirectoryName("tt_love")
+				.setBaseDirectoryPath(getCacheDir())
+				.setBaseDirectoryName("mo_love")
 				.setMaxCacheSize(500*1024*1024)//500MB
 				.setMaxCacheSizeOnLowDiskSpace(10 * 1024 * 1024)
 				.setMaxCacheSizeOnVeryLowDiskSpace(5 * 1024 * 1024)
@@ -143,41 +131,5 @@ public class CSApplication extends MultiDexApplication {
 				.setMainDiskCacheConfig(diskCacheConfig)
 				.setRequestListeners(listeners).build();
 		Fresco.initialize(this, config);
-	}
-
-	/**
-	 * 初始化网络接口
-	 */
-	private void initNetInterface(){
-		/**
-		 * 用户
-		 */
-		UserService userService = RetrofitManager.getInstance().getRetrofitInstance().create(UserService.class);
-		AppManager.setUserService(userService);
-		/**
-		 * 图片
-		 */
-		PictureService pictureService = RetrofitManager.getInstance().getRetrofitInstance().create(PictureService.class);
-		AppManager.setPictureService(pictureService);
-		/**
-		 * 关注
-		 */
-		FollowService followService = RetrofitManager.getInstance().getRetrofitInstance().create(FollowService.class);
-		AppManager.setFollowService(followService);
-		/**
-		 * 喜欢
-		 */
-		LoveService loveService = RetrofitManager.getInstance().getRetrofitInstance().create(LoveService.class);
-		AppManager.setLoveService(loveService);
-		/**
-		 * 视频
-		 */
-		VideoService videoService = RetrofitManager.getInstance().getRetrofitInstance().create(VideoService.class);
-		AppManager.setVideoService(videoService);
-		/**
-		 * 动态
-		 */
-		DynamicService dynamicService = RetrofitManager.getInstance().getRetrofitInstance().create(DynamicService.class);
-		AppManager.setDynamicService(dynamicService);
 	}
 }

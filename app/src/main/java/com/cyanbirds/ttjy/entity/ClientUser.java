@@ -84,6 +84,10 @@ public class ClientUser implements Serializable{
      * 版本更新的信息
      */
     public String versionUpdateInfo;
+    /**
+     * 是否强制升级
+     */
+    public boolean isForceUpdate;
 	/**
      * 用户获得的礼物
      */
@@ -125,6 +129,7 @@ public class ClientUser implements Serializable{
      * 0:不显示  1：显示
      */
     public boolean isShowAppointment; //是否显示约会
+
     /**
      * 0:不显示  1：显示
      */
@@ -133,15 +138,10 @@ public class ClientUser implements Serializable{
     public String latitude = "";
     public String longitude = "";
 
-    public String currentCity;//定位的当前城市
+    public String currentCity = "";//定位的当前城市
 
     public long loginTime;//登录时间
-
+    
     public boolean isLocalMsg;//是否是本地创建的消息(礼物、关注、喜欢)
-
-    /**
-     * 0:不显示  1：显示
-     */
-    public boolean isShowNormal; //主界面布局
 
 }

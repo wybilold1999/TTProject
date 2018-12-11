@@ -1,12 +1,9 @@
 package com.cyanbirds.ttjy.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
+import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -18,19 +15,26 @@ import com.amap.api.location.AMapLocationListener;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.entity.CityInfo;
-import com.cyanbirds.ttjy.eventtype.LocationEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.request.GetCityInfoRequest;
+import com.cyanbirds.ttjy.net.IUserApi;
+import com.cyanbirds.ttjy.net.base.RetrofitFactory;
+import com.cyanbirds.ttjy.utils.CheckUtil;
+import com.cyanbirds.ttjy.utils.JsonUtils;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
+import com.cyanbirds.ttjy.utils.Utils;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.uber.autodispose.AutoDispose;
+import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.analytics.MobclickAgent;
-
-import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import mehdi.sakout.fancybuttons.FancyButton;
+
+import static com.cyanbirds.ttjy.config.AppConstants.BAIDU_LOCATION_API;
 
 /**
  * @ClassName:EntranceActivity
@@ -47,6 +51,7 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
 
     private final int REQUEST_LOCATION_PERMISSION = 1000;
     private boolean isSecondAccess = false;
+    private RxPermissions rxPermissions;
 
     private AMapLocationClientOption mLocationOption;
     private AMapLocationClient mlocationClient;
@@ -59,62 +64,43 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrance);
         ButterKnife.bind(this);
-        saveFirstLauncher();
         setupViews();
-        new GetCityInfoTask().request();
+        getIPAddress();
         initLocationClient();
-        AppManager.requestLocationPermission(this);
+        requestLocationPermission();
     }
 
     /**
      * 设置视图
      */
     private void setupViews() {
-        mLogin = (FancyButton) findViewById(R.id.login);
-        mRegister = (FancyButton) findViewById(R.id.register);
+        mLogin = findViewById(R.id.login);
+        mRegister = findViewById(R.id.register);
     }
 
-    /**
-     * 保存是否第一次启动
-     */
-    private void saveFirstLauncher() {
-        try {
-            PreferencesUtils.setIsFirstLauncher(this, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void getIPAddress() {
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
+                .getIPAddress()
+                .subscribeOn(Schedulers.io())
+                .map(responseBody -> JsonUtils.parseIPJson(responseBody.string()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .subscribe(ipAddress -> {
+                    if (!TextUtils.isEmpty(ipAddress)) {
+                        getCityByIP(ipAddress);
+                    }
+                }, throwable -> {});
     }
 
-    /**
-     * 获取用户所在城市
-     */
-    class GetCityInfoTask extends GetCityInfoRequest {
-
-        @Override
-        public void onPostExecute(CityInfo cityInfo) {
-            try {
-                mCurrrentCity = cityInfo.city;
-                PreferencesUtils.setCurrentCity(EntranceActivity.this, mCurrrentCity);
-                PreferencesUtils.setCurrentProvince(EntranceActivity.this, cityInfo.province);
-                EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
-
-                String[] rectangle = cityInfo.rectangle.split(";");
-                String[] leftBottom = rectangle[0].split(",");
-                String[] rightTop = rectangle[1].split(",");
-
-                double lat = Double.parseDouble(leftBottom[1]) + (Double.parseDouble(rightTop[1]) - Double.parseDouble(leftBottom[1])) / 5;
-                curLat = String.valueOf(lat);
-
-                double lon = Double.parseDouble(leftBottom[0]) + (Double.parseDouble(rightTop[0]) - Double.parseDouble(leftBottom[0])) / 5;
-                curLon = String.valueOf(lon);
-            } catch (Exception e) {
-
-            }
-        }
-
-        @Override
-        public void onErrorExecute(String error) {
-        }
+    private void getCityByIP(String ip) {
+        String url = BAIDU_LOCATION_API + ip;
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
+                .getCityByIP(url)
+                .subscribeOn(Schedulers.io())
+                .map(responseBody -> JsonUtils.parseCityJson(responseBody.string()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .subscribe(result -> {}, throwable -> {});
     }
 
     /**
@@ -130,10 +116,39 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //获取最近3s内精度最高的一次定位结果：
         mLocationOption.setOnceLocationLatest(true);
+    }
+
+    /**
+     * 开始定位
+     */
+    private void startLocation() {
         //设置定位参数
         mlocationClient.setLocationOption(mLocationOption);
         //启动定位
         mlocationClient.startLocation();
+    }
+
+    /**
+     * 停止定位
+     */
+    private void stopLocation(){
+        // 停止定位
+        mlocationClient.stopLocation();
+    }
+
+    /**
+     * 销毁定位
+     */
+    private void destroyLocation(){
+        if (null != mlocationClient) {
+            /**
+             * 如果AMapLocationClient是在当前Activity实例化的，
+             * 在Activity的onDestroy中一定要执行AMapLocationClient的onDestroy
+             */
+            mlocationClient.onDestroy();
+            mlocationClient = null;
+            mLocationOption = null;
+        }
     }
 
     @Override
@@ -144,11 +159,13 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
             mCurrrentCity = aMapLocation.getCity();
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             PreferencesUtils.setCurrentProvince(EntranceActivity.this, aMapLocation.getProvince());
-            EventBus.getDefault().post(new LocationEvent(mCurrrentCity));
+            PreferencesUtils.setLatitude(this, curLat);
+            PreferencesUtils.setLongitude(this, curLon);
+            if (!TextUtils.isEmpty(mCurrrentCity)) {
+                stopLocation();
+                PreferencesUtils.setIsLocationSuccess(this, true);
+            }
         }
-
-        PreferencesUtils.setLatitude(this, curLat);
-        PreferencesUtils.setLongitude(this, curLon);
     }
 
     @OnClick({R.id.login, R.id.register})
@@ -189,34 +206,60 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        // 拒绝授权
-        if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-            // 勾选了不再提示
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) &&
-                    !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {
-                if (!isSecondAccess) {
-                    showAccessLocationDialog();
-                }
+    protected void onDestroy() {
+        super.onDestroy();
+        destroyLocation();
+    }
+
+    private void requestLocationPermission() {
+        if (!CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+                !CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            if (rxPermissions == null) {
+                rxPermissions = new RxPermissions(this);
             }
+            rxPermissions.requestEachCombined(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    .subscribe(permission -> {// will emit 1 Permission object
+                        if (permission.granted) {
+                            // All permissions are granted !
+                            startLocation();
+                        } else if (permission.shouldShowRequestPermissionRationale) {
+                            // At least one denied permission without ask never again
+                            if (!isSecondAccess) {
+                                showAccessLocationDialog();
+                            }
+                        } else {
+                            // At least one denied permission with ask never again
+                            // Need to go to the settings
+                            if (!isSecondAccess) {
+                                showAccessLocationDialog();
+                            }
+                        }
+                    }, throwable -> {
+
+                    });
+        } else {
+            startLocation();
         }
     }
 
-    private void showAccessLocationDialog(){
+    private void showAccessLocationDialog() {
+        isSecondAccess = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.permission_request);
         builder.setMessage(R.string.access_location);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                isSecondAccess = true;
-                if (Build.VERSION.SDK_INT >= 23) {
-                    ActivityCompat.requestPermissions(EntranceActivity.this, new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_LOCATION_PERMISSION);
-                }
-            }
+        builder.setPositiveButton(R.string.ok, (dialog, i) -> {
+            dialog.dismiss();
+            Utils.goToSetting(EntranceActivity.this, REQUEST_LOCATION_PERMISSION);
         });
         builder.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            isSecondAccess = false;
+            requestLocationPermission();
+        }
     }
 }

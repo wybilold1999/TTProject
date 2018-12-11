@@ -57,13 +57,11 @@
 
     <style name="ActionBarPopupThemeOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="HeaderBar">
-        <item name="android:background">@color/colorPrimary</item>
-    </style>
-
     <style name="Theme.AppStartLoad" parent="Theme.AppCompat">
-        <item name="android:windowBackground">@mipmap/lancher_img</item>
+        <item name="android:windowBackground">@mipmap/launcher_img</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="ActionBar.MenuText" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Menu">
@@ -101,25 +99,19 @@
         <item name="tag_view_text_size">10</item>
     </style>
 
-    <style name="SwipeFling">
-        <item name="rotation_degrees">15</item>
-        <item name="min_adapter_stack">6</item>
-        <item name="max_visible">4</item>
-    </style>
-
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar.Translucent">
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="myTransparent" parent="AppTheme.NoActionBar.Translucent">
         <item name="android:windowBackground">@color/half_transparent</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
     </style>
 

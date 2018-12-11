@@ -36,8 +36,8 @@ import com.umeng.analytics.MobclickAgent;
  * @Date:2015年7月13日下午3:01:46
  */
 public class LocationDetailActivity extends BaseActivity implements
-        AMapLocationListener, LocationSource,
-        OnInfoWindowClickListener, InfoWindowAdapter {
+		AMapLocationListener, LocationSource,
+		OnInfoWindowClickListener, InfoWindowAdapter {
 
 	private MapView mMapView;
 	private AMap aMap;

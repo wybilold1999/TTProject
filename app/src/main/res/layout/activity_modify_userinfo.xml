@@ -32,7 +32,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -299,14 +299,6 @@
                             android:layout_toRightOf="@id/signature_text"
                             android:ellipsize="end"
                             android:textColor="@color/gray_text" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/divider_height"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginLeft="@dimen/divider_margin_left"
-                            android:background="@color/divider_color"
-                            android:contentDescription="@null" />
                     </RelativeLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -325,7 +317,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -647,7 +639,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -868,7 +860,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
                 <RelativeLayout
                     android:id="@+id/lable_lay"
@@ -946,7 +938,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
                 <RelativeLayout
                     android:id="@+id/part_lay"
@@ -1024,7 +1016,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
                 <RelativeLayout
                     android:id="@+id/intrest_lay"
@@ -1103,7 +1095,7 @@
                 android:layout_marginTop="10dp"
                 app:cardBackgroundColor="#fff"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="true">
 
                 <LinearLayout
@@ -1168,7 +1160,6 @@
                         android:descendantFocusability="blocksDescendants">
 
                         <ImageView
-                            android:id="@+id/icon_qq"
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_alignParentLeft="true"
