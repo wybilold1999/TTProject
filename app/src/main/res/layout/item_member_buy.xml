@@ -30,13 +30,6 @@
 			android:layout_height="wrap_content"/>
 
 		<TextView
-			android:id="@+id/preferential"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="1dp"
-			android:layout_toRightOf="@id/price"/>
-
-		<TextView
 			android:id="@+id/desciption"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
