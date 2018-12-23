@@ -195,7 +195,7 @@
     <string name="select_appointment_location_tips">请选择要约会的位置</string>
     <string name="appointment_status"><Data><![CDATA[申请状态：<font color="#ff0000"><b>%1$s</b></font>]]></Data></string>
 
-    <string name="official_qq">注意：开通会员之后无法聊天，在设置界面，退出重新登录即可。若还是不能聊天或者还有任何疑问，可联系官方客服QQ：2350635875</string>
+    <string name="official_qq">注意：若有任何疑问，可联系官方客服QQ：2350635875</string>
     <string name="tv_fare">充值送话费！让您尽情谈情，尽情约爱！</string>
     <string name="tv_fare_info">1.限时抢购单次充值满100即有机会获赠话费\n2.绑定手机充值话费将会自动充值到您的手机中</string>
     <!--<string name="tv_refund">退费说明：\n我司为了更加重视和关注完善用户体验，根据有旧版本的用户的相关反馈，特意提供退费联系人信息。也请新用户继续监督和提供宝贵的意见和建议。谢谢！\n注意，退款需要提供以下信息：\n1.退款方式\n2.退款联系人相关信息\n3.支付宝账户、微信账户、银行卡号 三者选一\n\n客服QQ：2350635875</string>-->

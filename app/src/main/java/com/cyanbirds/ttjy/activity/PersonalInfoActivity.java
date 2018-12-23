@@ -85,8 +85,6 @@ public class PersonalInfoActivity extends BaseActivity {
 	LinearLayout mBottomLayout;
 	@BindView(R.id.gift)
 	TextView mGift;
-	@BindView(R.id.identify_state)
-	TextView mIdentifyState;
 
 	private List<String> tabList;
 	private List<Fragment> fragmentList;
@@ -126,12 +124,6 @@ public class PersonalInfoActivity extends BaseActivity {
 		dynamicFragment = new TabDynamicFragment();
 		fragmentList.add(personalFragment);
 		fragmentList.add(dynamicFragment);
-
-		if (AppManager.getClientUser().isShowAppointment) {
-			mLove.setText(R.string.tv_appointment);
-		} else {
-			mLove.setText(R.string.like);
-		}
 
 		rxBusSub();
 
@@ -218,19 +210,9 @@ public class PersonalInfoActivity extends BaseActivity {
 				startActivity(intent);
 				break;
 			case R.id.love:
-				if (AppManager.getClientUser().isShowAppointment && !TextUtils.isEmpty(curUserId)) {
-					if (mClientUser != null) {
-						/*intent.setClass(this, AppointmentActivity.class);
-						intent.putExtra(ValueKey.USER_ID, curUserId);
-						intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
-						intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
-						startActivity(intent);*/
-					}
-				} else {
-					if (null != mClientUser) {
-						sendGreet(mClientUser.userId);
-						addLove(mClientUser.userId);
-					}
+				if (null != mClientUser) {
+					sendGreet(mClientUser.userId);
+					addLove(mClientUser.userId);
 				}
 				break;
 			case R.id.message:
@@ -385,11 +367,6 @@ public class PersonalInfoActivity extends BaseActivity {
 			mPortrait.setImageURI(Uri.parse(imagePath));
 		}
 		mCollapsingToolbarLayout.setTitle(clientUser.user_name);
-		if (AppManager.getClientUser().isShowVip && clientUser.is_vip) {
-			mIdentifyState.setVisibility(View.VISIBLE);
-		} else {
-			mIdentifyState.setVisibility(View.GONE);
-		}
 
 		if (mClientUser.isFollow) {
 			mAttention.setText("已关注");

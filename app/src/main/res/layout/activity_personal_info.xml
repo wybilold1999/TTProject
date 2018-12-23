@@ -49,21 +49,6 @@
                         app:placeholderImageScaleType="fitCenter"
                         app:roundAsCircle="true"/>
 
-                    <TextView
-                        android:id="@+id/identify_state"
-                        android:layout_width="wrap_content"
-                        android:layout_height="16dp"
-                        android:drawableLeft="@mipmap/authentication_09"
-                        android:paddingLeft="2dp"
-                        android:paddingRight="2dp"
-                        android:textSize="10sp"
-                        android:text="@string/identified"
-                        android:textColor="@android:color/holo_red_light"
-                        android:background="@drawable/identify_background"
-                        android:layout_marginTop="10dp"
-                        android:layout_gravity="bottom|center"
-                        android:visibility="gone"/>
-
                 </FrameLayout>
 
             </RelativeLayout>
