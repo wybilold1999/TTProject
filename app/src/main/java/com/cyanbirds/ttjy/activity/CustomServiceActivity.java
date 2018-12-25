@@ -2,6 +2,7 @@ package com.cyanbirds.ttjy.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
@@ -37,6 +38,8 @@ public class CustomServiceActivity extends BaseActivity {
     private void setupView() {
         if(AppManager.getClientUser().isShowVip) {
             mVipTv.setVisibility(View.VISIBLE);
+            String exchange = getResources().getString(R.string.my_custom_service_vip);
+            mVipTv.setText(Html.fromHtml(exchange));
         } else {
             mVipTv.setVisibility(View.GONE);
         }

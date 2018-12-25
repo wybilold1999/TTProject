@@ -12,7 +12,7 @@ package com.cyanbirds.ttjy.config;
 public class AppConstants {
 	
 	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-//	public static final String BASE_URL = "http://192.168.1.100:8080/TTLoveServer/";
+//	public static final String BASE_URL = "http://192.168.1.102:8080/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙
@@ -65,7 +65,7 @@ public class AppConstants {
 
 	public static int CHAT_LIMIT = 0;
 
-	public static String BUGLY_ID = "f70599b373";
+	public static String BUGLY_ID = "28d110c523";
 
 	public static String CITY_WE_CHAT_RESP_CODE = "city_we_chat_resp_code";
 
