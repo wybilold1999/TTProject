@@ -12,7 +12,7 @@ android {
         targetSdkVersion 27
         versionCode 28
         versionName "1.6.8"
-        flavorDimensions "26"
+        flavorDimensions "28"
         multiDexEnabled true
 
         manifestPlaceholders = [
