@@ -10,9 +10,10 @@ package com.cyanbirds.ttjy.config;
  *
  */
 public class AppConstants {
-	
-	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
-//	public static final String BASE_URL = "http://192.168.1.102:8080/TTLoveServer/";
+
+	public static final String BASE_URL = "http://119.23.144.11/TTLoveServer/";
+//	public static final String BASE_URL = "http://120.76.54.8/TTLoveServer/";
+//	public static final String BASE_URL = "http://172.20.10.4:8080/TTLoveServer/";
 
 	/**
 	 * 密码加密密匙

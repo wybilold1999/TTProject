@@ -9,7 +9,7 @@ import com.cyanbirds.ttjy.helper.AppActivityLifecycleCallbacks;
 import com.cyanbirds.ttjy.helper.CrashHandler;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
-import com.cyanbirds.ttjy.net.base.RetrofitManager;
+import com.cyanbirds.ttjy.net.base.RetrofitFactory;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -102,7 +102,7 @@ public class CSApplication extends MultiDexApplication {
 	private void initFresco() {
 		DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(this)
 				.setBaseDirectoryPath(getCacheDir())
-				.setBaseDirectoryName("mo_love")
+				.setBaseDirectoryName("tt_love")
 				.setMaxCacheSize(500*1024*1024)//500MB
 				.setMaxCacheSizeOnLowDiskSpace(10 * 1024 * 1024)
 				.setMaxCacheSizeOnVeryLowDiskSpace(5 * 1024 * 1024)
@@ -124,7 +124,7 @@ public class CSApplication extends MultiDexApplication {
 						.build());
 
 		ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
-				.newBuilder(this, RetrofitManager.getInstance().getOkHttpClient())
+				.newBuilder(this, RetrofitFactory.initOkHttpClient())
 				.setBitmapsConfig(Bitmap.Config.RGB_565)
 				.setDownsampleEnabled(true)
 				.setPoolFactory(factory)
