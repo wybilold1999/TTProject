@@ -143,8 +143,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     implementation 'com.google.code.gson:gson:2.8.5'
-    // 持久化 Cookie
-    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 
     implementation 'org.greenrobot:greendao:3.1.1'
     implementation 'com.github.medyo:fancybuttons:1.5@aar'

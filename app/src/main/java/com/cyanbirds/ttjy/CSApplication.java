@@ -5,11 +5,9 @@ import android.support.multidex.MultiDexApplication;
 import android.util.SparseIntArray;
 
 import com.cyanbirds.ttjy.config.AppConstants;
-import com.cyanbirds.ttjy.helper.AppActivityLifecycleCallbacks;
 import com.cyanbirds.ttjy.helper.CrashHandler;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.net.base.RetrofitManager;
-import com.cyanbirds.ttjy.utils.FileAccessorUtils;
+import com.cyanbirds.ttjy.net.base.RetrofitFactory;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -121,7 +119,7 @@ public class CSApplication extends MultiDexApplication {
 						.build());
 
 		ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
-				.newBuilder(this, RetrofitManager.getInstance().getOkHttpClient())
+				.newBuilder(this, RetrofitFactory.initOkHttpClient())
 				.setBitmapsConfig(Bitmap.Config.RGB_565)
 				.setDownsampleEnabled(true)
 				.setPoolFactory(factory)
