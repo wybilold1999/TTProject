@@ -25,6 +25,7 @@
                 android:text="@string/give_vip_tips" />
 
             <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/example_img"
                 android:layout_width="200dp"
                 android:layout_height="300dp"
                 android:layout_gravity="center"

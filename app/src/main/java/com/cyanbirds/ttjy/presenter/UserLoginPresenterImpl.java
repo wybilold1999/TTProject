@@ -17,18 +17,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.umeng.analytics.MobclickAgent;
 
-import java.lang.ref.WeakReference;
-
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
+public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter{
 
-    private WeakReference<IUserLoginLogOut.View> mViewWeakReference;
+    private IUserLoginLogOut.View view;
 
     public UserLoginPresenterImpl(IUserLoginLogOut.View view) {
-        mViewWeakReference = new WeakReference<>(view);
+        this.view = view;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
         params.put("longitude", PreferencesUtils.getLongitude(CSApplication.getInstance()));
         params.put("loginTime", String.valueOf(PreferencesUtils.getLoginTime(CSApplication.getInstance())));
         params.put("currentCity", PreferencesUtils.getCurrentCity(CSApplication.getInstance()));
-        Observable<ClientUser> observable = RetrofitFactory.getRetrofit().create(IUserApi.class)
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
                 .userLogin(AppManager.getClientUser().sessionId, params)
                 .subscribeOn(Schedulers.io())
                 .flatMap(responseBody -> {
@@ -64,28 +62,17 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
                     PreferencesUtils.setLoginTime(CSApplication.getInstance(), System.currentTimeMillis());
                     IMChattingHelper.getInstance().sendInitLoginMsg();
                 })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-            observable.as(mViewWeakReference.get().bindAutoDispose());
-        }
-        observable.subscribe(clientUser -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().loginLogOutSuccess(clientUser);
-                    } else {
-                        return;
-                    }
-                },
-                throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        if (throwable instanceof NullPointerException) {
-                            mViewWeakReference.get().loginLogOutSuccess(null);
-                        } else {
-                            mViewWeakReference.get().onShowNetError();
-                        }
-                    } else {
-                        return;
-                    }
-                });
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(view.bindAutoDispose())
+                .subscribe(clientUser -> view.loginLogOutSuccess(clientUser),
+                        throwable -> {
+                            if (throwable instanceof NullPointerException) {
+                                view.loginLogOutSuccess(null);
+                            } else {
+                                view.onShowNetError();
+                            }
+                        });
+
     }
 
     @Override
@@ -103,10 +90,7 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
         params.put("longitude", PreferencesUtils.getLongitude(CSApplication.getInstance()));
         params.put("loginTime", String.valueOf(PreferencesUtils.getLoginTime(CSApplication.getInstance())));
         params.put("currentCity", PreferencesUtils.getCurrentCity(CSApplication.getInstance()));
-        if (!TextUtils.isEmpty(AppManager.getClientUser().sex)) {
-            params.put("sex", AppManager.getClientUser().sex);
-        }
-        Observable<ClientUser> observable = RetrofitFactory.getRetrofit().create(IUserApi.class)
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
                 .wxLogin(AppManager.getClientUser().sessionId, params)
                 .subscribeOn(Schedulers.io())
                 .flatMap(responseBody -> {
@@ -124,28 +108,16 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
                     PreferencesUtils.setLoginTime(CSApplication.getInstance(), System.currentTimeMillis());
                     IMChattingHelper.getInstance().sendInitLoginMsg();
                 })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-            observable.as(mViewWeakReference.get().bindAutoDispose());
-        }
-        observable.subscribe(clientUser -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().loginLogOutSuccess(clientUser);
-                    } else {
-                        return;
-                    }
-                },
-                throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        if (throwable instanceof NullPointerException) {
-                            mViewWeakReference.get().loginLogOutSuccess(null);
-                        } else {
-                            mViewWeakReference.get().onShowNetError();
-                        }
-                    } else {
-                        return;
-                    }
-                });
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(view.bindAutoDispose())
+                .subscribe(clientUser -> view.loginLogOutSuccess(clientUser),
+                        throwable -> {
+                            if (throwable instanceof NullPointerException) {
+                                view.loginLogOutSuccess(null);
+                            } else {
+                                view.onShowNetError();
+                            }
+                        });
 
     }
 
@@ -165,10 +137,7 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
         params.put("longitude", PreferencesUtils.getLongitude(CSApplication.getInstance()));
         params.put("loginTime", String.valueOf(PreferencesUtils.getLoginTime(CSApplication.getInstance())));
         params.put("currentCity", PreferencesUtils.getCurrentCity(CSApplication.getInstance()));
-        if (!TextUtils.isEmpty(AppManager.getClientUser().sex)) {
-            params.put("sex", AppManager.getClientUser().sex);
-        }
-        Observable<ClientUser> observable = RetrofitFactory.getRetrofit().create(IUserApi.class)
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
                 .qqLogin(AppManager.getClientUser().sessionId, params)
                 .subscribeOn(Schedulers.io())
                 .flatMap(responseBody -> {
@@ -186,28 +155,16 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
                     PreferencesUtils.setLoginTime(CSApplication.getInstance(), System.currentTimeMillis());
                     IMChattingHelper.getInstance().sendInitLoginMsg();
                 })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-            observable.as(mViewWeakReference.get().bindAutoDispose());
-        }
-        observable.subscribe(clientUser -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().loginLogOutSuccess(clientUser);
-                    } else {
-                        return;
-                    }
-                },
-                throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        if (throwable instanceof NullPointerException) {
-                            mViewWeakReference.get().loginLogOutSuccess(null);
-                        } else {
-                            mViewWeakReference.get().onShowNetError();
-                        }
-                    } else {
-                        return;
-                    }
-                });
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(view.bindAutoDispose())
+                .subscribe(clientUser -> view.loginLogOutSuccess(clientUser),
+                        throwable -> {
+                            if (throwable instanceof NullPointerException) {
+                                view.loginLogOutSuccess(null);
+                            } else {
+                                view.onShowNetError();
+                            }
+                        });
     }
 
     @Override
@@ -216,7 +173,7 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
         params.put("upwd", clientUser.userPwd);
         params.put("nickname", clientUser.user_name);
         params.put("phone", clientUser.mobile);
-        params.put("sex", clientUser.sex);
+        params.put("sex", "男".equals(clientUser.sex) ? "1" : "0");
         params.put("age", String.valueOf(clientUser.age));
         params.put("channel", channel);
         params.put("regDeviceName", AppManager.getDeviceName());
@@ -233,7 +190,7 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
         params.put("province", PreferencesUtils.getCurrentProvince(CSApplication.getInstance()));
         params.put("latitude", PreferencesUtils.getLatitude(CSApplication.getInstance()));
         params.put("longitude", PreferencesUtils.getLongitude(CSApplication.getInstance()));
-        Observable<ClientUser> observable = RetrofitFactory.getRetrofit().create(IUserApi.class)
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
                 .userRegister(params)
                 .subscribeOn(Schedulers.io())
                 .flatMap(responseBody -> {
@@ -251,28 +208,16 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
                     PreferencesUtils.setLoginTime(CSApplication.getInstance(), System.currentTimeMillis());
                     IMChattingHelper.getInstance().sendInitLoginMsg();
                 })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-            observable.as(mViewWeakReference.get().bindAutoDispose());
-        }
-        observable.subscribe(mClientUser -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().loginLogOutSuccess(mClientUser);
-                    } else {
-                        return;
-                    }
-                },
-                throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        if (throwable instanceof NullPointerException) {
-                            mViewWeakReference.get().loginLogOutSuccess(null);
-                        } else {
-                            mViewWeakReference.get().onShowNetError();
-                        }
-                    } else {
-                        return;
-                    }
-                });
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(view.bindAutoDispose())
+                .subscribe(user -> view.loginLogOutSuccess(user),
+                        throwable -> {
+                            if (throwable instanceof NullPointerException) {
+                                view.loginLogOutSuccess(null);
+                            } else {
+                                view.onShowNetError();
+                            }
+                        });
     }
 
     @Override
@@ -282,7 +227,7 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
         params.put("appVersion", String.valueOf(AppManager.getVersionCode()));
         params.put("systemVersion", AppManager.getDeviceSystemVersion());
         params.put("deviceId", AppManager.getDeviceId());
-        Observable<ClientUser> observable = RetrofitFactory.getRetrofit().create(IUserApi.class)
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
                 .userLogout(AppManager.getClientUser().sessionId, params)
                 .subscribeOn(Schedulers.io())
                 .map(responseBody -> {
@@ -296,91 +241,8 @@ public class UserLoginPresenterImpl implements IUserLoginLogOut.Presenter {
                     }
                     return clientUser;
                 })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-            observable.as(mViewWeakReference.get().bindAutoDispose());
-        }
-        observable.subscribe(mClientUser -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().loginLogOutSuccess(mClientUser);
-                    } else {
-                        return;
-                    }
-                },
-                throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().onShowNetError();
-                    } else {
-                        return;
-                    }
-                });
-    }
-
-    @Override
-    public void onHWLogin(String hwOpenId) {
-        ArrayMap<String, String> params = new ArrayMap<>();
-        params.put("channel", CheckUtil.getAppMetaData(CSApplication.getInstance(), "UMENG_CHANNEL"));
-        params.put("platform", "HW");
-        params.put("openId", hwOpenId);
-        params.put("device_name", AppManager.getDeviceName());
-        params.put("version", String.valueOf(AppManager.getVersionCode()));
-        params.put("os_version", AppManager.getDeviceSystemVersion());
-        params.put("device_id", AppManager.getDeviceId());
-        params.put("province", PreferencesUtils.getCurrentProvince(CSApplication.getInstance()));
-        params.put("latitude", PreferencesUtils.getLatitude(CSApplication.getInstance()));
-        params.put("longitude", PreferencesUtils.getLongitude(CSApplication.getInstance()));
-        params.put("loginTime", String.valueOf(PreferencesUtils.getLoginTime(CSApplication.getInstance())));
-        params.put("currentCity", PreferencesUtils.getCurrentCity(CSApplication.getInstance()));
-        if (!TextUtils.isEmpty(AppManager.getClientUser().sex)) {
-            params.put("sex", AppManager.getClientUser().sex);
-        }
-        Observable<ClientUser> observable = RetrofitFactory.getRetrofit().create(IUserApi.class)
-                .hwLogin(AppManager.getClientUser().sessionId, params)
-                .subscribeOn(Schedulers.io())
-                .flatMap(responseBody -> {
-                    ClientUser clientUser = JsonUtils.parseClientUser(responseBody.string());
-                    return Observable.just(clientUser);
-                })
-                .doOnNext(clientUser -> {
-                    MobclickAgent.onProfileSignIn(String.valueOf(clientUser.userId));
-                    clientUser.currentCity = PreferencesUtils.getCurrentCity(CSApplication.getInstance());
-                    clientUser.latitude = PreferencesUtils.getLatitude(CSApplication.getInstance());
-                    clientUser.longitude = PreferencesUtils.getLongitude(CSApplication.getInstance());
-                    AppManager.setClientUser(clientUser);
-                    AppManager.saveUserInfo();
-                    AppManager.getClientUser().loginTime = System.currentTimeMillis();
-                    PreferencesUtils.setLoginTime(CSApplication.getInstance(), System.currentTimeMillis());
-                    IMChattingHelper.getInstance().sendInitLoginMsg();
-                })
-                .observeOn(AndroidSchedulers.mainThread());
-        if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-            observable.as(mViewWeakReference.get().bindAutoDispose());
-        }
-        observable.subscribe(clientUser -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().loginLogOutSuccess(clientUser);
-                    } else {
-                        return;
-                    }
-                },
-                throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        if (throwable instanceof NullPointerException) {
-                            mViewWeakReference.get().loginLogOutSuccess(null);
-                        } else {
-                            mViewWeakReference.get().onShowNetError();
-                        }
-                    } else {
-                        return;
-                    }
-                });
-    }
-
-    @Override
-    public void detachView() {
-        if (mViewWeakReference != null) {
-            mViewWeakReference.clear();
-            mViewWeakReference = null;
-        }
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(view.bindAutoDispose())
+                .subscribe(clientUser -> view.loginLogOutSuccess(clientUser),throwable -> view.onShowNetError());
     }
 }

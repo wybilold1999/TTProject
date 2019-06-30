@@ -3,15 +3,17 @@ package com.cyanbirds.ttjy.utils;
 import android.text.TextUtils;
 
 import com.cyanbirds.ttjy.CSApplication;
+import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.entity.AllKeys;
 import com.cyanbirds.ttjy.entity.ClientUser;
+import com.cyanbirds.ttjy.entity.FareActivityModel;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.FollowLoveModel;
 import com.cyanbirds.ttjy.entity.FollowModel;
 import com.cyanbirds.ttjy.entity.Gift;
+import com.cyanbirds.ttjy.entity.IdentifyCard;
 import com.cyanbirds.ttjy.entity.LoveModel;
 import com.cyanbirds.ttjy.entity.MemberBuy;
-import com.cyanbirds.ttjy.entity.NoResponsibilityModel;
 import com.cyanbirds.ttjy.entity.PictureModel;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.entity.WeChatPay;
@@ -23,8 +25,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class JsonUtils {
             ClientUser clientUser = AppManager.getClientUser();
             clientUser.userId = data.get("uid").getAsString();
             clientUser.userPwd = data.get("upwd").getAsString();
-            clientUser.sex = data.get("sex").getAsInt() == 1 ? "1" : (data.get("sex").getAsInt() == 0 ? "0" : "all");
+            clientUser.sex = data.get("sex").getAsInt() == 1 ? "男" : (data.get("sex").getAsInt() == 0 ? "女" : "all");
             clientUser.mobile = data.get("phone") == null ? "" : data.get("phone").getAsString();
             clientUser.qq_no = data.get("qq").getAsString();
             clientUser.weixin_no = data.get("wechat").getAsString();
@@ -246,7 +246,7 @@ public class JsonUtils {
             JsonObject data = new JsonParser().parse(dataString).getAsJsonObject();
             ClientUser clientUser = new ClientUser();
             clientUser.userId = data.get("uid").getAsString();
-            clientUser.sex = data.get("sex").getAsInt() == 1 ? "1" : "0";
+            clientUser.sex = data.get("sex").getAsInt() == 1 ? "男" : "女";
             clientUser.user_name = data.get("nickname").getAsString();
             clientUser.city = data.get("city").getAsString();
             clientUser.distance = data.get("distance").getAsString();
@@ -461,7 +461,7 @@ public class JsonUtils {
                 ClientUser clientUser = new ClientUser();
                 JsonObject jsonObject = data.get(i).getAsJsonObject();
                 clientUser.userId = jsonObject.get("uid").getAsString();
-                clientUser.sex = jsonObject.get("sex").getAsInt() == 1 ? "1" : "0";
+                clientUser.sex = jsonObject.get("sex").getAsInt() == 1 ? "男" : "女";
                 clientUser.user_name = jsonObject.get("nickname").getAsString();
                 clientUser.is_vip = jsonObject.get("isVip").getAsBoolean();
                 clientUser.state_marry = jsonObject.get("emotionStatus").getAsString();
@@ -484,52 +484,11 @@ public class JsonUtils {
     }
 
     /**
-     * 根据api解析返回的ip地址
-     * @param result
+     * 获取返话费活动条件等
+     * @param json
      * @return
      */
-    public static String parseIPJson(String result) {
-        int start = result.indexOf("{");
-        int end = result.indexOf("}");
-        String json = result.substring(start, end + 1);
-        String ipAddress = "";
-        if (json != null) {
-            try {
-                JSONObject jsonObject = new JSONObject(json);
-                ipAddress = jsonObject.optString("cip");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return ipAddress;
-    }
-
-    /**
-     * 解析根据ip地址返回的地址
-     * @param result
-     * @return
-     */
-    public static String parseCityJson(String result) {
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONObject content = jsonObject.optJSONObject("content");
-            JSONObject addressDetail = content.optJSONObject("address_detail");
-            String city = addressDetail.optString("city");
-            String province = addressDetail.optString("province");
-            JSONObject point = content.optJSONObject("point");
-            String lat = point.optString("y");
-            String lon = point.optString("x");
-            PreferencesUtils.setCurrentCity(CSApplication.getInstance(), city);
-            PreferencesUtils.setCurrentProvince(CSApplication.getInstance(), province);
-            PreferencesUtils.setLatitude(CSApplication.getInstance(), lat);
-            PreferencesUtils.setLongitude(CSApplication.getInstance(), lon);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public static NoResponsibilityModel parseNoResponsibilityModel(String json) {
+    public static FareActivityModel parseFareActvityInfo(String json) {
         try {
             String decryptData = AESOperator.getInstance().decrypt(json);
             JsonObject obj = new JsonParser().parse(decryptData).getAsJsonObject();
@@ -538,10 +497,11 @@ public class JsonUtils {
                 return null;
             }
             Gson gson = new Gson();
-            NoResponsibilityModel model = gson.fromJson(obj.getAsJsonObject("data"), NoResponsibilityModel.class);
-            return model;
+            FareActivityModel activityModel = gson.fromJson(obj.getAsJsonObject("data"), FareActivityModel.class);
+            return activityModel;
         } catch (Exception e) {
         }
         return null;
     }
+
 }

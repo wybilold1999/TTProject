@@ -1,7 +1,6 @@
 package com.cyanbirds.ttjy.activity;
 
 import android.arch.lifecycle.Lifecycle;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -12,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
@@ -42,13 +43,17 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class GiftMarketActivity extends BaseActivity implements View.OnClickListener{
 	@BindView(R.id.recyclerview)
-    RecyclerView mRecyclerview;
+	RecyclerView mRecyclerview;
 
 	TextView mGiftName;
 	SimpleDraweeView mGiftUrl;
+	TextView mAmount;
+	TextView mVipAmount;
 	SimpleDraweeView mMyPortrait;
 	SimpleDraweeView mOtherPortrait;
 	TextView mSendGift;
+	ImageView mVip;
+	LinearLayout mVipLay;
 
 	private View mGiftDialogView;
 	private AlertDialog mGiftDialog;
@@ -104,6 +109,12 @@ public class GiftMarketActivity extends BaseActivity implements View.OnClickList
 
 			mGiftName.setText(gift.name);
 			mGiftUrl.setImageURI(Uri.parse(gift.dynamic_image_url));
+			if (gift.vip_amount == 0) {
+				mVipAmount.setText("免费");
+			} else {
+				mVipAmount.setText(gift.vip_amount + "金币");
+			}
+			mAmount.setText(String.format(getResources().getString(R.string.org_price), gift.amount));
 			if (!TextUtils.isEmpty(AppManager.getClientUser().face_url)) {
 				mMyPortrait.setImageURI(Uri.parse(AppManager.getClientUser().face_url));
 			}
@@ -117,49 +128,29 @@ public class GiftMarketActivity extends BaseActivity implements View.OnClickList
 		mGiftDialogView = LayoutInflater.from(this).inflate(R.layout.dialog_send_gift, null);
 		mGiftName = (TextView) mGiftDialogView.findViewById(R.id.gift_name);
 		mGiftUrl = (SimpleDraweeView) mGiftDialogView.findViewById(R.id.gift_url);
+		mAmount = (TextView) mGiftDialogView.findViewById(R.id.amount);
+		mVip = (ImageView) mGiftDialogView.findViewById(R.id.iv_vip);
+		mVipLay = (LinearLayout)  mGiftDialogView.findViewById(R.id.vip_lay);
+		mVipAmount = (TextView) mGiftDialogView.findViewById(R.id.vip_amount);
 		mMyPortrait = (SimpleDraweeView) mGiftDialogView.findViewById(R.id.my_portrait);
 		mOtherPortrait = (SimpleDraweeView) mGiftDialogView.findViewById(R.id.other_portrait);
 		mSendGift = (TextView) mGiftDialogView.findViewById(R.id.send_gift);
 		mSendGift.setOnClickListener(this);
+		if (AppManager.getClientUser().isShowGold) {
+			mVipLay.setVisibility(View.VISIBLE);
+			mAmount.setVisibility(View.VISIBLE);
+		} else {
+			mVipLay.setVisibility(View.GONE);
+			mAmount.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
 	public void onClick(View v) {
 		mGiftDialog.dismiss();
-		if (AppManager.getClientUser().isShowVip) {
-			if (AppManager.getClientUser().is_vip) {
-				Snackbar.make(findViewById(R.id.recyclerview),
-						getResources().getString(R.string.send_gift_success),
-						Snackbar.LENGTH_LONG).show();
-			} else {
-				showVipDialog();
-			}
-		} else {
-			Snackbar.make(findViewById(R.id.recyclerview),
-					getResources().getString(R.string.send_gift_success),
-					Snackbar.LENGTH_LONG).show();
-		}
-	}
-
-	private void showVipDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(R.string.un_send_gift);
-		builder.setPositiveButton(R.string.ok, ((dialog, i) -> {
-			dialog.dismiss();
-			Intent intent = new Intent();
-			intent.setClass(GiftMarketActivity.this, VipCenterActivity.class);
-			startActivity(intent);
-		}));
-		if (AppManager.getClientUser().isShowGiveVip) {
-			builder.setNegativeButton(R.string.free_give_vip, ((dialog, i) -> {
-				dialog.dismiss();
-				Intent intent = new Intent(GiftMarketActivity.this, GiveVipActivity.class);
-				startActivity(intent);
-			}));
-		} else {
-			builder.setNegativeButton(R.string.until_single, ((dialog, i) -> dialog.dismiss()));
-		}
-		builder.show();
+		Snackbar.make(findViewById(R.id.recyclerview),
+				getResources().getString(R.string.send_gift_success),
+				Snackbar.LENGTH_LONG).show();
 	}
 
 	@Override

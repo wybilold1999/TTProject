@@ -17,29 +17,29 @@ public class FileAccessorUtils {
 	
 	/** 默认路径 */
 	public static final String DEFAULT_PATH = getExternalStorePath()
-			+ "/momo";
+			+ "/tanlove";
 	/** 文件存储路径 */
 	public static final String FILE_PATH = getExternalStorePath()
-			+ "/momo/file";
+			+ "/tanlove/.file";
 	/** 图像的存储路径 */
 	public static final String IMESSAGE_IMAGE = getExternalStorePath()
-			+ "/momo/image";
+			+ "/tanlove/.image";
 	/** 头像存储路径 */
 	public static final String FACE_IMAGE = getExternalStorePath()
-			+ "/momo/face";
+			+ "/tanlove/.face";
 	/** 语音存储路径 */
 	public static final String VOICE_PATH = getExternalStorePath()
-			+ "/momo/voice";
+			+ "/tanlove/.voice";
 	/** 视频存储路径 */
 	public static final String VIDEO_PATH = getExternalStorePath()
-			+ "/momo/video";
+			+ "/tanlove/.video";
 	/** crash路径 */
 	public static final String CRASH_PATH = getExternalStorePath()
-			+ "/momo/crash";
+			+ "/tanlove/.crash";
 
 	/** APK文件暂时存放的路径 */
 	public static final String APK_PATH = getExternalStorePath()
-			+ "/momo/apk";
+			+ "/tanlove/.apk";
 
 	/**
 	 * 外置存储卡的路径

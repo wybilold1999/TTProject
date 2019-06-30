@@ -1,6 +1,7 @@
 package com.cyanbirds.ttjy.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
@@ -12,12 +13,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.GiveVipActivity;
 import com.cyanbirds.ttjy.activity.PhotoViewActivity;
 import com.cyanbirds.ttjy.activity.VipCenterActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
-import com.cyanbirds.ttjy.manager.AppManager;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
@@ -172,21 +171,20 @@ public class MyGiftsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private void showVipDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage(R.string.see_more_send_gift_data);
-        builder.setPositiveButton(R.string.ok, ((dialog, i) -> {
-            dialog.dismiss();
-            Intent intent = new Intent();
-            intent.setClass(mContext, VipCenterActivity.class);
-            mContext.startActivity(intent);
-        }));
-        if (AppManager.getClientUser().isShowGiveVip) {
-            builder.setNegativeButton(R.string.free_give_vip, ((dialog, i) -> {
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                Intent intent = new Intent(mContext, GiveVipActivity.class);
+                Intent intent = new Intent(mContext, VipCenterActivity.class);
                 mContext.startActivity(intent);
-            }));
-        } else {
-            builder.setNegativeButton(R.string.until_single, ((dialog, i) -> dialog.dismiss()));
-        }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
         builder.show();
     }
 

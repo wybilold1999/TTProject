@@ -19,7 +19,7 @@
 #-------------------------------------------定制化区域----------------------------------------------
 #---------------------------------1.实体类---------------------------------
 # 在开发的时候我们可以将所有的实体类放在一个包内，这样我们写一次混淆就行了。
--keep public class com.cyanbirds.tanlove.entity.** {
+-keep public class com.cyanbirds.ttjy.entity.** {
     public void set*(***);
     public *** get*();
     public *** is*();
@@ -147,7 +147,7 @@
 -keepattributes *Annotation*
 
 #这里com.xiaomi.mipushdemo.DemoMessageRreceiver改成app中定义的完整类名
--keep class com.cyanbirds.tanlove.receiver.MiMessageReceiver {*;}
+-keep class com.cyanbirds.ttjy.receiver.MiMessageReceiver {*;}
 #可以防止一个误报的 warning 导致无法成功编译，如果编译使用的 Android 版本是 23。
 -dontwarn com.xiaomi.push.**
 

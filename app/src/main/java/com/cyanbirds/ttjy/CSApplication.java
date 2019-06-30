@@ -8,8 +8,8 @@ import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.helper.AppActivityLifecycleCallbacks;
 import com.cyanbirds.ttjy.helper.CrashHandler;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
-import com.cyanbirds.ttjy.net.base.RetrofitFactory;
+import com.cyanbirds.ttjy.net.base.RetrofitManager;
+import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -20,11 +20,11 @@ import com.facebook.imagepipeline.listener.RequestLoggingListener;
 import com.facebook.imagepipeline.memory.PoolConfig;
 import com.facebook.imagepipeline.memory.PoolFactory;
 import com.facebook.imagepipeline.memory.PoolParams;
+import com.from.view.swipeback.SwipeBackHelper;
 import com.mob.MobSDK;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mmkv.MMKV;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,20 +55,18 @@ public class CSApplication extends MultiDexApplication {
 	public void onCreate() {
 		super.onCreate();
 		sApplication = this;
-		AppManager.getExecutorService().execute(() -> {
-			MMKV.initialize(sApplication);
-			AppManager.setMMKV(MMKV.defaultMMKV());
-			AppManager.setContext(sApplication);
+		SwipeBackHelper.init(this);
+		AppManager.getExecutorService().execute(new Runnable() {
+			@Override
+			public void run() {
+				AppManager.setContext(sApplication);
+				AppManager.setUserInfo();
 
-			AppManager.setUserInfo();
+				initFresco();
 
-			registerActivityLifecycleCallbacks(AppActivityLifecycleCallbacks.getInstance());
+				registerWeiXin();
 
-			initFresco();
-
-			registerWeiXin();
-
-			NotificationManagerUtils.getInstance().createNotificationChannel();
+			}
 		});
 
 		//初始化短信sdk
@@ -77,7 +75,6 @@ public class CSApplication extends MultiDexApplication {
 		CrashHandler.getInstance().init(sApplication);
 
 		initBugly();
-
 	}
 
 	private void initBugly() {
@@ -102,7 +99,7 @@ public class CSApplication extends MultiDexApplication {
 	private void initFresco() {
 		DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(this)
 				.setBaseDirectoryPath(getCacheDir())
-				.setBaseDirectoryName("tt_love")
+				.setBaseDirectoryName("tan_love")
 				.setMaxCacheSize(500*1024*1024)//500MB
 				.setMaxCacheSizeOnLowDiskSpace(10 * 1024 * 1024)
 				.setMaxCacheSizeOnVeryLowDiskSpace(5 * 1024 * 1024)
@@ -124,7 +121,7 @@ public class CSApplication extends MultiDexApplication {
 						.build());
 
 		ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
-				.newBuilder(this, RetrofitFactory.initOkHttpClient())
+				.newBuilder(this, RetrofitManager.getInstance().getOkHttpClient())
 				.setBitmapsConfig(Bitmap.Config.RGB_565)
 				.setDownsampleEnabled(true)
 				.setPoolFactory(factory)

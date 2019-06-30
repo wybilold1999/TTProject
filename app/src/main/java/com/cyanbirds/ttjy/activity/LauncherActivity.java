@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.util.ArrayMap;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -27,6 +28,7 @@ import com.cyanbirds.ttjy.utils.Md5Util;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.PushMsgUtil;
 import com.cyanbirds.ttjy.utils.ToastUtil;
+import com.cyanbirds.ttjy.utils.Utils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.uber.autodispose.AutoDispose;
@@ -86,35 +88,37 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     private void requestPermission() {
-        if (!CheckUtil.isGetPermission(this, Manifest.permission.READ_PHONE_STATE) ||
-                !CheckUtil.isGetPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!CheckUtil.isGetPermission(this, Manifest.permission.READ_PHONE_STATE)) {
             if (rxPermissions == null) {
                 rxPermissions = new RxPermissions(this);
             }
-            rxPermissions.requestEachCombined(Manifest.permission.READ_PHONE_STATE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .subscribe(permission -> {// will emit 1 Permission object
-                        if (permission.granted) {
-                            // All permissions are granted !
-                            init();
-                            loadData();
-                        } else if (permission.shouldShowRequestPermissionRationale) {
-                            // At least one denied permission without ask never again
+            rxPermissions.request(Manifest.permission.READ_PHONE_STATE)
+                    .subscribe(granted -> {
+                        if (granted) { // Always true pre-M
                             init();
                             loadData();
                         } else {
-                            // At least one denied permission with ask never again
-                            // Need to go to the settings
-                            init();
-                            loadData();
+                            showPermissionDialog();
                         }
-                    }, throwable -> {
-
-                    });
+                    }, throwable -> {});
         } else {
             init();
             loadData();
         }
+    }
+
+    private void showPermissionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.can_not_use_app);
+        builder.setPositiveButton(R.string.ok, (dialog, i) -> {
+            dialog.dismiss();
+            Utils.goToSetting(this, REQUEST_PERMISSION_READ_PHONE_STATE);
+        });
+        builder.setNegativeButton(R.string.cancel, (dialog, i) -> {
+            dialog.dismiss();
+            finish();
+        });
+        builder.show();
     }
 
     Runnable mainActivity = () -> {

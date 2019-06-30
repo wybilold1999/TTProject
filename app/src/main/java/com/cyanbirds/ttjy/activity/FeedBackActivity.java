@@ -7,13 +7,11 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
-import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.utils.ProgressDialogUtils;
 import com.cyanbirds.ttjy.utils.ToastUtil;
 
@@ -35,8 +33,6 @@ public class FeedBackActivity extends BaseActivity {
     TextView mTextNum;
     @BindView(R.id.submit)
     FancyButton mSubmit;
-    @BindView(R.id.offical_qq)
-    TextView mOfficalQQ;
 
     private int limit = 100;//最多允许输入
 
@@ -62,11 +58,6 @@ public class FeedBackActivity extends BaseActivity {
         mContent.setHorizontallyScrolling(false);
         mContent.setFocusable(true);
         mTextNum.setText(String.valueOf(limit));
-        if (AppManager.getClientUser().isShowDownloadVip) {
-            mOfficalQQ.setVisibility(View.VISIBLE);
-        } else {
-            mOfficalQQ.setVisibility(View.GONE);
-        }
     }
 
     private void setupEvent() {

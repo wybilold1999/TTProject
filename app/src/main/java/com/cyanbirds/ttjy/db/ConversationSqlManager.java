@@ -6,13 +6,13 @@ import android.text.TextUtils;
 import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.db.base.DBManager;
-import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.greendao.ConversationDao;
 import com.cyanbirds.ttjy.listener.MessageChangedListener;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadFileRequest;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
+import com.cyanbirds.ttjy.utils.FileUtils;
 import com.cyanbirds.ttjy.utils.Md5Util;
 import com.yuntongxun.ecsdk.ECMessage;
 import com.yuntongxun.ecsdk.im.ECTextMessageBody;
@@ -91,20 +91,10 @@ public class ConversationSqlManager extends DBManager {
 	}
 
 	/**
-	 * 根据id查询会话
-	 * @return
-	 */
-	public Conversation queryConversationForById(long conversationId) {
-		QueryBuilder<Conversation> qb = conversationDao.queryBuilder();
-		qb.where(ConversationDao.Properties.Id.eq(conversationId));
-		return qb.unique();
-	}
-
-	/**
 	 * 根据聊天对象的userid来查询会话
 	 * @return
 	 */
-	public Conversation queryConversationForByTalkerId(String talkerId) {
+	public synchronized Conversation queryConversationForByTalkerId(String talkerId) {
 		QueryBuilder<Conversation> qb = conversationDao.queryBuilder();
 		qb.where(ConversationDao.Properties.Talker.eq(talkerId));
 		return qb.unique();
@@ -151,33 +141,27 @@ public class ConversationSqlManager extends DBManager {
 	 */
 	public long inserConversation(Conversation conversation) {
 		return conversationDao.insertOrReplace(conversation);
-//		return conversationDao.insert(conversation);
 	}
-	/**
-	 * 插入一个新会话记录
-	 * @param ecMessage
-	 * @return
-	 */
-	public long insertConversation(ECMessage ecMessage) {
+
+	public synchronized long insertConversation(String userData, ECMessage ecMessage) {
+		String[] userInfos = userData.split(";");
+
 		String talker = "";
 		String sender = "";
 		String talkerName = "";
 		String portraitUrl = "";
 		boolean isSend = false;
-		String[] userInfo = ecMessage.getUserData().split(";");
 		if (ecMessage.getDirection() == ECMessage.Direction.SEND) {
 			isSend = true;
 		}
 		if (isSend) {
-			talker = userInfo[3];
-			talkerName = userInfo[4];
-			portraitUrl = userInfo[5];
+			talker = ecMessage.getTo();
+			talkerName = userInfos[0];
+			portraitUrl = userInfos[1];
 		} else {
-			if (userInfo.length > 1) {
-				talker = userInfo[0];
-				talkerName = userInfo[1];
-				portraitUrl = userInfo[2];
-			}
+			talker = userInfos[0];
+			talkerName = userInfos[1];
+			portraitUrl = userInfos[2];
 		}
 		//根据talker去查询有没有对应的会话
 		Conversation conversation = queryConversationForByTalkerId(talker);
@@ -187,7 +171,11 @@ public class ConversationSqlManager extends DBManager {
 		conversation.talker = talker;
 		conversation.talkerName = talkerName;
 		conversation.createTime = ecMessage.getMsgTime();
-		conversation.faceUrl = portraitUrl;
+		if (userInfos.length == 8) {
+			conversation.channel = userInfos[6];
+			conversation.city = userInfos[7];
+		}
+
 		if (!isSend && !"com.cyanbirds.ttjy.activity.ChatActivity".equals(AppManager.getTopActivity(mContext))) {
 			conversation.unreadCount++;
 		}

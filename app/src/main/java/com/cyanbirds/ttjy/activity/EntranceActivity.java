@@ -4,6 +4,7 @@ import android.Manifest;
 import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
@@ -19,7 +21,6 @@ import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.IUserApi;
 import com.cyanbirds.ttjy.net.base.RetrofitFactory;
 import com.cyanbirds.ttjy.utils.CheckUtil;
-import com.cyanbirds.ttjy.utils.JsonUtils;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.cyanbirds.ttjy.utils.Utils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -33,8 +34,6 @@ import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import mehdi.sakout.fancybuttons.FancyButton;
-
-import static com.cyanbirds.ttjy.config.AppConstants.BAIDU_LOCATION_API;
 
 /**
  * @ClassName:EntranceActivity
@@ -65,7 +64,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
         setContentView(R.layout.activity_entrance);
         ButterKnife.bind(this);
         setupViews();
-        getIPAddress();
         initLocationClient();
         requestLocationPermission();
     }
@@ -76,31 +74,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     private void setupViews() {
         mLogin = findViewById(R.id.login);
         mRegister = findViewById(R.id.register);
-    }
-
-    private void getIPAddress() {
-        RetrofitFactory.getRetrofit().create(IUserApi.class)
-                .getIPAddress()
-                .subscribeOn(Schedulers.io())
-                .map(responseBody -> JsonUtils.parseIPJson(responseBody.string()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
-                .subscribe(ipAddress -> {
-                    if (!TextUtils.isEmpty(ipAddress)) {
-                        getCityByIP(ipAddress);
-                    }
-                }, throwable -> {});
-    }
-
-    private void getCityByIP(String ip) {
-        String url = BAIDU_LOCATION_API + ip;
-        RetrofitFactory.getRetrofit().create(IUserApi.class)
-                .getCityByIP(url)
-                .subscribeOn(Schedulers.io())
-                .map(responseBody -> JsonUtils.parseCityJson(responseBody.string()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
-                .subscribe(result -> {}, throwable -> {});
     }
 
     /**
@@ -159,13 +132,28 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
             mCurrrentCity = aMapLocation.getCity();
             PreferencesUtils.setCurrentCity(this, mCurrrentCity);
             PreferencesUtils.setCurrentProvince(EntranceActivity.this, aMapLocation.getProvince());
+            uploadCityInfoRequest(mCurrrentCity, String.valueOf(aMapLocation.getLatitude()),
+                    String.valueOf(aMapLocation.getLongitude()));
             PreferencesUtils.setLatitude(this, curLat);
             PreferencesUtils.setLongitude(this, curLon);
             if (!TextUtils.isEmpty(mCurrrentCity)) {
                 stopLocation();
-                PreferencesUtils.setIsLocationSuccess(this, true);
             }
         }
+    }
+
+    private void uploadCityInfoRequest(String city, String lat, String lon) {
+        ArrayMap<String, String> params = new ArrayMap<>();
+        params.put("channel", CheckUtil.getAppMetaData(CSApplication.getInstance(), "UMENG_CHANNEL"));
+        params.put("currentCity", city);
+        params.put("latitude", lat);
+        params.put("longitude", lon);
+        RetrofitFactory.getRetrofit().create(IUserApi.class)
+                .uploadCityInfo(params, AppManager.getClientUser().sessionId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
+                .subscribe(responseBody -> {} , throwable -> {});
     }
 
     @OnClick({R.id.login, R.id.register})
@@ -212,12 +200,14 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     }
 
     private void requestLocationPermission() {
-        if (!CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+        if (!CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) &&
                 !CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
             if (rxPermissions == null) {
                 rxPermissions = new RxPermissions(this);
             }
-            rxPermissions.requestEachCombined(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            rxPermissions.requestEachCombined(Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
                     .subscribe(permission -> {// will emit 1 Permission object
                         if (permission.granted) {
                             // All permissions are granted !
@@ -245,7 +235,6 @@ public class EntranceActivity extends BaseActivity implements AMapLocationListen
     private void showAccessLocationDialog() {
         isSecondAccess = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.permission_request);
         builder.setMessage(R.string.access_location);
         builder.setPositiveButton(R.string.ok, (dialog, i) -> {
             dialog.dismiss();

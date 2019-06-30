@@ -105,7 +105,7 @@ public class PublishDynamicActivity extends BaseActivity {
 	}
 
 	private void requestPermission() {
-	    if (!CheckUtil.isGetPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+	    if (!CheckUtil.isGetPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
                 !CheckUtil.isGetPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             rxPermissions.requestEachCombined(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
                     .subscribe(permission -> {// will emit 1 Permission object
@@ -136,12 +136,12 @@ public class PublishDynamicActivity extends BaseActivity {
 
 	private void showPermissionDialog(int textResId, int requestCode) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.permission_request);
 		builder.setMessage(textResId);
 		builder.setPositiveButton(R.string.ok, (dialog, i) -> {
 			dialog.dismiss();
 			Utils.goToSetting(this, requestCode);
 		});
+		builder.setCancelable(false);
 		builder.show();
 	}
 

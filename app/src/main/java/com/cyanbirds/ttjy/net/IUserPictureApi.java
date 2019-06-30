@@ -21,4 +21,8 @@ public interface IUserPictureApi {
     @FormUrlEncoded
     @POST("picture/uploadCommentImg")
     Observable<ResponseBody> uploadCommentImg(@Header("token") String token, @Field("imgUrl") String imgUrl);
+
+    @FormUrlEncoded
+    @POST("picture/realUserDiscoverPics")
+    Observable<ResponseBody> getRealUserDiscoverPics(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 }

@@ -51,7 +51,7 @@ public class IMessageDaoManager extends DBManager {
 	 * 插入一条记录
 	 * @param message
 	 */
-	public long insertIMessage(IMessage message) {
+	public synchronized long insertIMessage(IMessage message) {
 		long id = mIMessageDao.insertOrReplace(message);
 		mHandler.post(new Runnable() {
 			@Override
@@ -66,7 +66,7 @@ public class IMessageDaoManager extends DBManager {
 	 * 插入消息集合
 	 * @param messages
 	 */
-	public void insertIMessageList(List<IMessage> messages) {
+	public synchronized void insertIMessageList(List<IMessage> messages) {
 		if (messages == null || messages.isEmpty()) {
 			return;
 		}

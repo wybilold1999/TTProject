@@ -17,14 +17,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.ChatActivity;
+import com.cyanbirds.ttjy.activity.FConversationActivity;
+import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
+import com.cyanbirds.ttjy.db.FConversationSqlManager;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
-import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
-import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
+import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.utils.DateUtil;
 import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -41,7 +42,6 @@ public class MessageAdapter extends
         RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
     private List<Conversation> mConversations;
-    private RecyclerView mRecyclerView;
     private Context mContext;
 
     public MessageAdapter(Context context, List<Conversation> mConversations) {
@@ -63,8 +63,6 @@ public class MessageAdapter extends
             } else {
                 holder.mPortrait.setImageURI(Uri.parse("file://" + conversation.localPortrait));
             }
-        } else {
-            holder.mPortrait.setImageURI(Uri.parse(conversation.faceUrl));
         }
         holder.mTitle.setText(conversation.talkerName);
         holder.mContent.setText(Html.fromHtml(
@@ -82,6 +80,16 @@ public class MessageAdapter extends
                         .valueOf(conversation.unreadCount));
             }
         }
+        if (!TextUtils.isEmpty(conversation.channel)) {
+            holder.mChannel.setText(Html.fromHtml(String.format(mContext.getResources().getString(R.string.channel), conversation.channel)));
+        } else {
+            holder.mChannel.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(conversation.city)) {
+            holder.mCity.setText(Html.fromHtml(String.format(mContext.getResources().getString(R.string.city), conversation.city)));
+        } else {
+            holder.mCity.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -98,6 +106,8 @@ public class MessageAdapter extends
         TextView mTitle;
         TextView mUpdateTime;
         TextView mContent;
+        TextView mChannel;
+        TextView mCity;
         LinearLayout mItemMsg;
 
         public ViewHolder(View itemView) {
@@ -108,6 +118,8 @@ public class MessageAdapter extends
             mTitle = (TextView) itemView.findViewById(R.id.title);
             mUpdateTime = (TextView) itemView.findViewById(R.id.update_time);
             mContent = (TextView) itemView.findViewById(R.id.content);
+            mChannel = (TextView) itemView.findViewById(R.id.tv_channel);
+            mCity = (TextView) itemView.findViewById(R.id.tv_city);
             mItemMsg = (LinearLayout) itemView.findViewById(R.id.item_msg);
             mItemMsg.setOnClickListener(this);
             mItemMsg.setOnLongClickListener(this);
@@ -118,21 +130,9 @@ public class MessageAdapter extends
             int position = getAdapterPosition();
             if (mConversations.size() > position && position > -1) {
                 Conversation conversation = mConversations.get(position);
-                conversation.unreadCount = 0;
-                mConversations.set(position, conversation);
-                ConversationSqlManager.getInstance(mContext).updateConversation(conversation);
-                MessageUnReadListener.getInstance().notifyDataSetChanged(0);
-
-                Intent intent = new Intent(mContext, ChatActivity.class);
-                ClientUser clientUser = new ClientUser();
-                clientUser.face_local = conversation.localPortrait;
-                clientUser.user_name = conversation.talkerName;
-                clientUser.userId = conversation.talker;
-                clientUser.face_url = conversation.faceUrl;
-                intent.putExtra(ValueKey.USER, clientUser);
+                Intent intent = new Intent(mContext, FConversationActivity.class);
+                intent.putExtra(ValueKey.CONVERSATION, conversation);
                 mContext.startActivity(intent);
-                mUnreadCount.setVisibility(View.GONE);
-                mRedPoint.setVisibility(View.GONE);
             }
         }
 
@@ -145,25 +145,35 @@ public class MessageAdapter extends
                                     mContext.getResources().getString(
                                             R.string.delete_conversation),
                                     mContext.getResources().getString(
-                                            R.string.delete_all_conversation)},
+                                            R.string.delete_all_conversation),
+                                    mContext.getResources().getString(
+                                            R.string.check_personal_info)},
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     switch (which) {
                                         case 0:
-                                            ConversationSqlManager.getInstance(mContext).deleteConversationById(mConversations.get(position));
-                                            IMessageDaoManager.getInstance(mContext).deleteIMessageByConversationId(mConversations.get(position).id);
-                                            mConversations.remove(position);
+                                            Conversation conversation = mConversations.get(position);
+                                            ConversationSqlManager.getInstance(mContext).deleteConversationById(conversation);
+                                            FConversationSqlManager.getInstance(mContext).deleteAllConversationByRid(conversation.id);
+                                            IMessageDaoManager.getInstance(mContext).deleteIMessageByConversationId(conversation.id);
+                                            mConversations.remove(conversation);
                                             notifyDataSetChanged();
                                             MessageUnReadListener.getInstance().notifyDataSetChanged(0);
                                             break;
                                         case 1:
                                             ConversationSqlManager.getInstance(mContext).deleteAllConversation();
+                                            FConversationSqlManager.getInstance(mContext).deleteAllConversation();
                                             IMessageDaoManager.getInstance(mContext).deleteAllIMessage();
                                             mConversations.clear();
                                             notifyDataSetChanged();
                                             MessageUnReadListener.getInstance().notifyDataSetChanged(0);
-                                            NotificationManagerUtils.getInstance().cancelNotification();
+                                            NotificationManager.getInstance().cancelNotification();
+                                            break;
+                                        case 2:
+                                            Intent intent = new Intent(mContext, PersonalInfoActivity.class);
+                                            intent.putExtra(ValueKey.USER_ID, mConversations.get(position).talker);
+                                            mContext.startActivity(intent);
                                             break;
                                     }
                                     dialog.dismiss();

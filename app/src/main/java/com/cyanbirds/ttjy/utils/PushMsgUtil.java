@@ -59,7 +59,7 @@ public class PushMsgUtil {
 		if (pushMsgModel != null && !TextUtils.isEmpty(pushMsgModel.sender)) {
 			if (pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
 				if (!AppManager.getTopActivity(CSApplication.getInstance()).equals("com.cyanbirds.ttjy.activity.VoipCallActivity")) {
-					if (!AppManager.getClientUser().is_vip) {
+					if (!AppManager.getClientUser().is_vip || AppManager.getClientUser().gold_num < 100) {
 						//当前接收到消息的时间和登录时间相距小于1分钟，就延迟执行
 						if (System.currentTimeMillis() - AppManager.getClientUser().loginTime < 60000) {
 							mHandler.postDelayed(new Runnable() {
@@ -86,7 +86,7 @@ public class PushMsgUtil {
 			}
 			if (System.currentTimeMillis() - AppManager.getClientUser().loginTime < 60000 &&
 					pushMsgModel.msgType == PushMsgModel.MessageType.VOIP) {
-				if (!AppManager.getClientUser().is_vip) {
+				if (!AppManager.getClientUser().is_vip || AppManager.getClientUser().gold_num < 100) {
 					mHandler.postDelayed(new Runnable() {
 						@Override
 						public void run() {
@@ -95,12 +95,7 @@ public class PushMsgUtil {
 					}, 60000);
 				}
 			} else {
-				mHandler.post(new Runnable() {
-					@Override
-					public void run() {
-						handleConversation(pushMsgModel);
-					}
-				});
+				handleConversation(pushMsgModel);
 			}
 		}
 	}
@@ -129,7 +124,6 @@ public class PushMsgUtil {
 			conversation.talker = pushMsgModel.sender;
 			conversation.talkerName = pushMsgModel.senderName;
 			conversation.createTime = pushMsgModel.serverTime;
-			conversation.faceUrl = pushMsgModel.faceUrl;
 			conversation.unreadCount++;
 			long conversationId = ConversationSqlManager.getInstance(
 					CSApplication.getInstance()).inserConversation(conversation);

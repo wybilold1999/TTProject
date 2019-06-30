@@ -85,6 +85,8 @@ public class PersonalInfoActivity extends BaseActivity {
 	LinearLayout mBottomLayout;
 	@BindView(R.id.gift)
 	TextView mGift;
+	@BindView(R.id.identify_state)
+	TextView mIdentifyState;
 
 	private List<String> tabList;
 	private List<Fragment> fragmentList;
@@ -125,6 +127,12 @@ public class PersonalInfoActivity extends BaseActivity {
 		fragmentList.add(personalFragment);
 		fragmentList.add(dynamicFragment);
 
+		if (AppManager.getClientUser().isShowAppointment) {
+			mLove.setText(R.string.tv_appointment);
+		} else {
+			mLove.setText(R.string.like);
+		}
+
 		rxBusSub();
 
 	}
@@ -160,6 +168,14 @@ public class PersonalInfoActivity extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (AppManager.getClientUser().userId.equals(curUserId)) {
 			getMenuInflater().inflate(R.menu.personal_menu, menu);
+		} else if (!"oppo".equals(channel)){//oppo渠道不显示call
+			if (AppManager.getClientUser().isShowVip) {
+				if (!AppManager.getClientUser().is_vip) {
+					getMenuInflater().inflate(R.menu.call_menu, menu);
+				} else if (AppManager.getClientUser().isShowGold && AppManager.getClientUser().gold_num < 100) {
+					getMenuInflater().inflate(R.menu.call_menu, menu);
+				}
+			}
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -168,6 +184,12 @@ public class PersonalInfoActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.modify_info) {
 			Intent intent = new Intent(this, ModifyUserInfoActivity.class);
+			startActivity(intent);
+		} else if (item.getItemId() == R.id.call) {
+			Intent intent = new Intent(this, VoipCallActivity.class);
+			intent.putExtra(ValueKey.IMAGE_URL, mClientUser == null ? "" : mClientUser.face_url);
+			intent.putExtra(ValueKey.USER_NAME, mClientUser == null ? "" : mClientUser.user_name);
+			intent.putExtra(ValueKey.FROM_ACTIVITY, "PersonalInfoActivity");
 			startActivity(intent);
 		} else {
 			finish();
@@ -210,9 +232,19 @@ public class PersonalInfoActivity extends BaseActivity {
 				startActivity(intent);
 				break;
 			case R.id.love:
-				if (null != mClientUser) {
-					sendGreet(mClientUser.userId);
-					addLove(mClientUser.userId);
+				if (AppManager.getClientUser().isShowAppointment && !TextUtils.isEmpty(curUserId)) {
+					if (mClientUser != null) {
+						/*intent.setClass(this, AppointmentActivity.class);
+						intent.putExtra(ValueKey.USER_ID, curUserId);
+						intent.putExtra(ValueKey.USER_NAME, mClientUser.user_name);
+						intent.putExtra(ValueKey.IMAGE_URL, mClientUser.face_url);
+						startActivity(intent);*/
+					}
+				} else {
+					if (null != mClientUser) {
+						sendGreet(mClientUser.userId);
+						addLove(mClientUser.userId);
+					}
 				}
 				break;
 			case R.id.message:
@@ -367,6 +399,11 @@ public class PersonalInfoActivity extends BaseActivity {
 			mPortrait.setImageURI(Uri.parse(imagePath));
 		}
 		mCollapsingToolbarLayout.setTitle(clientUser.user_name);
+		if (AppManager.getClientUser().isShowVip && clientUser.is_vip) {
+			mIdentifyState.setVisibility(View.VISIBLE);
+		} else {
+			mIdentifyState.setVisibility(View.GONE);
+		}
 
 		if (mClientUser.isFollow) {
 			mAttention.setText("已关注");
@@ -423,11 +460,5 @@ public class PersonalInfoActivity extends BaseActivity {
 		super.onPause();
 		MobclickAgent.onPageEnd(this.getClass().getName());
 		MobclickAgent.onPause(this);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		RxBus.getInstance().unregister(AppConstants.UPDATE_USER_INFO, observable);
 	}
 }

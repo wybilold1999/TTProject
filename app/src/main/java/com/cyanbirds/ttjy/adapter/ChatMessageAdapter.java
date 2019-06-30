@@ -3,10 +3,12 @@ package com.cyanbirds.ttjy.adapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.Html;
@@ -26,14 +28,15 @@ import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.LocationDetailActivity;
 import com.cyanbirds.ttjy.activity.PersonalInfoActivity;
 import com.cyanbirds.ttjy.activity.PhotoViewActivity;
+import com.cyanbirds.ttjy.activity.VipCenterActivity;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
-import com.cyanbirds.ttjy.entity.Conversation;
+import com.cyanbirds.ttjy.entity.FConversation;
 import com.cyanbirds.ttjy.entity.IMessage;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.net.request.DownloadImageRequest;
 import com.cyanbirds.ttjy.ui.widget.CircularProgress;
+import com.cyanbirds.ttjy.utils.DateUtil;
 import com.cyanbirds.ttjy.utils.DensityUtil;
 import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
@@ -58,7 +61,7 @@ public class ChatMessageAdapter extends
         RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static List<IMessage> mIMessages;
-    private static Conversation mConversation;
+    private static FConversation mConversation;
     /**
      * 需要显示时间的Item position
      */
@@ -66,7 +69,7 @@ public class ChatMessageAdapter extends
     private static Context mContext;
     private String redPkt[] = null;//红包数据结构:祝福语;金额
 
-    public ChatMessageAdapter(Context context, List<IMessage> messages, Conversation mConversation) {
+    public ChatMessageAdapter(Context context, List<IMessage> messages, FConversation mConversation) {
         mContext = context;
         mIMessages = messages;
         mShowTimePosition = new ArrayList<String>();
@@ -107,14 +110,12 @@ public class ChatMessageAdapter extends
                             .setBackgroundResource(R.drawable.left_bubble_selector);
                     textHolder.message_text.setTextColor(Color.BLACK);
 
-                    if(null != mConversation && !TextUtils.isEmpty(mConversation.localPortrait)){
+                    if(!TextUtils.isEmpty(mConversation.localPortrait)){
                         if (mConversation.localPortrait.startsWith("res")) {
                             textHolder.portrait.setImageURI(Uri.parse(mConversation.localPortrait));
                         } else {
                             textHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
                         }
-                    } else if (null != mConversation) {
-                        textHolder.portrait.setImageURI(Uri.parse(mConversation.faceUrl));
                     }
 
                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) textHolder.portrait
@@ -220,16 +221,13 @@ public class ChatMessageAdapter extends
                             }
                         }
                     }
-                    if(null != mConversation && !TextUtils.isEmpty(mConversation.localPortrait)){
+                    if(!TextUtils.isEmpty(mConversation.localPortrait)){
                         if (mConversation.localPortrait.startsWith("res")) {
                             imageHolder.portrait.setImageURI(Uri.parse(mConversation.localPortrait));
                         } else {
                             imageHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
                         }
-                    } else if (mConversation != null){
-                        imageHolder.portrait.setImageURI(Uri.parse(mConversation.faceUrl));
                     }
-
                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) imageHolder.portrait
                             .getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT,
@@ -287,14 +285,12 @@ public class ChatMessageAdapter extends
                 locationHolder.message_send_fail.setVisibility(View.GONE);
                 if (message.isSend == IMessage.MessageIsSend.RECEIVING) {
 
-                    if(null != mConversation && !TextUtils.isEmpty(mConversation.localPortrait)){
+                    if(!TextUtils.isEmpty(mConversation.localPortrait)){
                         if (mConversation.localPortrait.startsWith("res")) {
                             locationHolder.portrait.setImageURI(Uri.parse(mConversation.localPortrait));
                         } else {
                             locationHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
                         }
-                    }  else if (mConversation != null){
-                        locationHolder.portrait.setImageURI(Uri.parse(mConversation.faceUrl));
                     }
 
                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) locationHolder.portrait
@@ -363,16 +359,10 @@ public class ChatMessageAdapter extends
                             .setBackgroundResource(R.drawable.left_bubble_selector);
                     voipViewHolder.message_text.setTextColor(Color.BLACK);
 
-                    if(null != mConversation && !TextUtils.isEmpty(mConversation.localPortrait)){
+                    if(!TextUtils.isEmpty(mConversation.localPortrait)){
                         if (mConversation.localPortrait.startsWith("res")) {
                             voipViewHolder.portrait.setImageURI(Uri.parse(mConversation.localPortrait));
                         } else {
-                            voipViewHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
-                        }
-                    } else {
-                        mConversation = ConversationSqlManager.getInstance(mContext)
-                                .queryConversationForById(message.conversationId);
-                        if (null != mConversation) {
                             voipViewHolder.portrait.setImageURI(Uri.parse("file://" + mConversation.localPortrait));
                         }
                     }
@@ -511,12 +501,12 @@ public class ChatMessageAdapter extends
      * 设置显示时间
      */
     private void setChatTime(TextView chat_time, long time, boolean showTimer) {
-        /*chat_time.setVisibility(View.GONE);
+        chat_time.setVisibility(View.GONE);
         if (showTimer) {
             chat_time.setVisibility(View.VISIBLE);
             chat_time.setText(DateUtil.getDateString(time,
                     DateUtil.SHOW_TYPE_CALL_LOG).trim());
-        }*/
+        }
     }
 
 
@@ -621,7 +611,7 @@ public class ChatMessageAdapter extends
     }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder implements
-            OnClickListener{
+            OnClickListener {
 
         SimpleDraweeView portrait;
         SimpleDraweeView message_img;
@@ -683,7 +673,7 @@ public class ChatMessageAdapter extends
     }
 
     public class LocationViewHolder extends RecyclerView.ViewHolder implements
-            OnClickListener{
+            OnClickListener {
 
         ImageView location_img;
         TextView location_info;
@@ -779,6 +769,29 @@ public class ChatMessageAdapter extends
                     break;
             }
         }
+    }
+
+
+
+    private void showVipDialog(String tips) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setMessage(tips);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                Intent intent = new Intent();
+                intent.setClass(mContext, VipCenterActivity.class);
+                mContext.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     public void onDestroy() {

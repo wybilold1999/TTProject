@@ -10,39 +10,28 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Build;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.alibaba.sdk.android.oss.OSS;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.FederationToken;
 import com.cyanbirds.ttjy.entity.IMessage;
+import com.cyanbirds.ttjy.utils.PreferencesUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mmkv.MMKV;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static android.content.Context.ACTIVITY_SERVICE;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_CURRENT_CITY;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_LATITUDE;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_LONGITUDE;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_ACCOUNT;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_FACE_LOCAL;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_IS_LOGIN;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_PASSWORD;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_SESSIONID;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_USER_MOBILE;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_RL_USER_USER_NAME;
-import static com.cyanbirds.ttjy.utils.PreferencesUtils.SETTINGS_SEX;
-
 /**
- *
+ * 
  * @ClassName:AppManager
  * @Description:APP管理类
  * @Author:wangyb
@@ -75,8 +64,6 @@ public class AppManager {
 
 	private static IWXAPI sIWX_PAY_API;
 	private static IWXAPI sIWXAPI;
-
-	private static MMKV sMMKV;
 
 	private static ExecutorService mExecutorService;
 
@@ -112,7 +99,7 @@ public class AppManager {
 
 	/**
 	 * 设置用户信息
-	 *
+	 * 
 	 * @param user
 	 */
 	public static void setClientUser(ClientUser user) {
@@ -121,7 +108,7 @@ public class AppManager {
 
 	/**
 	 * 获取用户信息
-	 *
+	 * 
 	 * @return
 	 */
 	public static ClientUser getClientUser() {
@@ -130,7 +117,7 @@ public class AppManager {
 
 	/**
 	 * 获取包名
-	 *
+	 * 
 	 * @return
 	 */
 	public static String getPackageName() {
@@ -139,7 +126,7 @@ public class AppManager {
 
 	/**
 	 * 返回上下文对象
-	 *
+	 * 
 	 * @return
 	 */
 	public static Context getContext() {
@@ -148,7 +135,7 @@ public class AppManager {
 
 	/**
 	 * 设置上下文对象
-	 *
+	 * 
 	 * @param context
 	 */
 	public static void setContext(Context context) {
@@ -158,7 +145,7 @@ public class AppManager {
 
 	/**
 	 * 获取应用程序版本名称
-	 *
+	 * 
 	 * @return 版本名称
 	 */
 	public static String getVersion() {
@@ -179,7 +166,7 @@ public class AppManager {
 
 	/**
 	 * 获取应用版本号
-	 *
+	 * 
 	 * @return 版本号
 	 */
 	public static int getVersionCode() {
@@ -200,35 +187,35 @@ public class AppManager {
 
 	/**
 	 * 获取设备ID
-	 *
+	 * 
 	 * @return
 	 */
 	public static String getDeviceId() {
-		String serial = null;
-		String m_szDevIDShort = "35" +
-				Build.BOARD.length()%10+ Build.BRAND.length()%10 +
-
-				Build.CPU_ABI.length()%10 + Build.DEVICE.length()%10 +
-
-				Build.DISPLAY.length()%10 + Build.HOST.length()%10 +
-
-				Build.ID.length()%10 + Build.MANUFACTURER.length()%10 +
-
-				Build.MODEL.length()%10 + Build.PRODUCT.length()%10 +
-
-				Build.TAGS.length()%10 + Build.TYPE.length()%10 +
-
-				Build.USER.length()%10 ; //13 位
+		String deviceId = "";
 		try {
-			serial = android.os.Build.class.getField("SERIAL").get(null).toString();
-			//API>=9 使用serial号
-			return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
-		} catch (Exception exception) {
-			//serial需要一个初始化
-			serial = "serial"; // 随便一个初始化
+			// 获取ID
+			TelephonyManager tm = (TelephonyManager) mContext
+					.getSystemService(Context.TELEPHONY_SERVICE);
+			String id = tm.getDeviceId();
+			// 获取mac地址
+			String macSerial = null;
+			String str = "";
+			Process pp = Runtime.getRuntime().exec(
+					"cat /sys/class/net/wlan0/address ");
+			InputStreamReader ir = new InputStreamReader(pp.getInputStream());
+			LineNumberReader input = new LineNumberReader(ir);
+			for (; null != str;) {
+				str = input.readLine();
+				if (str != null) {
+					macSerial = str.trim();
+					break;
+				}
+			}
+			deviceId = "Android_" + id + "_" + macSerial;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		//使用硬件信息拼凑出来的15位号码
-		return new UUID(m_szDevIDShort.hashCode(), serial.hashCode()).toString();
+		return deviceId;
 	}
 
 	/**
@@ -270,7 +257,7 @@ public class AppManager {
 	 */
 	public static boolean isAppIsInBackground(Context context) {
 		boolean isInBackground = true;
-		ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
 			List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
 			for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
@@ -304,7 +291,7 @@ public class AppManager {
 		boolean isTop = false;
 		if (null == mActivityManager) {
 			mActivityManager = ((ActivityManager) context
-					.getSystemService(ACTIVITY_SERVICE));
+					.getSystemService(Context.ACTIVITY_SERVICE));
 		}
 		if (null != mActivityManager) {
 			tasksInfo = mActivityManager.getRunningTasks(1);
@@ -326,26 +313,12 @@ public class AppManager {
 	 * @return boolean
 	 */
 	public static boolean isAppAlive(Context context, String packageName) {
-		ActivityManager am = (ActivityManager)context.getSystemService(ACTIVITY_SERVICE);
-		List<RunningTaskInfo> list = am.getRunningTasks(100);
-		if (list.size() <= 0) {
-			return false;
-		}
-		boolean isAppRunning = false;
-		//100表示取的最大的任务数，info.topActivity表示当前正在运行的Activity，info.baseActivity表系统后台有此进程在运行
-		for (RunningTaskInfo info : list) {
-			if (info.topActivity.getPackageName().equals(packageName) || info.baseActivity.getPackageName().equals(packageName)) {
-				isAppRunning = true;
-				break;
-			}
-		}
-		return isAppRunning;
-	}
-
-	public static boolean isServiceRunning(Context context, String ServicePackageName) {
-		ActivityManager manager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
-		for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (ServicePackageName.equals(service.service.getClassName())) {
+		ActivityManager activityManager = (ActivityManager) context
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		List<ActivityManager.RunningAppProcessInfo> processInfos = activityManager
+				.getRunningAppProcesses();
+		for (int i = 0; i < processInfos.size(); i++) {
+			if (processInfos.get(i).processName.equals(packageName)) {
 				return true;
 			}
 		}
@@ -362,7 +335,7 @@ public class AppManager {
 	public static String getTopActivity(Context context) {
 		if (null == mActivityManager) {
 			mActivityManager = ((ActivityManager) context
-					.getSystemService(ACTIVITY_SERVICE));
+					.getSystemService(Context.ACTIVITY_SERVICE));
 		}
 		if (null != mActivityManager) {
 			tasksInfo = mActivityManager.getRunningTasks(1);
@@ -384,7 +357,7 @@ public class AppManager {
 	 */
 	public static void showNotification(IMessage message) {
 		if (checkNeedMsgNotify(message)) {
-			NotificationManagerUtils.getInstance().showMessageNotification(
+			NotificationManager.getInstance().showMessageNotification(
 					message);
 		}
 	}
@@ -395,6 +368,17 @@ public class AppManager {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * 获取手机IMEI
+	 * 
+	 * @return
+	 */
+	public static String getImei() {
+		String imei = ((TelephonyManager) mContext
+				.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+		return imei;
 	}
 
 	public static void installApk(File file) {
@@ -421,14 +405,8 @@ public class AppManager {
 	 * @return
 	 */
 	public static boolean isLogin() {
-		/*if (getClientUser() == null || TextUtils.isEmpty(getClientUser().userId)
+		if (getClientUser() == null || TextUtils.isEmpty(getClientUser().userId) // &&Integer.parseInt(getClientUser().userId) <= 0)
 				|| !PreferencesUtils.getIsLogin(mContext)) {
-			return false;
-		}
-
-		return true;*/
-		if (getClientUser() == null || TextUtils.isEmpty(getClientUser().userId)
-				|| !sMMKV.decodeBool(SETTINGS_RL_IS_LOGIN, false)) {
 			return false;
 		}
 
@@ -462,14 +440,6 @@ public class AppManager {
 		sIWX_PAY_API = IWX_PAY_API;
 	}
 
-	public static MMKV getMMKV() {
-		return sMMKV;
-	}
-
-	public static void setMMKV(MMKV MMKV) {
-		sMMKV = MMKV;
-	}
-
 	public static String getProcessName(int pid) {
 		BufferedReader reader = null;
 		try {
@@ -498,12 +468,12 @@ public class AppManager {
 	 */
 	public static void setUserInfo() {
 		try {
-			String userId = sMMKV.decodeString(SETTINGS_RL_ACCOUNT, "");
-			String mobile = sMMKV.decodeString(SETTINGS_RL_USER_MOBILE, "");
-			String pwd = sMMKV.decodeString(SETTINGS_RL_PASSWORD, "");
-			String userName = sMMKV.decodeString(SETTINGS_RL_USER_USER_NAME, "");
-			String face_local = sMMKV.decodeString(SETTINGS_RL_FACE_LOCAL, "");
-			String sessionId = sMMKV.decodeString(SETTINGS_RL_SESSIONID, "");
+			String userId = PreferencesUtils.getAccount(mContext);
+			String mobile = PreferencesUtils.getUserMobile(mContext);
+			String pwd = PreferencesUtils.getPassword(mContext);
+			String userName = PreferencesUtils.getUserName(mContext);
+			String face_local = PreferencesUtils.getFaceLocal(mContext);
+			String sessionId = PreferencesUtils.getSessionid(mContext);
 			ClientUser clientUser = new ClientUser();
 			clientUser.userId = userId;
 			clientUser.mobile = mobile;
@@ -511,10 +481,7 @@ public class AppManager {
 			clientUser.user_name = userName;
 			clientUser.face_local = face_local;
 			clientUser.sessionId = sessionId;
-			clientUser.currentCity = sMMKV.decodeString(SETTINGS_CURRENT_CITY, "");
-			clientUser.sex = sMMKV.decodeString(SETTINGS_SEX, "");
-			clientUser.latitude = sMMKV.decodeString(SETTINGS_LATITUDE, "");
-			clientUser.longitude = sMMKV.decodeString(SETTINGS_LONGITUDE, "");
+			clientUser.currentCity = PreferencesUtils.getCurrentCity(mContext);
 			setClientUser(clientUser);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -526,15 +493,14 @@ public class AppManager {
 	 */
 	public static void saveUserInfo() {
 		try {
-			sMMKV.encode(SETTINGS_RL_ACCOUNT, getClientUser().userId);
-			sMMKV.encode(SETTINGS_RL_PASSWORD, getClientUser().userPwd);
-			sMMKV.encode(SETTINGS_RL_FACE_LOCAL, getClientUser().face_local);
-			sMMKV.encode(SETTINGS_RL_USER_MOBILE, getClientUser().mobile);
-			sMMKV.encode(SETTINGS_RL_USER_USER_NAME, getClientUser().user_name);
-			sMMKV.encode(SETTINGS_RL_SESSIONID, getClientUser().sessionId);
-			sMMKV.encode(SETTINGS_RL_IS_LOGIN, true);
-			sMMKV.encode(SETTINGS_CURRENT_CITY, getClientUser().currentCity);
-			sMMKV.encode(SETTINGS_SEX, getClientUser().sex);
+			PreferencesUtils.setAccount(mContext, getClientUser().userId);
+			PreferencesUtils.setPassword(mContext, getClientUser().userPwd);
+			PreferencesUtils.setFaceLocal(mContext, getClientUser().face_local);
+			PreferencesUtils.setUserMobile(mContext, getClientUser().mobile);
+			PreferencesUtils.setUserName(mContext, getClientUser().user_name);
+			PreferencesUtils.setSessionId(mContext, getClientUser().sessionId);
+			PreferencesUtils.setIsLogin(mContext, true);
+			PreferencesUtils.setCurrentCity(mContext, getClientUser().currentCity);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

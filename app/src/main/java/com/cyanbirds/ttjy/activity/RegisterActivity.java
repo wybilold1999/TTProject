@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -64,6 +63,11 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
     ImageView mSelectMan;
     ImageView mSelectLady;
 
+    /**
+     * 相册返回
+     */
+    public final static int ALBUMS_RESULT = 102;
+
     public static Tencent mTencent;
     private UserInfo mInfo;
     private String token;
@@ -74,6 +78,7 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
     private String mCurrrentCity;//定位到的城市
 
     private Observable<?> observable;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,11 +126,14 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
                     checkPhoneIsRegister();
                 }
                 break;
+            case R.id.portrait :
+                openAlbums();
+                break;
             case R.id.qq_login:
-                if (!TextUtils.isEmpty(AppManager.getClientUser().sex)) {
-                    sendQQRequest();
-                } else {
-                    ToastUtil.showMessage(R.string.please_select_sex);
+                ProgressDialogUtils.getInstance(this).show(R.string.wait);
+                if (!mTencent.isSessionValid() &&
+                        mTencent.getQQToken().getOpenId() == null) {
+                    mTencent.login(this, "all", loginListener);
                 }
                 break;
             case R.id.select_man :
@@ -135,32 +143,16 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
                 showSelectSexDialog(R.id.select_lady);
                 break;
             case R.id.weixin_login:
-                if (!TextUtils.isEmpty(AppManager.getClientUser().sex)) {
-                    sendWeChatRequest();
+                ProgressDialogUtils.getInstance(this).show(R.string.wait);
+                SendAuth.Req req = new SendAuth.Req();
+                req.scope = "snsapi_userinfo";
+                req.state = "wechat_sdk_demo_test";
+                if (null != AppManager.getIWXAPI()) {
+                    AppManager.getIWXAPI().sendReq(req);
                 } else {
-                    ToastUtil.showMessage(R.string.please_select_sex);
+                    CSApplication.api.sendReq(req);
                 }
                 break;
-        }
-    }
-
-    private void sendWeChatRequest() {
-        ProgressDialogUtils.getInstance(this).show(R.string.wait);
-        SendAuth.Req req = new SendAuth.Req();
-        req.scope = "snsapi_userinfo";
-        req.state = "wechat_sdk_demo_test";
-        if (null != AppManager.getIWXAPI()) {
-            AppManager.getIWXAPI().sendReq(req);
-        } else {
-            CSApplication.api.sendReq(req);
-        }
-    }
-
-    private void sendQQRequest() {
-        ProgressDialogUtils.getInstance(this).show(R.string.wait);
-        if (!mTencent.isSessionValid() &&
-                mTencent.getQQToken().getOpenId() == null) {
-            mTencent.login(this, "all", loginListener);
         }
     }
 
@@ -190,12 +182,6 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
     @Override
     public void onHideLoading() {
         ProgressDialogUtils.getInstance(RegisterActivity.this).dismiss();
-    }
-
-    @Override
-    public void onShowNetError() {
-        onHideLoading();
-        ToastUtil.showMessage(R.string.network_requests_error);
     }
 
     @Override
@@ -252,6 +238,15 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
                         startActivity(intent);
                     }
                 }, throwable -> onShowNetError());
+    }
+
+    /**
+     * 打开相册
+     */
+    private void openAlbums() {
+        Intent openAlbumIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        openAlbumIntent.setType("image/*");
+        startActivityForResult(openAlbumIntent, ALBUMS_RESULT);
     }
 
     IUiListener loginListener = new BaseUiListener() {
@@ -365,12 +360,10 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
                             mClientUser = new ClientUser();
                         }
                         if (sexId == R.id.select_man) {
-                            AppManager.getClientUser().sex = "1";
-                            mClientUser.sex = "1";
+                            mClientUser.sex = "男";
                             mSelectMan.setImageResource(R.mipmap.radio_men_focused_bg);
                         } else {
-                            AppManager.getClientUser().sex = "0";
-                            mClientUser.sex = "0";
+                            mClientUser.sex = "女";
                             mSelectLady.setImageResource(R.mipmap.radio_women_focused_bg);
                         }
                         dialog.dismiss();
@@ -437,20 +430,5 @@ public class RegisterActivity extends BaseActivity<IUserLoginLogOut.Presenter> i
     protected void onStop() {
         super.onStop();
         ProgressDialogUtils.getInstance(this).dismiss();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        RxBus.getInstance().unregister(AppConstants.CITY_WE_CHAT_RESP_CODE, observable);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK
-                && event.getAction() == KeyEvent.ACTION_DOWN) {
-            finish();
-        }
-        return super.onKeyDown(keyCode, event);
     }
 }

@@ -239,11 +239,18 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 						FileAccessorUtils.FACE_IMAGE,
 						Md5Util.md5(AppManager.getClientUser().face_url) + ".jpg");
 			}
+			if (AppManager.getClientUser().isShowLovers) {
+				mCardFriend.setVisibility(View.VISIBLE);
+				mTvFriend.setVisibility(View.VISIBLE);
+			} else {
+				mCardFriend.setVisibility(View.GONE);
+				mTvFriend.setVisibility(View.GONE);
+			}
 			if (!TextUtils.isEmpty(clientUser.user_name)) {
 				mNickName.setText(clientUser.user_name);
 			}
 			if (!TextUtils.isEmpty(clientUser.sex)) {
-				mSex.setText("1".equals(clientUser.sex) ? "男" : "女");
+				mSex.setText(clientUser.sex);
 			}
 			if (!TextUtils.isEmpty(String.valueOf(clientUser.age))) {
 				mAge.setText(String.valueOf(clientUser.age));
@@ -324,11 +331,6 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 					}
 				}
 				mIntrestFlowlayout.setTags(mVals);
-			}
-
-			if (AppManager.getClientUser().isShowVip) {
-				mTvFriend.setVisibility(View.VISIBLE);
-				mCardFriend.setVisibility(View.VISIBLE);
 			}
 		}
 	}
@@ -544,15 +546,12 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 	}
 
 	private void checkPOpenCameraAlbums() {
-		if (!CheckUtil.isGetPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-				!CheckUtil.isGetPermission(this, Manifest.permission.CAMERA) ||
-				!CheckUtil.isGetPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+		if (!CheckUtil.isGetPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
+				!CheckUtil.isGetPermission(this, Manifest.permission.CAMERA)) {
 			if (rxPermissions == null) {
 				rxPermissions = new RxPermissions(this);
 			}
-			rxPermissions.requestEachCombined(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-					Manifest.permission.CAMERA,
-					Manifest.permission.READ_EXTERNAL_STORAGE)
+			rxPermissions.requestEachCombined(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
 					.subscribe(permission -> {// will emit 1 Permission object
 						if (permission.granted) {
 							// All permissions are granted !
@@ -583,7 +582,6 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 
     private void showPermissionDialog(int textResId, int requestCode) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.permission_request);
         builder.setMessage(textResId);
         builder.setPositiveButton(R.string.ok, (dialog, i) -> {
             dialog.dismiss();
@@ -731,7 +729,7 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 	 */
 	private void showLableDialog() {
 		mVals.clear();
-		if ("1".equals(AppManager.getClientUser().sex)) {
+		if ("男".equals(AppManager.getClientUser().sex)) {
 			commonDialog(R.string.lable,
 					getResources().getStringArray(R.array.male_lable), null, mLableFlowlayout, mLableText);
 		} else {
@@ -745,7 +743,7 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 	 */
 	private void showPartDialog() {
 		mVals.clear();
-		if ("1".equals(AppManager.getClientUser().sex)) {
+		if ("男".equals(AppManager.getClientUser().sex)) {
 			commonDialog(R.string.satisfacies_part,
 					getResources().getStringArray(R.array.male_sex_part), null, mPartFlowlayout, mPartText);
 		} else {
@@ -821,7 +819,7 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 				String lableTag = ";" + clientUser.personality_tag;
 				if (!TextUtils.isEmpty(lableTag)) {
 					String[] lableArray = null;
-					if ("1".equals(AppManager.getClientUser().sex)) {
+					if ("男".equals(AppManager.getClientUser().sex)) {
 						lableArray = getResources().getStringArray(R.array.male_lable);
 					} else {
 						lableArray = getResources().getStringArray(R.array.female_lable);
@@ -842,7 +840,7 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 				String partTag = ";" + clientUser.part_tag;
 				if (!TextUtils.isEmpty(partTag)) {
 					String[] partArray = null;
-					if ("1".equals(AppManager.getClientUser().sex)) {
+					if ("男".equals(AppManager.getClientUser().sex)) {
 						partArray = getResources().getStringArray(R.array.male_sex_part);
 					} else {
 						partArray = getResources().getStringArray(R.array.female_sex_part);
@@ -1110,17 +1108,15 @@ public class ModifyUserInfoActivity extends BaseActivity implements ModifyUserIn
 				Utils.cutPhoto(this, mPhotoOnSDCardUri, mCutFile, PHOTO_CUT_RESULT);
 			}
 		} else if (resultCode == RESULT_OK && requestCode == ALBUMS_RESULT) {
-			if (mCutFile != null) {
-				Uri originalUri = data.getData();
-				File originalFile = new File(FileUtils.getPath(this, originalUri));
-				Uri dataUri;
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-					dataUri = FileProvider.getUriForFile(this, AUTHORITY, originalFile);
-				} else {
-					dataUri = originalUri;
-				}
-				Utils.cutPhoto(this, dataUri, mCutFile, PHOTO_CUT_RESULT);
+			Uri originalUri = data.getData();
+			File originalFile = new File(FileUtils.getPath(this, originalUri));
+			Uri dataUri;
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+				dataUri = FileProvider.getUriForFile(this, AUTHORITY, originalFile);
+			} else {
+				dataUri = originalUri;
 			}
+			Utils.cutPhoto(this, dataUri, mCutFile, PHOTO_CUT_RESULT);
 		} else if (resultCode == RESULT_OK && requestCode == PHOTO_CUT_RESULT) {
 			mPortraitUri = data.getData();
 			if (mPortraitUri == null && mCutFile != null) {

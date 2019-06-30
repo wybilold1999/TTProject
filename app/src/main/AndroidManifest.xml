@@ -45,7 +45,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     //=============小米推送=====================//
     <permission
@@ -80,8 +79,6 @@
     <uses-permission android:name="com.xiaomi.permission.AUTH_SERVICE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-
     <permission
         android:name="getui.permission.GetuiService.com.cyanbirds.ttjy"
         android:protectionLevel="normal" >
@@ -109,22 +106,21 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme" >
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="6cb779c01dc89323b817ee1d73246c0b" />
+            android:value="58442a8be469441d3ef5fdd6a2c1942d" />
 
         <meta-data
             android:name="UMENG_APPKEY"
-            android:value="58a90dd97f2c7478a900065d"/>
+            android:value="57fcfcfbe0f55a3147003866"/>
 
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="${UMENG_CHANNEL_ID}" />
 
-    <activity
+        <activity
             android:name=".activity.LauncherActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:screenOrientation="portrait"
@@ -400,26 +396,10 @@
         </activity>
 
         <activity
-            android:name=".activity.SelectSexActivity"
+            android:name=".activity.FConversationActivity"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:windowSoftInputMode="stateAlwaysHidden"
-            android:label="@string/select_sex"
-            android:screenOrientation="portrait">
-        </activity>
-
-        <activity
-            android:name=".activity.CustomServiceActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:label="@string/my_custom_service_tv"
-            android:screenOrientation="portrait">
-        </activity>
-
-        <activity
-            android:name=".activity.NoResponsibilityActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:label="@string/no_responsibility"
+            android:label="@string/tab_message"
             android:screenOrientation="portrait">
         </activity>
 
@@ -468,7 +448,7 @@
         // 声明自定义通知的广播接收器，第三方 APP 集成时，action 中的 com.cyanbirds.ttjy 请替换为自己的包名
         <receiver
             android:name=".receiver.YuntxNotifyReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 // 接收push消息
                 // action匹配规则{packageName + ".action" + "功能"}
@@ -536,6 +516,72 @@
         //====================小米推送结束=================================
 
         //====================个推推送开始=================================
+        <meta-data
+            android:name="PUSH_APPID"
+            android:value="fn4zeTabxU6Z7jbRgm0d19" />
+        <meta-data
+            android:name="PUSH_APPKEY"
+            android:value="lhFmeD04jY7NEqOm6xW7E2" />
+        <meta-data
+            android:name="PUSH_APPSECRET"
+            android:value="SgdwgVRTVU8XW9UajLdjX1" />
+
+        <!-- 配置SDK核心服务 -->
+        <service
+            android:name="com.igexin.sdk.PushService"
+            android:exported="true"
+            android:label="NotificationCenter"
+            android:process=":pushservice">
+            <intent-filter>
+                <action android:name="com.igexin.sdk.action.service.message"/>
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="com.igexin.sdk.PushReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+                <action android:name="com.igexin.sdk.action.refreshls"/>
+                <action android:name="android.intent.action.MEDIA_MOUNTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.igexin.sdk.PushActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:process=":pushservice"
+            android:taskAffinity="com.igexin.sdk.PushActivityTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+        <activity
+            android:name="com.igexin.sdk.GActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:process=":pushservice"
+            android:taskAffinity="com.igexin.sdk.PushActivityTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+
+        <service
+            android:name="com.igexin.download.DownloadService"
+            android:process=":pushservice"/>
+
+        <receiver
+            android:name="com.igexin.download.DownloadReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.igexin.download.DownloadProvider"
+            android:authorities="com.cyanbirds.ttjy"
+            android:exported="true"
+            android:process=":pushservice"/>
 
         <!-- 用户自定义服务继承自GTIntentService,作为SDK与APP桥梁服务,用来接收各种消息和命令回复-->
         <service android:name=".service.MyIntentService"/>
@@ -551,13 +597,34 @@
 
         //====================信鸽推送开始=================================
 
+        <!-- YOUR_PACKAGE_PATH.CustomPushReceiver需要改为自己的Receiver： -->
+        <receiver android:name="com.cyanbirds.ttjy.receiver.MessageReceiver"
+                  android:exported="true" >
+            <intent-filter>
+                <!-- 接收消息透传 -->
+                <action android:name="com.tencent.android.tpush.action.PUSH_MESSAGE" />
+                <!-- 监听注册、反注册、设置/删除标签、通知被点击等处理结果 -->
+                <action android:name="com.tencent.android.tpush.action.FEEDBACK" />
+            </intent-filter>
+        </receiver>
 
         //====================信鸽推送结束=================================
+
+        //====================极光推送开始=================================
+
+        //====================极光推送开始=================================
+
+        //====================极光推送结束=================================
+
+        //====================魅族推送开始=================================
+
+        //====================魅族推送结束=================================
 
 
         <receiver android:name=".receiver.NotificationReceiver"/>
 
-        <service android:name=".service.ConnectServerService"/>
+        //下载主apk的service
+        <service android:name=".service.DownloadUpdateService"/>
 
     </application>
 

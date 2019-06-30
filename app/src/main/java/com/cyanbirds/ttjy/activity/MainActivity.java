@@ -14,12 +14,6 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
-import com.alibaba.sdk.android.oss.ClientConfiguration;
-import com.alibaba.sdk.android.oss.OSS;
-import com.alibaba.sdk.android.oss.OSSClient;
-import com.alibaba.sdk.android.oss.common.OSSLog;
-import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
-import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -28,12 +22,8 @@ import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.activity.base.BaseActivity;
 import com.cyanbirds.ttjy.adapter.ViewPagerAdapter;
-import com.cyanbirds.ttjy.config.AppConstants;
-import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.entity.ClientUser;
-import com.cyanbirds.ttjy.entity.FollowModel;
-import com.cyanbirds.ttjy.entity.ReceiveGiftModel;
 import com.cyanbirds.ttjy.fragment.FoundFragment;
 import com.cyanbirds.ttjy.fragment.HomeLoveFragment;
 import com.cyanbirds.ttjy.fragment.MessageFragment;
@@ -42,27 +32,17 @@ import com.cyanbirds.ttjy.helper.BottomNavigationViewHelper;
 import com.cyanbirds.ttjy.helper.SDKCoreHelper;
 import com.cyanbirds.ttjy.listener.MessageUnReadListener;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
 import com.cyanbirds.ttjy.net.IUserApi;
-import com.cyanbirds.ttjy.net.IUserFollowApi;
-import com.cyanbirds.ttjy.net.IUserLoveApi;
 import com.cyanbirds.ttjy.net.base.RetrofitFactory;
-import com.cyanbirds.ttjy.service.MyIntentService;
-import com.cyanbirds.ttjy.service.MyPushService;
 import com.cyanbirds.ttjy.ui.widget.CustomViewPager;
 import com.cyanbirds.ttjy.utils.CheckUtil;
 import com.cyanbirds.ttjy.utils.DensityUtil;
-import com.cyanbirds.ttjy.utils.JsonUtils;
-import com.cyanbirds.ttjy.utils.MsgUtil;
 import com.cyanbirds.ttjy.utils.PreferencesUtils;
-import com.cyanbirds.ttjy.utils.PushMsgUtil;
 import com.cyanbirds.ttjy.utils.Utils;
-import com.igexin.sdk.PushManager;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.uber.autodispose.AutoDispose;
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider;
 import com.umeng.analytics.MobclickAgent;
-import com.xiaomi.mipush.sdk.MiPushClient;
 import com.yuntongxun.ecsdk.ECInitParams;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -74,7 +54,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 
 	private CustomViewPager viewPager;
 	private BottomNavigationView bottomNavigationView;
-	private ClientConfiguration mOSSConf;
 
 	private final int REQUEST_LOCATION_PERMISSION = 1000;
 
@@ -85,18 +64,9 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	private String curLat;
 	private String curLon;
 
-	/**
-	 * oss鉴权获取失败重试次数
-	 */
-	public int mOSSTokenRetryCount = 0;
-
 	private Badge mBadgeView;
 	private QBadgeView mQBadgeView;
 	private RxPermissions rxPermissions;
-
-	private static Handler mHandler = new Handler();
-
-	private ViewPagerAdapter mViewPagerAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,38 +75,12 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 		setupViews();
 		setupEvent();
-		initOSS();
 		if (AppManager.getClientUser().is_vip) {
 			SDKCoreHelper.init(CSApplication.getInstance(), ECInitParams.LoginMode.FORCE_LOGIN);
 		}
 		updateConversationUnRead();
 
 		locationSuccess();
-
-		AppManager.getExecutorService().execute(() -> {
-
-			if (AppManager.getClientUser().isShowVip) {
-				/**
-				 * 注册小米推送
-				 */
-				MiPushClient.registerPush(MainActivity.this, AppConstants.MI_PUSH_APP_ID, AppConstants.MI_PUSH_APP_KEY);
-
-				//个推
-				initGeTuiPush();
-
-			}
-		});
-
-		if (AppManager.getClientUser().isShowVip) {
-			mHandler.postDelayed(() -> requestLoveForme(1, 1), 9000 * 10);
-			mHandler.postDelayed(() -> requestMyGiftList(1, 1), 5000 * 10);
-			mHandler.postDelayed(() -> requestFollowList("followFormeList", 1, 1), 1500 * 10);
-		} else {
-			SDKCoreHelper.init(CSApplication.getInstance(), ECInitParams.LoginMode.FORCE_LOGIN);
-		}
-
-		loadData();
-
 	}
 
 	/**
@@ -146,8 +90,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		String currentCity = AppManager.getClientUser().currentCity;
 		curLat = AppManager.getClientUser().latitude;
 		curLon = AppManager.getClientUser().longitude;
-		boolean isLocSuc = PreferencesUtils.getIsLocationSuccess(this);
-		if (isLocSuc && !TextUtils.isEmpty(currentCity) && !TextUtils.isEmpty(curLat) && !TextUtils.isEmpty(curLon)) {
+		if (!TextUtils.isEmpty(currentCity) && !TextUtils.isEmpty(curLat) && !TextUtils.isEmpty(curLon)) {
 			uploadCityInfoRequest(currentCity, curLat, curLon);
 		} else {
 			initLocationClient();
@@ -204,76 +147,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 		}
 	}
 
-	/**
-	 * 点击通知栏的消息，将消息入库
-	 */
-	private void loadData() {
-		String msg = getIntent().getStringExtra(ValueKey.DATA);
-		if (!TextUtils.isEmpty(msg)) {
-			viewPager.setCurrentItem(2);
-			PushMsgUtil.getInstance().handlePushMsg(false, msg);
-			NotificationManagerUtils.getInstance().cancelNotification();
-			AppManager.isMsgClick = true;
-		}
-	}
-
-	/**
-	 * 初始化oss
-	 */
-	private void initOSS() {
-		mOSSConf = new ClientConfiguration();
-		mOSSConf.setConnectionTimeout(30 * 1000); // 连接超时，默认15秒
-		mOSSConf.setSocketTimeout(30 * 1000); // socket超时，默认15秒
-		mOSSConf.setMaxConcurrentRequest(50); // 最大并发请求书，默认5个
-		mOSSConf.setMaxErrorRetry(2); // 失败后最大重试次数，默认2次
-		OSSLog.enableLog();
-
-		final Handler handler = new Handler();
-		// 每30分钟请求一次鉴权
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				getFederationToken();
-				handler.postDelayed(this, 60 * 30 * 1000);
-			}
-		};
-
-		handler.postDelayed(runnable, 0);
-	}
-
-	private void getFederationToken() {
-		RetrofitFactory.getRetrofit().create(IUserApi.class)
-				.getOSSToken()
-				.subscribeOn(Schedulers.io())
-				.map(responseBody -> JsonUtils.parseOSSToken(responseBody.string()))
-				.observeOn(AndroidSchedulers.mainThread())
-				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
-				.subscribe(result -> {
-					if (result != null) {
-						AppManager.setFederationToken(result);
-						OSSCredentialProvider credentialProvider = new OSSStsTokenCredentialProvider(result.accessKeyId, result.accessKeySecret, result.securityToken);
-						OSS oss = new OSSClient(getApplicationContext(), result.endpoint, credentialProvider, mOSSConf);
-						AppManager.setOSS(oss);
-						mOSSTokenRetryCount = 0;
-					} else {
-						if (mOSSTokenRetryCount < 5) {
-							getFederationToken();
-							mOSSTokenRetryCount++;
-						}
-					}
-				}, throwable -> {});
-
-	}
-
-	/**
-	 * 个推注册
-	 */
-	private void initGeTuiPush() {
-		// SDK初始化，第三方程序启动时，都要进行SDK初始化工作
-		PushManager.getInstance().initialize(this.getApplicationContext(), MyPushService.class);
-		PushManager.getInstance().registerPushIntentService(this.getApplicationContext(), MyIntentService.class);
-	}
-
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
@@ -283,22 +156,20 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	@Override
 	public void onLocationChanged(AMapLocation aMapLocation) {
 		if (aMapLocation != null && !TextUtils.isEmpty(aMapLocation.getCity())) {
+			PreferencesUtils.setCurrentCity(this, aMapLocation.getCity());
 			ClientUser clientUser = AppManager.getClientUser();
 			clientUser.latitude = String.valueOf(aMapLocation.getLatitude());
 			clientUser.longitude = String.valueOf(aMapLocation.getLongitude());
 			AppManager.setClientUser(clientUser);
 			curLat = clientUser.latitude;
 			curLon = clientUser.longitude;
-
+			if (TextUtils.isEmpty(PreferencesUtils.getCurrentProvince(this))) {
+				PreferencesUtils.setCurrentProvince(this, aMapLocation.getProvince());
+			}
 			uploadCityInfoRequest(aMapLocation.getCity(), String.valueOf(aMapLocation.getLatitude()),
 					String.valueOf(aMapLocation.getLongitude()));
-
-			PreferencesUtils.setCurrentCity(this, aMapLocation.getCity());
-			PreferencesUtils.setCurrentProvince(this, aMapLocation.getProvince());
 			PreferencesUtils.setLatitude(this, curLat);
 			PreferencesUtils.setLongitude(this, curLon);
-			PreferencesUtils.setIsLocationSuccess(this, true);
-
 			if (!TextUtils.isEmpty(aMapLocation.getCity())) {
 				stopLocation();
 			}
@@ -318,89 +189,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 				.observeOn(AndroidSchedulers.mainThread())
 				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
 				.subscribe(responseBody -> {} , throwable -> {});
-	}
-
-	/**
-	 * 获取最近喜欢我的那个人
-	 */
-	private void requestLoveForme(final int pageNo, final int pageSize){
-		ArrayMap<String, String> params = new ArrayMap<>();
-		params.put("uid", AppManager.getClientUser().userId);
-		params.put("pageNo", String.valueOf(pageNo));
-		params.put("pageSize", String.valueOf(pageSize));
-		RetrofitFactory.getRetrofit().create(IUserLoveApi.class)
-				.getLoveFormeList(AppManager.getClientUser().sessionId, params)
-				.subscribeOn(Schedulers.io())
-				.map(responseBody -> JsonUtils.parseJsonLovers(responseBody.string()))
-				.observeOn(AndroidSchedulers.mainThread())
-				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
-				.subscribe(loveModels -> {
-					if(loveModels != null && loveModels.size() > 0) {
-						String lastUserId = PreferencesUtils.getLoveMeUserId(MainActivity.this);
-						if (!lastUserId.equals(String.valueOf(loveModels.get(0).userId))) {
-
-							PreferencesUtils.setLoveMeUserId(
-									MainActivity.this, String.valueOf(loveModels.get(0).userId));
-							Intent intent = new Intent(MainActivity.this, PopupLoveActivity.class);
-							intent.putExtra(ValueKey.DATA, loveModels.get(0));
-							startActivity(intent);
-						}
-					}
-				}, throwable -> {});
-	}
-
-	/**
-	 * 获取礼物
-	 */
-	private void requestMyGiftList(int pageNo, int pageSize){
-		ArrayMap<String, String> params = new ArrayMap<>();
-		params.put("uid", AppManager.getClientUser().userId);
-		params.put("pageNo", String.valueOf(pageNo));
-		params.put("pageSize", String.valueOf(pageSize));
-		RetrofitFactory.getRetrofit().create(IUserFollowApi.class)
-				.getGiftsList(AppManager.getClientUser().sessionId, params)
-				.subscribeOn(Schedulers.io())
-				.map(responseBody -> JsonUtils.parseJsonReceiveGift(responseBody.string()))
-				.observeOn(AndroidSchedulers.mainThread())
-				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
-				.subscribe(receiveGiftModels -> {
-					if(null != receiveGiftModels && receiveGiftModels.size() > 0){
-						ReceiveGiftModel model = receiveGiftModels.get(0);
-						String lastUserId = PreferencesUtils.getGiftMeUserId(MainActivity.this);
-						if (!lastUserId.equals(String.valueOf(model.userId))) {
-							PreferencesUtils.setGiftMeUserId(
-									MainActivity.this, String.valueOf(model.userId));
-							MsgUtil.sendAttentionOrGiftMsg(String.valueOf(model.userId), model.nickname, model.faceUrl,
-									model.nickname + "给您送了一件礼物");
-						}
-					}
-				}, throwable -> {});
-	}
-
-	private void requestFollowList(String url, int pageNo, int pageSize) {
-		ArrayMap<String, String> params = new ArrayMap<>();
-		params.put("uid", AppManager.getClientUser().userId);
-		params.put("pageNo", String.valueOf(pageNo));
-		params.put("pageSize", String.valueOf(pageSize));
-		RetrofitFactory.getRetrofit().create(IUserFollowApi.class)
-				.getFollowList(url, AppManager.getClientUser().sessionId, params)
-				.subscribeOn(Schedulers.io())
-				.map(responseBody -> JsonUtils.parseJsonFollows(responseBody.string()))
-				.observeOn(AndroidSchedulers.mainThread())
-				.as(AutoDispose.autoDisposable(AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_DESTROY)))
-				.subscribe(followModels -> {
-					if(followModels != null && followModels.size() > 0){
-						FollowModel followModel = followModels.get(0);
-						String lastUserId = PreferencesUtils.getAttentionMeUserId(MainActivity.this);
-						if (!lastUserId.equals(String.valueOf(followModel.userId))) {
-							PreferencesUtils.setAttentionMeUserId(
-									MainActivity.this, String.valueOf(followModel.userId));
-							MsgUtil.sendAttentionOrGiftMsg(String.valueOf(followModel.userId),
-									followModel.nickname, followModel.faceUrl,
-									followModel.nickname + "关注了您");
-						}
-					}
-				}, throwable -> {});
 	}
 
 	/**
@@ -430,25 +218,11 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			return false;
 		});
 
-		setupViewPager(viewPager);
-
 		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 				if(bottomNavigationView.getMenu().getItem(position).isChecked()){
 					bottomNavigationView.getMenu().getItem(position).setChecked(false);
-				}
-				String title = getResources().getString(R.string.tab_find_love);
-				if (position == 1) {
-					title = getResources().getString(R.string.tab_found);
-				} else if (position == 2) {
-					title = getResources().getString(R.string.tab_message);
-				} else if (position == 3) {
-					title = getResources().getString(R.string.tab_personal);
-				}
-				if (mViewPagerAdapter != null && mViewPagerAdapter.getItem(position) !=null &&
-						mViewPagerAdapter.getItem(position).getActivity() != null) {
-					mViewPagerAdapter.getItem(position).getActivity().setTitle(title);
 				}
 			}
 
@@ -462,6 +236,8 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 			}
 		});
 
+		setupViewPager(viewPager);
+
 		BottomNavigationMenuView menuView = (BottomNavigationMenuView) bottomNavigationView.getChildAt(0);
 		if (menuView != null) {
 			mQBadgeView = new QBadgeView(this);
@@ -471,13 +247,13 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	}
 
 	private void setupViewPager(ViewPager viewPager) {
-		mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+		ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-		mViewPagerAdapter.addFragment(new HomeLoveFragment());
-		mViewPagerAdapter.addFragment(new FoundFragment());
-		mViewPagerAdapter.addFragment(new MessageFragment());
-		mViewPagerAdapter.addFragment(new PersonalFragment());
-		viewPager.setAdapter(mViewPagerAdapter);
+		adapter.addFragment(new HomeLoveFragment());
+		adapter.addFragment(new FoundFragment());
+		adapter.addFragment(new MessageFragment());
+		adapter.addFragment(new PersonalFragment());
+		viewPager.setAdapter(adapter);
 	}
 
 
@@ -512,7 +288,7 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	}
 
 	private void requestLocationPermission() {
-		if (!CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ||
+		if (!CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) &&
 				!CheckUtil.isGetPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
 			if (rxPermissions == null) {
 				rxPermissions = new RxPermissions(this);
@@ -545,7 +321,6 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	private void showAccessLocationDialog() {
 		isSecondAccess = true;
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.permission_request);
 		builder.setMessage(R.string.access_location);
 		builder.setPositiveButton(R.string.ok, (dialog, i) -> {
 			dialog.dismiss();
@@ -578,23 +353,9 @@ public class MainActivity extends BaseActivity implements MessageUnReadListener.
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK
 				&& event.getAction() == KeyEvent.ACTION_DOWN) {
-			showQuitDialog();
+			moveTaskToBack(false);
 		}
 		return super.onKeyDown(keyCode, event);
-	}
-
-	private void showQuitDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.quit_app_name);
-		builder.setMessage(R.string.quit_are_you_sure);
-		builder.setNegativeButton(R.string.cancel, (dialog, i) -> {
-			dialog.dismiss();
-		});
-		builder.setPositiveButton(R.string.ok, (dialog, i) -> {
-			dialog.dismiss();
-			exitApp();
-		});
-		builder.show();
 	}
 
 	@Override

@@ -80,11 +80,7 @@ public class FoundAdapter extends
             }
             viewHolder.portrait.setImageURI(Uri.parse(model.faceUrl));
             viewHolder.mUserName.setText(model.nickname);
-            if (!TextUtils.isEmpty(mCurCity) && null != model.distance && model.distance != 0.00) {
-                viewHolder.mFromCity.setVisibility(View.VISIBLE);
-                viewHolder.mDistanceLayout.setVisibility(View.GONE);
-                viewHolder.mFromCity.setText("来自" + mCurCity);
-            } else if (null == model.distance || model.distance == 0.00) {
+            if (!TextUtils.isEmpty(model.city)) {
                 viewHolder.mFromCity.setVisibility(View.VISIBLE);
                 viewHolder.mDistanceLayout.setVisibility(View.GONE);
                 viewHolder.mFromCity.setText("来自" + model.city);

@@ -94,23 +94,17 @@ public class FindLoveAdapter extends
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.userName.setText(clientUser.user_name);
             itemViewHolder.age.setText(String.valueOf(clientUser.age));
-            if ("1".equals(clientUser.sex)) {
+            if ("男".equals(clientUser.sex)) {
                 itemViewHolder.mSexImg.setImageResource(R.mipmap.list_male);
             } else {
                 itemViewHolder.mSexImg.setImageResource(R.mipmap.list_female);
             }
             itemViewHolder.marrayState.setText(clientUser.state_marry);
             itemViewHolder.constellation.setText(clientUser.constellation);
-            if (!TextUtils.isEmpty(mCurCity) && mCurIndex == 1) {
-                itemViewHolder.distance.setText("来自" + mCurCity);
-            } else if (null == clientUser.distance || Double.parseDouble(clientUser.distance) == 0.0) {
+            if (!TextUtils.isEmpty(clientUser.city)) {
                 itemViewHolder.distance.setText("来自" + clientUser.city);
             } else {
                 itemViewHolder.distance.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + " km");
-            }
-            if (mCurIndex == 2 && !TextUtils.isEmpty(mCurCity) && !TextUtils.isEmpty(clientUser.distance)
-                    && Double.parseDouble(clientUser.distance) > 0.0) {
-                itemViewHolder.distance.setText("来自" + mCurCity);
             }
             itemViewHolder.signature.setText(clientUser.signature);
             if(clientUser.is_vip && AppManager.getClientUser().isShowVip){

@@ -11,7 +11,6 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
-import retrofit2.http.Url;
 
 public interface IUserApi {
 
@@ -26,10 +25,6 @@ public interface IUserApi {
     @FormUrlEncoded
     @POST("user/wechat_login")
     Observable<ResponseBody> wxLogin(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
-
-    @FormUrlEncoded
-    @POST("user/hw_login")
-    Observable<ResponseBody> hwLogin(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 
     @FormUrlEncoded
     @POST("user/register")
@@ -99,6 +94,10 @@ public interface IUserApi {
     @POST("user/homeLoveList")
     Observable<ResponseBody> getHomeLoveList(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
 
+    @FormUrlEncoded
+    @POST("user/realUserHomeList")
+    Observable<ResponseBody> getRealUserHomeList(@Header("token") String token, @FieldMap ArrayMap<String, String> params);
+
     /**
      * 上传城市信息
      * @param token
@@ -124,35 +123,5 @@ public interface IUserApi {
     @FormUrlEncoded
     @POST("user/uploadToken")
     Call<ResponseBody> uploadToken(@FieldMap ArrayMap<String, String> params, @Header("token") String token);
-
-    /**
-     * 根据api查询ip地址
-     * @return
-     */
-    @GET("http://pv.sohu.com/cityjson?ie=utf-8")
-    Observable<ResponseBody> getIPAddress();
-
-    /**
-     * 根据ip获取城市
-     * @param url
-     * @return
-     */
-    @GET
-    Observable<ResponseBody> getCityByIP(@Url String url);
-
-    /**
-     * 修改华为支付成功之后user为vip
-     * @param token
-     * @return
-     */
-    @GET("user/modifyUserVip")
-    Observable<ResponseBody> modifyUserVip(@Header("token") String token);
-
-    /**
-     * 更新客户端和服务端最新的连接时间
-     */
-    @FormUrlEncoded
-    @POST("user/userOnOffLine")
-    Observable<ResponseBody> saveUserOnOffLine(@Field("uid") int uid);
 
 }

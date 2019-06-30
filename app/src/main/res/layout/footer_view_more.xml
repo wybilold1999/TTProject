@@ -47,7 +47,8 @@
 		app:roundAsCircle="true"/>
 
 	<TextView
-        android:layout_width="match_parent"
+		android:id="@+id/view_more_data"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginLeft="20dp"
 		android:gravity="center_vertical"

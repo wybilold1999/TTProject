@@ -11,4 +11,7 @@ public class DataEvent {
 	public DataEvent(String dynamicContent) {
 		this.dynamicContent = dynamicContent;
 	}
+
+	public DataEvent() {
+	}
 }

@@ -8,22 +8,16 @@ android {
 
     defaultConfig {
         applicationId "com.cyanbirds.ttjy"
-        minSdkVersion 16
+        minSdkVersion 15
         targetSdkVersion 27
-        versionCode 28
-        versionName "1.6.8"
-        flavorDimensions "28"
+        versionCode 60
+        versionName "1.7.0"
+        flavorDimensions "60"
         multiDexEnabled true
-
-        manifestPlaceholders = [
-                GETUI_APP_ID : "6BO85LjudJ84laoTSzMPF",
-                GETUI_APP_KEY : "7QxfJAhJIH8NeTmSjsXMvA",
-                GETUI_APP_SECRET : "8PZn2lNDdG6EIj12bQh1g7"
-        ]
 
         ndk {
             // 设置支持的SO库架构
-            abiFilters 'armeabi' , 'armeabi-v7a'
+            abiFilters 'armeabi' , 'armeabi-v7a' , 'arm64-v8a'
         }
 
     }
@@ -40,7 +34,7 @@ android {
     }
 
     greendao {
-        schemaVersion 4
+        schemaVersion 8
         daoPackage "com.cyanbirds.ttjy.greendao"
         targetGenDir "src/main/java"
     }
@@ -61,6 +55,15 @@ android {
         }
     }
 
+    /*splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi' , 'x86', 'armeabi-v7a' , 'x86_64', 'arm64-v8a'
+            universalApk false
+        }
+    }*/
+
     dexOptions {
         javaMaxHeapSize "4g"
     }
@@ -72,24 +75,7 @@ android {
     }
 
     productFlavors {
-        baidu {}
-        c360 {}
-        xiaomi {}
         tencent {}
-        meizu {}
-        oppo {}
-        vivo {}
-        huawei {}
-        sanxing {}
-        lianxiang {}
-        leshi {}
-        sj91 {}
-        androidmarket {}
-        sougou {}
-        uc {}
-        jinli {}
-
-
         productFlavors.all { flavor ->
             flavor.manifestPlaceholders = [UMENG_CHANNEL_ID: flavor.name]
         }
@@ -99,6 +85,19 @@ android {
     //=========apk的文件名：app_版本名称_版本号_日期_渠道号.apk
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
+            // 重命名产出的apk文件
+            /*def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                File outputDirectory = new File(outputFile.parent);
+                def fileName
+                if (variant.buildType.name == "release") {
+                    fileName = "app_${variant.productFlavors[0].name}_${packageTime()}_v${defaultConfig.versionCode}_${defaultConfig.versionName}.apk"
+//                    fileName = "app_v${defaultConfig.versionName}_${defaultConfig.versionCode}_${packageTime()}_${variant.productFlavors[0].name}.apk"
+                } else {
+                    fileName = "app_v${defaultConfig.versionName}_${defaultConfig.versionCode}_${packageTime()}_debug.apk"
+                }
+                output.outputFile = new File(outputDirectory, fileName)
+            }*/
             if (!variant.buildType.isDebuggable()) {
                 //获取签名的名字 variant.signingConfig.name
                 //要被替换的源字符串
@@ -120,7 +119,7 @@ def packageTime() {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:support-v4:27.0.0'
+    implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
@@ -144,6 +143,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
     implementation 'com.google.code.gson:gson:2.8.5'
+    // 持久化 Cookie
+    implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
 
     implementation 'org.greenrobot:greendao:3.1.1'
     implementation 'com.github.medyo:fancybuttons:1.5@aar'
@@ -154,10 +155,10 @@ dependencies {
     implementation 'me.relex:photodraweeview:1.1.1'
     implementation 'com.github.chrisbanes:PhotoView:1.3.0'
 
+    implementation 'com.liulishuo.filedownloader:library:1.7.5'
     implementation 'com.github.Rukey7:TagLayout:1.0.4'
     implementation 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.4.0'
     implementation 'q.rorbin:badgeview:1.1.3'
-
     implementation 'com.tencent.bugly:crashreport:latest.release'
     //地图
     implementation 'com.amap.api:map2d:latest.integration'
@@ -166,7 +167,7 @@ dependencies {
 
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
 
-    implementation 'com.tencent:mmkv:1.0.12'
+    implementation 'org.greenrobot:eventbus:3.0.0'
 
-    implementation 'com.getui:sdk:2.12.5.0'
+    implementation 'com.from.view.swipeback:view_module_swipeback:1.0.3'
 }

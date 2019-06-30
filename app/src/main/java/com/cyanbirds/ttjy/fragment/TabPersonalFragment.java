@@ -1,11 +1,8 @@
 package com.cyanbirds.ttjy.fragment;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.amap.api.location.CoordinateConverter;
-import com.amap.api.location.DPoint;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
@@ -33,19 +28,19 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.cyanbirds.ttjy.R;
-import com.cyanbirds.ttjy.activity.GiveVipActivity;
-import com.cyanbirds.ttjy.activity.VipCenterActivity;
 import com.cyanbirds.ttjy.adapter.TabPersonalPhotosAdapter;
-import com.cyanbirds.ttjy.config.AppConstants;
 import com.cyanbirds.ttjy.config.ValueKey;
 import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.eventtype.UserEvent;
 import com.cyanbirds.ttjy.manager.AppManager;
 import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
-import com.cyanbirds.ttjy.utils.RxBus;
 import com.cyanbirds.ttjy.utils.StringUtil;
 import com.dl7.tag.TagLayout;
 import com.umeng.analytics.MobclickAgent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -54,7 +49,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
 
 /**
  * @author: wangyb
@@ -65,119 +59,119 @@ import io.reactivex.Observable;
 public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeocodeSearchListener,
 		AMap.OnMapScreenShotListener{
 	@BindView(R.id.occupation)
-	TextView mOccupation;
+    TextView mOccupation;
 	@BindView(R.id.colleage)
-	TextView mColleage;
+    TextView mColleage;
 	@BindView(R.id.constellation)
-	TextView mConstellation;
+    TextView mConstellation;
 	@BindView(R.id.tall)
-	TextView mTall;
+    TextView mTall;
 	@BindView(R.id.weight)
-	TextView mWeight;
+    TextView mWeight;
 	@BindView(R.id.married)
-	TextView mMarried;
+    TextView mMarried;
 	@BindView(R.id.signature)
-	TextView mSignature;
+    TextView mSignature;
 	@BindView(R.id.plable_flowlayout)
-	TagLayout mPlableFlowlayout;
+    TagLayout mPlableFlowlayout;
 	@BindView(R.id.part_flowlayout)
-	TagLayout mPartFlowlayout;
+    TagLayout mPartFlowlayout;
 	@BindView(R.id.intrest_flowlayout)
-	TagLayout mIntrestFlowlayout;
+    TagLayout mIntrestFlowlayout;
 	@BindView(R.id.purpose)
-	TextView mPurpose;
+    TextView mPurpose;
 	@BindView(R.id.loveWhere)
-	TextView mLoveWhere;
+    TextView mLoveWhere;
 	@BindView(R.id.do_what_first)
-	TextView mDoWhatFirst;
+    TextView mDoWhatFirst;
 	@BindView(R.id.conception)
-	TextView mConception;
+    TextView mConception;
 	@BindView(R.id.occupation_lay)
-	RelativeLayout mOccupationLay;
+    RelativeLayout mOccupationLay;
 	@BindView(R.id.colleage_text)
-	TextView mColleageText;
+    TextView mColleageText;
 	@BindView(R.id.colleage_lay)
-	RelativeLayout mColleageLay;
+    RelativeLayout mColleageLay;
 	@BindView(R.id.constellation_text)
-	TextView mConstellationText;
+    TextView mConstellationText;
 	@BindView(R.id.constellation_lay)
-	RelativeLayout mConstellationLay;
+    RelativeLayout mConstellationLay;
 	@BindView(R.id.tall_text)
-	TextView mTallText;
+    TextView mTallText;
 	@BindView(R.id.tall_lay)
-	RelativeLayout mTallLay;
+    RelativeLayout mTallLay;
 	@BindView(R.id.weight_text)
-	TextView mWeightText;
+    TextView mWeightText;
 	@BindView(R.id.weight_lay)
-	RelativeLayout mWeightLay;
+    RelativeLayout mWeightLay;
 	@BindView(R.id.married_text)
-	TextView mMarriedText;
+    TextView mMarriedText;
 	@BindView(R.id.married_lay)
-	RelativeLayout mMarriedLay;
+    RelativeLayout mMarriedLay;
 	@BindView(R.id.signature_text)
-	TextView mSignatureText;
+    TextView mSignatureText;
 	@BindView(R.id.signature_lay)
-	RelativeLayout mSignatureLay;
+    RelativeLayout mSignatureLay;
 	@BindView(R.id.my_info)
-	CardView mMyInfo;
+    CardView mMyInfo;
 	@BindView(R.id.qq_id)
-	TextView mQqId;
+    TextView mQqId;
 	@BindView(R.id.social_text)
-	TextView mSocialText;
+    TextView mSocialText;
 	@BindView(R.id.social_card)
-	CardView mSocialCard;
+    CardView mSocialCard;
 	@BindView(R.id.plable_icon)
-	ImageView mPlableIcon;
+    ImageView mPlableIcon;
 	@BindView(R.id.plable_lay)
-	RelativeLayout mPlableLay;
+    RelativeLayout mPlableLay;
 	@BindView(R.id.part_icon)
-	ImageView mPartIcon;
+    ImageView mPartIcon;
 	@BindView(R.id.part_lay)
-	RelativeLayout mPartLay;
+    RelativeLayout mPartLay;
 	@BindView(R.id.intrest_icon)
-	ImageView mIntrestIcon;
+    ImageView mIntrestIcon;
 	@BindView(R.id.intrest_lay)
-	RelativeLayout mIntrestLay;
+    RelativeLayout mIntrestLay;
 	@BindView(R.id.recyclerview)
-	RecyclerView mRecyclerview;
+    RecyclerView mRecyclerview;
 	@BindView(R.id.photo_card)
-	CardView mPhotoCard;
+    CardView mPhotoCard;
 	@BindView(R.id.gift_text)
-	TextView mGiftText;
+    TextView mGiftText;
 	@BindView(R.id.gift_recyclerview)
-	RecyclerView mGiftRecyclerview;
+    RecyclerView mGiftRecyclerview;
 	@BindView(R.id.gift_card)
-	CardView mGiftCard;
+    CardView mGiftCard;
 	@BindView(R.id.wechat_id)
-	TextView mWechatId;
+    TextView mWechatId;
 	@BindView(R.id.check_view_wechat)
-	Button mCheckViewWechat;
+    Button mCheckViewWechat;
 	@BindView(R.id.check_view_qq)
-	Button mCheckViewQq;
+    Button mCheckViewQq;
 	@BindView(R.id.map)
-	MapView mapView;
+    MapView mapView;
 	@BindView(R.id.address)
-	TextView mAdress;
+    TextView mAdress;
 	@BindView(R.id.map_card)
-	CardView mMapCard;
+    CardView mMapCard;
 	@BindView(R.id.my_location)
-	TextView mMyLocation;
+    TextView mMyLocation;
 	@BindView(R.id.nickname)
-	TextView mNickName;
+    TextView mNickName;
 	@BindView(R.id.age)
-	TextView mAge;
+    TextView mAge;
 	@BindView(R.id.city_text)
-	TextView mCityText;
+    TextView mCityText;
 	@BindView(R.id.city)
-	TextView mCity;
+    TextView mCity;
 	@BindView(R.id.is_vip)
-	ImageView mIsVip;
+    ImageView mIsVip;
 	@BindView(R.id.tv_friend)
-	TextView mTvFriend;
+    TextView mTvFriend;
 	@BindView(R.id.card_friend)
-	CardView mCardFriend;
+    CardView mCardFriend;
 	@BindView(R.id.city_lay)
-	RelativeLayout mCityLay;
+    RelativeLayout mCityLay;
 
 	private AMap aMap;
 	private UiSettings mUiSettings;
@@ -192,26 +186,23 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 
 	private ClientUser clientUser;
 	private List<String> mVals = null;
+	private List<String> mPhotoList;
 	private DecimalFormat mFormat = new DecimalFormat("#.00");
 
 	private TabPersonalPhotosAdapter mAdapter;
 	private LinearLayoutManager layoutManager;
 	private LinearLayoutManager mGiftLayoutManager;
 
-	private DPoint mStartPoint;
-	private DPoint mEndPoint;
-
-	private Observable<UserEvent> observable;
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
 		if (rootView == null) {
 			rootView = inflater.inflate(R.layout.tab_item_personal, null);
 			ButterKnife.bind(this, rootView);
+			EventBus.getDefault().register(this);
 			initMap();
 			setupViews();
-			rxBusSub();
+			setupEvent();
 			setupData();
 			setHasOptionsMenu(true);
 			mapView.onCreate(savedInstanceState);// 此方法必须重写
@@ -243,12 +234,7 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 
 	}
 
-	/**
-	 * rx订阅
-	 */
-	private void rxBusSub() {
-		observable = RxBus.getInstance().register(AppConstants.UPDATE_USER_INFO);
-		observable.subscribe(userEvent -> setUserInfo(AppManager.getClientUser()));
+	private void setupEvent() {
 	}
 
 	private void setupViews() {
@@ -278,26 +264,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 			getLocation();
 			if (clientUser != null) {
 				setUserInfo(clientUser);
-				/**
-				 * 用户收到的礼物
-				 */
-				if (!TextUtils.isEmpty(clientUser.gifts)) {
-					mGiftText.setVisibility(View.VISIBLE);
-					mGiftCard.setVisibility(View.VISIBLE);
-					mAdapter = new TabPersonalPhotosAdapter(getActivity(),
-							StringUtil.stringToIntList(clientUser.gifts));
-					mGiftRecyclerview.setAdapter(mAdapter);
-				} else {
-					mGiftText.setVisibility(View.GONE);
-					mGiftCard.setVisibility(View.GONE);
-				}
-				if (AppManager.getClientUser().isShowVip) {
-					mTvFriend.setVisibility(View.VISIBLE);
-					mCardFriend.setVisibility(View.VISIBLE);
-				} else {
-					mTvFriend.setVisibility(View.GONE);
-					mCardFriend.setVisibility(View.GONE);
-				}
 			}
 		}
 	}
@@ -306,41 +272,17 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 	 * 展示用户地图
 	 */
 	private void getLocation() {
-		try {
-			String myLatitude = AppManager.getClientUser().latitude;
-			String myLongitude = AppManager.getClientUser().longitude;
-			if (!TextUtils.isEmpty(myLatitude) &&
-					!TextUtils.isEmpty(myLongitude)) {
-				LatLonPoint latLonPoint = null;
-				if ("-1".equals(AppManager.getClientUser().userId)) {
-					latLonPoint = new LatLonPoint(latitude, longitude);
-				} else {
-					latLonPoint = new LatLonPoint(Double.parseDouble(myLatitude) + latitude,
-							Double.parseDouble(myLongitude) + longitude);
-				}
-				mLatLonPoint = latLonPoint;
-				LatLng latLng = null;
-				if ("-1".equals(AppManager.getClientUser().userId)) {
-					latLng = new LatLng(latitude, longitude);
-				} else {
-					latLng = new LatLng(Double.parseDouble(myLatitude) + latitude,
-							Double.parseDouble(myLongitude) + longitude);
-				}
-				aMap.animateCamera(CameraUpdateFactory.changeLatLng(latLng));
-				RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 1000,
-						GeocodeSearch.AMAP);// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
-				geocoderSearch.getFromLocationAsyn(query);// 设置同步逆地理编码请求
-
-				mStartPoint = new DPoint(Double.parseDouble(myLatitude), Double.parseDouble(myLongitude));
-				mEndPoint = new DPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude());
-			}
-		} catch (Exception e) {
-
-		}
+		LatLonPoint latLonPoint = new LatLonPoint(latitude, longitude);
+		mLatLonPoint = latLonPoint;
+		LatLng latLng = new LatLng(latitude, longitude);
+		aMap.animateCamera(CameraUpdateFactory.changeLatLng(latLng));
+		RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 1000,
+				GeocodeSearch.AMAP);// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+		geocoderSearch.getFromLocationAsyn(query);// 设置同步逆地理编码请求
 	}
 
 	private void setUserInfo(ClientUser clientUser) {
-		if (AppManager.getClientUser().isShowGold) {
+		if (AppManager.getClientUser().isShowVip) {
 			mSocialCard.setVisibility(View.VISIBLE);
 			mSocialText.setVisibility(View.VISIBLE);
 		} else {
@@ -375,11 +317,7 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 			mCityLay.setVisibility(View.VISIBLE);
 			if (!TextUtils.isEmpty(clientUser.distance) && Double.parseDouble(clientUser.distance) != 0) {
 				mCityText.setText("距离");
-				if (mStartPoint != null && mEndPoint != null) {
-					mCity.setText(mFormat.format((CoordinateConverter.calculateLineDistance(mStartPoint, mEndPoint) / 1000)) + "km");
-				} else {
-					mCity.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + "km");
-				}
+				mCity.setText(mFormat.format(Double.parseDouble(clientUser.distance)) + "km");
 			} else if (!TextUtils.isEmpty(clientUser.city)) {
 				mCityText.setText("城市");
 				mCity.setText(clientUser.city);
@@ -476,63 +414,22 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		}
 	}
 
+	@Subscribe(threadMode = ThreadMode.MAIN)
+	public void updateUserInfo(UserEvent event) {
+		setUserInfo(AppManager.getClientUser());
+	}
+
 	@OnClick({R.id.check_view_wechat, R.id.check_view_qq})
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.check_view_wechat:
-				if (AppManager.getClientUser().is_vip) {
-					showNoCheckDialog();
-				} else {
-					showTurnOnVipDialog("微信");
-				}
+				mWechatId.setText(clientUser.weixin_no);
 				break;
 			case R.id.check_view_qq:
-				if (AppManager.getClientUser().is_vip) {
-					showNoCheckDialog();
-				} else {
-					showTurnOnVipDialog("QQ");
-				}
+				mQqId.setText(clientUser.qq_no);
 				break;
 		}
 	}
-
-
-	private void showTurnOnVipDialog(String socialTpe) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(String.format(getResources().getString(R.string.social_id_need_vip), socialTpe));
-		builder.setPositiveButton(R.string.ok, ((dialog, i) -> {
-			dialog.dismiss();
-			Intent intent = new Intent();
-			intent.setClass(getActivity(), VipCenterActivity.class);
-			startActivity(intent);
-		}));
-		if (AppManager.getClientUser().isShowGiveVip) {
-			builder.setNegativeButton(R.string.free_give_vip, ((dialog, i) -> {
-				dialog.dismiss();
-				Intent intent = new Intent(getActivity(), GiveVipActivity.class);
-				startActivity(intent);
-			}));
-		} else {
-			builder.setNegativeButton(R.string.until_single, ((dialog, i) -> dialog.dismiss()));
-		}
-		builder.show();
-	}
-
-	/**
-	 * 禁止查看
-	 */
-	private void showNoCheckDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(R.string.no_check_tips);
-		builder.setPositiveButton(getResources().getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.dismiss();
-					}
-				});
-		builder.show();
-	}
-
 
 	@Override
 	public void onDestroy() {
@@ -540,7 +437,7 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 		if (mapView != null) {
 			mapView.onDestroy();
 		}
-		RxBus.getInstance().unregister(AppConstants.UPDATE_USER_INFO, observable);
+		EventBus.getDefault().unregister(this);
 	}
 
 	@Override
@@ -581,16 +478,6 @@ public class TabPersonalFragment extends Fragment implements GeocodeSearch.OnGeo
 						.getRegeocodeAddress().getFormatAddress());
 				mAddress = poiItem.getSnippet();
 				mAdress.setText(mAddress);
-				if (AppManager.getClientUser().isShowMap &&
-						!TextUtils.isEmpty(clientUser.distance) &&
-						!"0.0".equals(clientUser.distance) &&
-						!TextUtils.isEmpty(mAddress)) {
-					mMyLocation.setVisibility(View.VISIBLE);
-					mMapCard.setVisibility(View.VISIBLE);
-				} else {
-					mMapCard.setVisibility(View.GONE);
-					mMyLocation.setVisibility(View.GONE);
-				}
 				if (clientUser.userId.equals(AppManager.getClientUser().userId)) {
 					mMyLocation.setVisibility(View.GONE);
 					mMapCard.setVisibility(View.GONE);

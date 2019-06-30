@@ -96,10 +96,6 @@ public class BaseActivity<T extends IBasePresenter> extends AppCompatActivity im
 	protected void onDestroy() {
 		super.onDestroy();
 		ActivityStackManager.getScreenManager().popActivity(this);
-		if (presenter != null) {
-			presenter.detachView();
-			presenter = null;
-		}
 	}
 
 	/**

@@ -9,18 +9,15 @@ import com.cyanbirds.ttjy.view.IUserLoginLogOut;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.lang.ref.WeakReference;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class SmsCodePresenterImpl implements IUserLoginLogOut.CheckSmsCodePresenter {
 
-
-    private WeakReference<IUserLoginLogOut.CheckSmsCodeView> mViewWeakReference;
+    private IUserLoginLogOut.CheckSmsCodeView checkSmsCodeView;
 
     public SmsCodePresenterImpl(IUserLoginLogOut.CheckSmsCodeView view) {
-        mViewWeakReference = new WeakReference<>(view);
+        this.checkSmsCodeView = view;
     }
 
     @Override
@@ -39,22 +36,6 @@ public class SmsCodePresenterImpl implements IUserLoginLogOut.CheckSmsCodePresen
                     return obj.get("status").getAsInt();
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(status -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().checkSmsCode(status);
-                    }
-                }, throwable -> {
-                    if (null != mViewWeakReference && mViewWeakReference.get() != null) {
-                        mViewWeakReference.get().onShowNetError();
-                    }
-                });
-    }
-
-    @Override
-    public void detachView() {
-        if (mViewWeakReference != null) {
-            mViewWeakReference.clear();
-            mViewWeakReference = null;
-        }
+                .subscribe(checkSmsCodeView::checkSmsCode, throwable -> checkSmsCodeView.onShowNetError());
     }
 }

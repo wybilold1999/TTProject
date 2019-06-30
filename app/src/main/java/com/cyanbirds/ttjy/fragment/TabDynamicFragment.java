@@ -204,9 +204,4 @@ public class TabDynamicFragment extends Fragment {
 		MobclickAgent.onPageEnd(this.getClass().getName());
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		RxBus.getInstance().unregister(AppConstants.PUB_DYNAMIC, observable);
-	}
 }

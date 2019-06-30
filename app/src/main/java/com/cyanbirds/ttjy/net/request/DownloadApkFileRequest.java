@@ -1,19 +1,14 @@
 package com.cyanbirds.ttjy.net.request;
 
 
-import com.cyanbirds.ttjy.listener.DownloadListener;
+import com.cyanbirds.ttjy.CSApplication;
 import com.cyanbirds.ttjy.listener.FileProgressListener;
-import com.cyanbirds.ttjy.net.IDownLoadApi;
+import com.cyanbirds.ttjy.listener.NetFileDownloadListener;
 import com.cyanbirds.ttjy.net.base.ResultPostExecute;
-import com.cyanbirds.ttjy.net.base.RetrofitFactory;
-import com.cyanbirds.ttjy.utils.FileUtils;
+import com.liulishuo.filedownloader.BaseDownloadTask;
+import com.liulishuo.filedownloader.FileDownloader;
 
 import java.io.File;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /***
@@ -34,33 +29,26 @@ public class DownloadApkFileRequest extends ResultPostExecute<String> {
      */
     public void request(String url, final String savePath, String fileName) {
         final File file = new File(savePath, fileName);
-        RetrofitFactory.getRetrofit().create(IDownLoadApi.class)
-                .downloadFileWithDynamicUrlSync(url)
-                .enqueue(new Callback<ResponseBody>() {
+        FileDownloader.setup(CSApplication.getInstance());
+        FileDownloader.getImpl().create(url)
+                .setPath(file.getAbsolutePath())
+                .setListener(new NetFileDownloadListener(){
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        FileUtils.writeResponseBodyToDisk(response.body(), file.getAbsolutePath(), new DownloadListener(){
-                            @Override
-                            public void progress(int progress) {
-                                FileProgressListener.getInstance().notifyFileProgressChanged(null, progress);
-                            }
-
-                            @Override
-                            public void completed(String path) {
-                                onPostExecute(file.getPath());
-                            }
-
-                            @Override
-                            public void error(String error) {
-                                onErrorExecute("下载失败");
-                            }
-                        });
+                    protected void completed(BaseDownloadTask task) {
+                        onPostExecute(file.getPath());
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                        int progress = (int) ((totalBytes > 0) ? (soFarBytes * 1.0 / totalBytes) * 100
+                                : -1);
+                        FileProgressListener.getInstance().notifyFileProgressChanged(null, progress);
+                    }
+
+                    @Override
+                    protected void error(BaseDownloadTask task, Throwable e) {
                         onErrorExecute("下载失败");
                     }
-                });
+                }).start();
     }
 }

@@ -6,10 +6,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
+import com.cyanbirds.ttjy.entity.BetweenLovers;
+import com.cyanbirds.ttjy.entity.ClientUser;
 import com.cyanbirds.ttjy.entity.Gift;
+import com.cyanbirds.ttjy.manager.AppManager;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
@@ -47,6 +54,23 @@ public class GiftMarketAdapter extends
 		Gift gift =  mGifts.get(position);
 		holder.mGiftName.setText(gift.name);
 		holder.mImgUrl.setImageURI(Uri.parse(gift.dynamic_image_url));
+		if (AppManager.getClientUser().isShowGold) {
+			holder.mPriceLay.setVisibility(View.VISIBLE);
+			holder.mLine.setVisibility(View.VISIBLE);
+			holder.mVipAmount.setVisibility(View.VISIBLE);
+			holder.mVip.setVisibility(View.VISIBLE);
+			if (gift.vip_amount == 0) {
+				holder.mVipAmount.setText("免费");
+			} else {
+				holder.mVipAmount.setText(gift.vip_amount + "金币");
+			}
+		} else {
+			holder.mPriceLay.setVisibility(View.GONE);
+			holder.mVipAmount.setVisibility(View.GONE);
+			holder.mLine.setVisibility(View.GONE);
+			holder.mVip.setVisibility(View.GONE);
+		}
+		holder.mAmount.setText(String.format(mContext.getResources().getString(R.string.org_price), gift.amount));
 	}
 
 	@Override
@@ -63,10 +87,20 @@ public class GiftMarketAdapter extends
 
 		TextView mGiftName;
 		SimpleDraweeView mImgUrl;
+		TextView mVipAmount;
+		TextView mAmount;
+		TextView mLine;
+		ImageView mVip;
+		LinearLayout mPriceLay;
 		public ViewHolder(View itemView) {
 			super(itemView);
 			mGiftName = (TextView) itemView.findViewById(R.id.gift_name);
 			mImgUrl = (SimpleDraweeView) itemView.findViewById(R.id.img_url);
+			mVipAmount = (TextView) itemView.findViewById(R.id.vip_amount);
+			mAmount = (TextView) itemView.findViewById(R.id.amount);
+			mLine = (TextView) itemView.findViewById(R.id.line);
+			mVip = (ImageView) itemView.findViewById(R.id.iv_vip);
+			mPriceLay = (LinearLayout) itemView.findViewById(R.id.price_lay);
 			mImgUrl.setOnClickListener(this);
 		}
 

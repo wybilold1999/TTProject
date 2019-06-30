@@ -1,6 +1,6 @@
 package com.cyanbirds.ttjy.activity;
 
-import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -43,11 +43,11 @@ import com.cyanbirds.ttjy.adapter.ChatEmoticonsAdapter.OnEmojiItemClickListener;
 import com.cyanbirds.ttjy.adapter.ChatMessageAdapter;
 import com.cyanbirds.ttjy.adapter.PagerGridAdapter;
 import com.cyanbirds.ttjy.config.ValueKey;
-import com.cyanbirds.ttjy.db.ConversationSqlManager;
 import com.cyanbirds.ttjy.db.IMessageDaoManager;
 import com.cyanbirds.ttjy.entity.ClientUser;
-import com.cyanbirds.ttjy.entity.Conversation;
 import com.cyanbirds.ttjy.entity.Emoticon;
+import com.cyanbirds.ttjy.entity.ExpressionGroup;
+import com.cyanbirds.ttjy.entity.FConversation;
 import com.cyanbirds.ttjy.entity.IMessage;
 import com.cyanbirds.ttjy.helper.IMChattingHelper;
 import com.cyanbirds.ttjy.listener.FileProgressListener;
@@ -57,15 +57,13 @@ import com.cyanbirds.ttjy.listener.MessageCallbackListener.OnMessageReportCallba
 import com.cyanbirds.ttjy.listener.MessageStatusReportListener;
 import com.cyanbirds.ttjy.listener.MessageStatusReportListener.OnMessageStatusReport;
 import com.cyanbirds.ttjy.manager.AppManager;
-import com.cyanbirds.ttjy.manager.NotificationManagerUtils;
+import com.cyanbirds.ttjy.manager.NotificationManager;
 import com.cyanbirds.ttjy.ui.widget.WrapperLinearLayoutManager;
-import com.cyanbirds.ttjy.utils.CheckUtil;
 import com.cyanbirds.ttjy.utils.EmoticonUtil;
 import com.cyanbirds.ttjy.utils.FileAccessorUtils;
 import com.cyanbirds.ttjy.utils.FileUtils;
 import com.cyanbirds.ttjy.utils.ImageUtil;
-import com.cyanbirds.ttjy.utils.Utils;
-import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.cyanbirds.ttjy.utils.ToastUtil;
 import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
@@ -75,17 +73,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-
 /**
  * @author Cloudsoar(wangyb)
  * @datetime 2016-01-16 19:21 GMT+8
  * @email 395044952@qq.com
  */
 public class ChatActivity extends BaseActivity implements OnMessageReportCallback, OnClickListener,
-		OnEmojiItemClickListener, OnFileProgressChangedListener,
-		OnRefreshListener, OnMessageStatusReport {
+        OnEmojiItemClickListener, OnFileProgressChangedListener,
+        OnRefreshListener, OnMessageStatusReport {
 	private RecyclerView mMessageRecyclerView;
 	private ChatMessageAdapter mMessageAdapter;
 	private ImageView openCamera;
@@ -102,14 +97,18 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	private RecyclerView mEmoticonRecyclerview;
 	private SwipeRefreshLayout mSwipeRefresh;
 
-    private File mPhotoFile;
-	private String mPhotoDirPath;
+	private String mPhotoPath;
+	private File mPhotoFile;
+	private Uri mPhotoOnSDCardUri;
+
 	private ClientUser mClientUser;
-	private Conversation mConversation;
+	private FConversation mConversation;
+	private String mRealId;//真实用户的用户id
 
 	private List<IMessage> mIMessages;
 	private List<GridView> mChatEmoticonsGridView;
 	private LinearLayoutManager mLinearLayoutManager;
+	private List<ExpressionGroup> mExpressionGroups;
 
 	/**
 	 * 消息分页条数
@@ -134,16 +133,11 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	 */
 	public final static int SHARE_LOCATION_RESULT = 106;
 	/**
-	 * 相机权限
+	 * 发红包
 	 */
-	private final int REQUEST_PERMISSION_CAMERA_WRITE_EXTERNAL = 1001;
+	public static final int  SEND_RED_PACKET = 107;
 
-	private String AUTHORITY = "com.cyanbirds.ttjy.fileProvider";
 	public static Handler handler;
-
-	private RxPermissions rxPermissions;
-
-	private boolean isOpenCamara = false;//是否打开相机
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -199,6 +193,7 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		LinearLayoutManager layoutManager = new WrapperLinearLayoutManager(this);
 		layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
 		mEmoticonRecyclerview.setLayoutManager(layoutManager);
+
 	}
 
 	private void setupEvent() {
@@ -266,11 +261,12 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 
 	private void setupData() {
 		mClientUser = (ClientUser) getIntent().getSerializableExtra(ValueKey.USER);
-		if (mClientUser != null) {
+		mRealId = getIntent().getStringExtra(ValueKey.USER_ID);
+		/*if (mClientUser != null) {
 			mConversation = ConversationSqlManager.getInstance(this)
 					.queryConversationForByTalkerId(mClientUser.userId);
-		}
-
+		}*/
+		mConversation = (FConversation) getIntent().getSerializableExtra(ValueKey.CONVERSATION);
 		initEmoticon();
 		initEmotionUI();
 		mIMessages = new ArrayList<>();
@@ -407,103 +403,61 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.openCamera:
-				isOpenCamara = true;
-				checkPOpenCameraAlbums();
+                openCamera();
+                setInputMode();
 				break;
 			case R.id.openAlbums:
-				isOpenCamara = false;
-				checkPOpenCameraAlbums();
+				openAlbums();
 				break;
 			case R.id.openEmotion:
-				isOpenCamara = false;
 				setEmojiconMode();
 				break;
 			case R.id.openLocation:
-				isOpenCamara = false;
 				toShareLocation();
 				break;
 			case R.id.tool_view_input_text:
 				if (AppManager.getClientUser().isShowVip) {
-					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
-						if (AppManager.getClientUser().is_vip) {
-							if (null != IMChattingHelper.getInstance().getChatManager()) {
-								sendTextMsg();
-							}
-						} else {
-							showVipDialog();
-						}
+					if (AppManager.getClientUser().is_vip) {
+                        if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
+                            if (null != IMChattingHelper.getInstance().getChatManager()) {
+                                IMChattingHelper.getInstance().sendTextMsg(mConversation.Rid, mRealId,
+                                        mClientUser, mContentInput.getText().toString());
+                                mContentInput.setText("");
+                            }
+                        }
+					} else {
+						showVipDialog();
 					}
 				} else {
-					if (!TextUtils.isEmpty(mContentInput.getText().toString()) &&
-							null != IMChattingHelper.getInstance().getChatManager()) {
-						sendTextMsg();
+					if (!TextUtils.isEmpty(mContentInput.getText().toString())) {
+						if (null != IMChattingHelper.getInstance().getChatManager()) {
+							IMChattingHelper.getInstance().sendTextMsg(mConversation.Rid, mRealId,
+									mClientUser, mContentInput.getText().toString());
+							mContentInput.setText("");
+						}
 					}
 				}
 				break;
 		}
 	}
 
-	private void checkPOpenCameraAlbums() {
-		if (!CheckUtil.isGetPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
-				!CheckUtil.isGetPermission(this, Manifest.permission.CAMERA)) {
-			if (rxPermissions == null) {
-				rxPermissions = new RxPermissions(this);
-			}
-			rxPermissions.requestEachCombined(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
-					.subscribe(permission -> {// will emit 1 Permission object
-						if (permission.granted) {
-							// All permissions are granted !
-							if (isOpenCamara) {
-								openCamera();
-								setInputMode();
-							} else {
-								openAlbums();
-							}
-						} else if (permission.shouldShowRequestPermissionRationale) {
-							// At least one denied permission without ask never again
-							showPermissionDialog(R.string.open_camera_write_external_permission, REQUEST_PERMISSION_CAMERA_WRITE_EXTERNAL);
-						} else {
-							// At least one denied permission with ask never again
-							// Need to go to the settings
-							showPermissionDialog(R.string.open_camera_write_external_permission, REQUEST_PERMISSION_CAMERA_WRITE_EXTERNAL);
-						}
-					}, throwable -> {
-
-					});
-		} else {
-			if (isOpenCamara) {
-				openCamera();
-				setInputMode();
-			} else {
-				openAlbums();
-			}
-		}
-	}
-
-	private void sendTextMsg() {
-		IMChattingHelper.getInstance().sendTextMsg(
-				mClientUser, mContentInput.getText().toString());
-		mContentInput.setText("");
-	}
-
 	private void showVipDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(R.string.un_send_msg);
-		builder.setPositiveButton(R.string.ok, ((dialog, i) -> {
-			dialog.dismiss();
-			Intent intent = new Intent();
-			intent.setClass(ChatActivity.this, VipCenterActivity.class);
-			startActivity(intent);
-		}));
-		if (AppManager.getClientUser().isShowGiveVip) {
-			builder.setNegativeButton(R.string.free_give_vip, ((dialog, i) -> {
+		builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
-				Intent intent = new Intent(ChatActivity.this, GiveVipActivity.class);
+				Intent intent = new Intent(ChatActivity.this, VipCenterActivity.class);
 				startActivity(intent);
-			}));
-		} else {
-			builder.setNegativeButton(R.string.until_single, ((dialog, i) -> dialog.dismiss()));
-		}
+			}
+		});
+		builder.setNegativeButton(R.string.until_single, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
 		builder.show();
 	}
 
@@ -526,10 +480,8 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (mClientUser != null) {
-			AppManager.currentChatTalker = mClientUser.userId;
-		}
-		NotificationManagerUtils.getInstance().cancelNotification();
+		AppManager.currentChatTalker = mClientUser.userId;
+		NotificationManager.getInstance().cancelNotification();
 		MobclickAgent.onPageStart(this.getClass().getName());
 		MobclickAgent.onResume(this);
 	}
@@ -558,30 +510,32 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		hideSoftKeyboard();
 		Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		if (intent.resolveActivity(getPackageManager())!=null){
-
-			mPhotoDirPath = Environment.getExternalStorageDirectory()+"/Android/data/com.cyanbirds.ttjy/files/";
+			String mPhotoDirPath = Environment
+					.getExternalStoragePublicDirectory(
+							Environment.DIRECTORY_DCIM).getPath();
 			File mPhotoDirFile = new File(mPhotoDirPath);
 			if (!mPhotoDirFile.exists()) {
-				mPhotoDirFile.mkdirs();
+				mPhotoDirFile.mkdir();
 			}
-            mPhotoFile = new File(mPhotoDirPath, getPhotoFileName());//照相机的File对象
+			mPhotoPath = mPhotoDirPath + File.separator + getPhotoFileName();
+			mPhotoFile = new File(mPhotoPath);
 			if (!mPhotoFile.exists()) {
 				try {
-                    mPhotoFile.createNewFile();
+					mPhotoFile.createNewFile();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-			Intent intentFromCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {//7.0及以上
-				Uri uriForFile = FileProvider.getUriForFile(this, AUTHORITY, mPhotoFile);
-				intentFromCapture.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile);
-				intentFromCapture.addFlags(FLAG_GRANT_READ_URI_PERMISSION);
-				intentFromCapture.addFlags(FLAG_GRANT_WRITE_URI_PERMISSION);
-			} else {
-				intentFromCapture.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+			if (mPhotoFile != null) {
+				//FileProvider 是一个特殊的 ContentProvider 的子类，
+				//它使用 content:// Uri 代替了 file:/// Uri. ，更便利而且安全的为另一个app分享文件
+				mPhotoOnSDCardUri = FileProvider.getUriForFile(this,
+						"com.cyanbirds.ttjy.fileProvider",
+						mPhotoFile);
+				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, mPhotoOnSDCardUri);
+				startActivityForResult(intent, CAMERA_RESULT);
 			}
-			startActivityForResult(intentFromCapture, CAMERA_RESULT);
 		}
 	}
 
@@ -610,37 +564,56 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK && requestCode == CAMERA_RESULT) {
-			Uri inputUri;
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-				inputUri = FileProvider.getUriForFile(this, AUTHORITY, mPhotoFile);//通过FileProvider创建一个content类型的Uri
-			} else {
-				inputUri = Uri.fromFile(mPhotoFile);
-			}
-			Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, inputUri);
+			Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+					mPhotoOnSDCardUri);
 			sendBroadcast(intent);
-			if (inputUri != null && mPhotoFile.exists()) {
+			if (mPhotoOnSDCardUri != null && new File(mPhotoPath).exists()) {
 				//压缩图片
-				String imgUrl = ImageUtil.compressImage(mPhotoFile.getPath(), mPhotoDirPath);
+				String imgUrl = ImageUtil.compressImage(mPhotoPath, FileAccessorUtils.IMESSAGE_IMAGE);
 				Uri uri = Uri.parse("file://" + imgUrl);
 				toImagePreview(uri);
 			}
 		} else if (resultCode == RESULT_OK && requestCode == ALBUMS_RESULT) {
 			if (AppManager.getClientUser().isShowVip) {
 				if (AppManager.getClientUser().is_vip) {
-					Uri originalUri = data.getData();
-					File originalFile = new File(FileUtils.getPath(this, originalUri));
-					if (null != IMChattingHelper.getInstance().getChatManager()) {
-						IMChattingHelper.getInstance().sendImgMsg(mClientUser, originalFile.getAbsolutePath());
-					}
+                    Uri uri = data.getData();
+                    String url = FileUtils.getPath(this, uri);
+                    if (!TextUtils.isEmpty(url)) {
+                        String fileUrl = "";
+                        if (url.startsWith("/storage")) {
+                            fileUrl = url;
+                        } else {
+                            String extSdCardPath = FileUtils.getPath();
+                            fileUrl = extSdCardPath + File.separator + FileUtils.getPath(this, uri);
+                        }
+                        if (null != IMChattingHelper.getInstance().getChatManager()) {
+                            IMChattingHelper.getInstance().sendImgMsg(mConversation.Rid, mRealId, mClientUser, fileUrl);
+                        }
+                    }
 				} else {
 					showVipDialog();
+				}
+			} else {
+				Uri uri = data.getData();
+				String url = FileUtils.getPath(this, uri);
+				if (!TextUtils.isEmpty(url)) {
+					String fileUrl = "";
+					if (url.startsWith("/storage")) {
+						fileUrl = url;
+					} else {
+						String extSdCardPath = FileUtils.getPath();
+						fileUrl = extSdCardPath + File.separator + FileUtils.getPath(this, uri);
+					}
+					if (null != IMChattingHelper.getInstance().getChatManager()) {
+						IMChattingHelper.getInstance().sendImgMsg(mConversation.Rid, mRealId, mClientUser, fileUrl);
+					}
 				}
 			}
 		} else if (resultCode == RESULT_OK
 				&& requestCode == PREVIEW_IMAGE_RESULT) {
 			Uri uri = data.getData();
             String imgUrl = ImageUtil.compressImage(uri.getPath(), FileAccessorUtils.IMESSAGE_IMAGE);
-			IMChattingHelper.getInstance().sendImgMsg(mClientUser, imgUrl);
+			IMChattingHelper.getInstance().sendImgMsg(mConversation.Rid, mRealId, mClientUser, imgUrl);
 		} else if (resultCode == RESULT_OK
 				&& requestCode == SHARE_LOCATION_RESULT) {
 			double latitude = data.getDoubleExtra(ValueKey.LATITUDE, 0);
@@ -648,11 +621,15 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 			String address = data.getStringExtra(ValueKey.ADDRESS);
 			String imagePath = data.getStringExtra(ValueKey.IMAGE_URL);
 			if (null != IMChattingHelper.getInstance().getChatManager()) {
-				IMChattingHelper.getInstance().sendLocationMsg(mClientUser, latitude, longitude,
+				IMChattingHelper.getInstance().sendLocationMsg(mConversation.Rid, mRealId, mClientUser, latitude, longitude,
 						address, imagePath);
 			}
-		} else if (requestCode == REQUEST_PERMISSION_CAMERA_WRITE_EXTERNAL) {
-			checkPOpenCameraAlbums();
+		} else if (resultCode == RESULT_OK && requestCode == SEND_RED_PACKET) {
+			ToastUtil.showMessage("已发送");
+			if (null != IMChattingHelper.getInstance().getChatManager()) {
+				IMChattingHelper.getInstance().sendRedPacketMsg(mConversation.Rid, mRealId,
+						mClientUser, data.getStringExtra(ValueKey.DATA));
+			}
 		}
 	}
 
@@ -853,15 +830,5 @@ public class ChatActivity extends BaseActivity implements OnMessageReportCallbac
 		onMessageStatusReport(msg);
 	}
 
-	private void showPermissionDialog(int textResId, int requestCode) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.permission_request);
-		builder.setMessage(textResId);
-		builder.setPositiveButton(R.string.ok, (dialog, i) -> {
-			dialog.dismiss();
-			Utils.goToSetting(this, requestCode);
-		});
-		builder.show();
-	}
 }
 

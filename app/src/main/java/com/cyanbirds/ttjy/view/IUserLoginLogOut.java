@@ -16,7 +16,6 @@ public interface IUserLoginLogOut {
         void onQQLogin(String token, String openId);
         void onRegist(ClientUser clientUser, String channel);
         void onLogOut();
-        void onHWLogin(String hwOpenId);
     }
 
     interface CheckSmsCodeView extends IBaseView<CheckSmsCodePresenter> {

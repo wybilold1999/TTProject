@@ -1,7 +1,12 @@
 package com.cyanbirds.ttjy.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +15,7 @@ import android.widget.TextView;
 
 import com.cyanbirds.ttjy.R;
 import com.cyanbirds.ttjy.entity.MemberBuy;
+import com.cyanbirds.ttjy.utils.CheckUtil;
 
 import java.util.List;
 
@@ -24,9 +30,13 @@ public class MemberBuyAdapter extends
 
 	private List<MemberBuy> mMemberBuyList;
 	private OnItemClickListener mOnItemClickListener;
+	private Context mContext;
+	private String channel;
 
 	public MemberBuyAdapter(Context context, List<MemberBuy> memberBuys) {
+		this.mContext = context;
 		this.mMemberBuyList = memberBuys;
+		channel = CheckUtil.getAppMetaData(context, "UMENG_CHANNEL");
 	}
 
 
@@ -46,6 +56,13 @@ public class MemberBuyAdapter extends
 		}
 		holder.mDateLimit.setText(memberBuy.months);
 		holder.mPrice.setText(memberBuy.price + "元");
+		if (!TextUtils.isEmpty(memberBuy.preferential.trim())) {//不是99元的，显示赠送话费的优惠
+			holder.mPreferential.setText(String.format(mContext.getResources().getString(R.string.send_telephone_fare),
+					Integer.parseInt(memberBuy.preferential)));
+			if ("oppo".equals(channel)) {
+				holder.mPreferential.setVisibility(View.GONE);
+			}
+		}
 		holder.mDesciption.setText(memberBuy.descreption);
 	}
 
@@ -58,12 +75,14 @@ public class MemberBuyAdapter extends
 	class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 		TextView mDateLimit;
 		TextView mPrice;
+		TextView mPreferential;
 		TextView mDesciption;
 		Button mBuy;
 		public ViewHolder(View itemView) {
 			super(itemView);
 			mDateLimit = (TextView) itemView.findViewById(R.id.date_limit);
 			mPrice = (TextView) itemView.findViewById(R.id.price);
+			mPreferential = (TextView) itemView.findViewById(R.id.preferential);
 			mDesciption = (TextView) itemView.findViewById(R.id.desciption);
 			mBuy = (Button) itemView.findViewById(R.id.buy);
 			mBuy.setOnClickListener(this);
